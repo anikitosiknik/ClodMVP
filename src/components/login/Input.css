@@ -1,0 +1,18 @@
+.inp {
+    outline: none;
+    border: none;
+    border-radius: 20px;
+    text-align: left;
+    font-size: 16px;
+    padding: 8px 0px 8px 13px;
+    width: 75vw;
+    border: 2px solid #699C8B;
+    font-family: Roboto;
+    font-style: normal;
+    color: #515151;
+}
+
+.inp::placeholder {
+    color: #C4C4C4;
+    
+}

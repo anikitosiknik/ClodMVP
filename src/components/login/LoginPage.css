@@ -1,0 +1,43 @@
+.loginPage {
+    display: grid;
+    min-height: 100vh;
+    grid-auto-flow: row;
+    justify-items: center;
+    grid-template-rows: 2fr 3fr;
+    font-size: 18px;
+    font-weight: 500;
+    line-height: 22px;
+    color: #515151;
+}
+
+.loginPage img {
+    align-self: flex-end;
+}
+
+.loginPage .form {
+    margin-top: 70px;
+    display: grid;
+    justify-self: center;
+    align-items: flex-start;
+    align-content: flex-start;
+    gap: 16px;
+}
+
+
+.loginPage .form h2,
+.loginPage .form p {
+    font-size: 18px;
+    font-weight: 500;
+    line-height: 22px;
+    margin: 0px;
+}
+
+
+.loginPage .form p {
+    font-size: 16px;
+    color: #C4C4C4;
+}
+.loginPage .form h2 {
+    font-size: 18px;
+    color: #515151;
+}
