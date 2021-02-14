@@ -1,6 +1,7 @@
 import { ADD_TODO } from "../actionTypes";
+import { InitialState } from "../types";
 
-const initialState = {
+const initialState: InitialState = {
   logined: false,
   name: '',
   mail: '',
