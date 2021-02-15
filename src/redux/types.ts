@@ -1,8 +1,7 @@
-export interface InitialState {
+export interface userState {
     logined: boolean,
   name: string,
   mail: string,
-  password: string,
   chest: number,
   waist: number,
   hips: number,
@@ -15,5 +14,5 @@ export interface InitialState {
 }
 
 export interface RootState {
-    user: InitialState,
+    user: userState,
 }

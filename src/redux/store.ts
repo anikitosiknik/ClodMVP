@@ -2,7 +2,7 @@ import { createStore, applyMiddleware, compose } from "redux";
 import rootReducer from "./reducers";
 import createSagaMiddleware from 'redux-saga'
 
-import {helloSaga} from '../saga/sagas'
+import rootSaga from '../saga/sagas'
 
 
 const win: any = window;
@@ -18,4 +18,4 @@ win['__REDUX_DEVTOOLS_EXTENSION_COMPOSE__']({ }) : compose;
 
 export default createStore(rootReducer, enhancer);
 
-sagaMiddleware.run(helloSaga)
+sagaMiddleware.run(rootSaga)

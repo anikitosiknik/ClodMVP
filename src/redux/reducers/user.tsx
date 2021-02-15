@@ -1,11 +1,10 @@
-import { ADD_TODO } from "../actionTypes";
-import { InitialState } from "../types";
+import { FETCH_LOGIN_USER, FETCH_REGISTER_USER, SET_USER } from "../actionTypes";
+import { userState } from "../types";
 
-const initialState: InitialState = {
+const initialState: userState = {
   logined: false,
   name: '',
   mail: '',
-  password: '',
   chest: 0,
   waist: 0,
   hips: 0,
@@ -17,12 +16,18 @@ const initialState: InitialState = {
   style: '',
 };
 
-export default function(state = initialState, action: { type: string}) {
+export default function(state = initialState, action: { type: string, payload: userState}) {
   switch (action.type) {
-    case ADD_TODO: {
-      return {...state };
+    case SET_USER: {
+      console.log(action.payload);
+      return { ...state, ...action.payload };
     }
     default:
       return state;
   }
 }
+
+
+export const setUser = (payload:any) => ({type: SET_USER, payload });
+export const fetchRegister = (payload: {name: string, mail: string, password: string}) => ({type: FETCH_REGISTER_USER, payload});
+export const fetchLogin = (payload: { mail: string, password: string}) => ({type: FETCH_LOGIN_USER, payload});

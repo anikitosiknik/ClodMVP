@@ -1,14 +1,9 @@
-export const emailValidation = (mail: string) => {
-    const re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-    return re.test(String(mail).toLowerCase())
-}
+export const emailRegexp = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+export const nickRegexp = /^[^0-9]\w+$/;
+export const passwordRegexp = /(?=.*[0-9])/;
 
-export const nicklValidation = (nick: string) => {
-    const re = /^[^0-9]\w+$/;
-    return re.test(String(nick).toLowerCase())
-}
+export const emailValidation = (mail: string) => emailRegexp.test(String(mail).toLowerCase());
 
-export const passwordValidation = (password: string) => {
-    const re = /(?=.*[0-9])/;
-    return re.test(String(password).toLowerCase())
-}
+export const nicklValidation = (nick: string) => nickRegexp.test(String(nick).toLowerCase())
+
+export const passwordValidation = (password: string) => passwordRegexp.test(String(password).toLowerCase())

@@ -1,1 +1,4 @@
-export const ADD_TODO = "ADD_TODO";
+
+export const SET_USER = 'SET_USER'
+export const FETCH_REGISTER_USER = 'FETCH_REGISTER_USER';
+export const FETCH_LOGIN_USER = 'FETCH_LOGIN_USER';

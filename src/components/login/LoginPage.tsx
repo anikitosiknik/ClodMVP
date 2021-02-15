@@ -16,6 +16,26 @@ function LoginPage() {
     ref.current?.classList.add("clicked");
   };
 
+  const validate = (
+    value: string,
+    classList: DOMTokenList | undefined,
+    validateFunc?: (value: string) => boolean
+  ) => {
+    if (!classList) return;
+    if (validateFunc && validateFunc(value)) {
+      classList.add("valid");
+      classList.remove("invalid");
+    } else {
+      classList.remove("valid");
+      classList.add("invalid");
+    }
+
+    if (!value) {
+      classList.remove("valid");
+      classList.remove("invalid");
+    }
+  };
+
   return (
     <div className="loginPage">
       <img src={logo}></img>
@@ -42,12 +62,13 @@ function LoginPage() {
           </button>
         </div>
       ) : pageStatus === "create" ? (
-        <Create></Create>
+        <Create validate={validate}></Create>
       ) : (
-        <Login></Login>
+        <Login validate={validate}></Login>
       )}
     </div>
   );
 }
+
 
 export default LoginPage;

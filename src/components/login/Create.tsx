@@ -1,61 +1,61 @@
 import React, { useRef } from "react";
+import { useDispatch } from "react-redux";
 import {
   emailValidation,
   nicklValidation,
   passwordValidation,
 } from "../../utils/validation";
+import { fetchRegister } from "../../redux/reducers/user";
+import PropTypes, { InferProps } from "prop-types";
 
-function Create() {
+function Create({validate}: InferProps<typeof Create.propTypes>) {
   const userNameRef: React.RefObject<HTMLInputElement> = useRef(null);
   const userMailRef: React.RefObject<HTMLInputElement> = useRef(null);
   const userPasswordRef: React.RefObject<HTMLInputElement> = useRef(null);
   const repeatPasswordRef: React.RefObject<HTMLInputElement> = useRef(null);
 
-  const inputRefs = [userNameRef, userMailRef, userPasswordRef, repeatPasswordRef];
+  const dispatch = useDispatch();
+  
 
-  const validate = (
-    event: React.ChangeEvent<HTMLInputElement>,
-    ref: React.RefObject<HTMLInputElement>,
-    validateFunc?: Function
+  const inputRefs = [
+    userNameRef,
+    userMailRef,
+    userPasswordRef,
+    repeatPasswordRef,
+  ];
+
+
+  
+
+  const secondPasswordValidation = (
+    secondPassword: string | null | undefined
   ) => {
-    if (validateFunc && validateFunc(event.target.value)) {
-      ref.current?.classList.add("valid");
-      ref.current?.classList.remove("invalid");
-    } else {
-      ref.current?.classList.remove("valid");
-      ref.current?.classList.add("invalid");
-    }
-
-    if (!event.target.value) {
-      ref.current?.classList.remove("valid");
-      ref.current?.classList.remove("invalid");
-    }
-  };
-
-  const secondPasswordValidation = (secondPassword: string | null | undefined) => {
-      return userPasswordRef.current?.value === secondPassword;
+    return userPasswordRef.current?.value === secondPassword;
   };
 
   const resetSecondPassword = () => {
     repeatPasswordRef.current?.classList.remove("valid");
     repeatPasswordRef.current?.classList.remove("invalid");
-  }
+  };
 
   const register = () => {
-    if(inputRefs.filter(inputRef=>{
-      if (!inputRef.current?.classList.contains("valid")) 
-      {
-        inputRef.current?.classList.toggle("shake")
-        return false; 
-      }
-      return true;
-    }).length !== 4) return;
     
-    console.log('send')
-   
-  }
-
-
+    if (
+      inputRefs.filter((inputRef) => {
+        if (!inputRef.current?.classList.contains("valid")) {
+          inputRef.current?.classList.toggle("shake");
+          return false;
+        }
+        return true;
+      }).length !== inputRefs.length
+    )
+      return;
+      dispatch(fetchRegister({
+        name: userNameRef.current?.value || '',
+        mail: userMailRef.current?.value || '',
+        password: userPasswordRef.current?.value || '',
+      }))
+  };
 
   return (
     <div className="form">
@@ -66,7 +66,11 @@ function Create() {
         type="text"
         placeholder="Укажите имя пользователя"
         onChange={(event) => {
-          validate(event, userNameRef, nicklValidation);
+          validate(
+            event.target.value,
+            userNameRef.current?.classList,
+            nicklValidation
+          );
         }}
       ></input>
       <input
@@ -75,7 +79,7 @@ function Create() {
         ref={userMailRef}
         placeholder="Укажите эл. адрес"
         onChange={(event) => {
-          validate(event, userMailRef, emailValidation);
+          validate(event.target.value, userMailRef.current?.classList, emailValidation);
         }}
       ></input>
       <input
@@ -85,7 +89,7 @@ function Create() {
         placeholder="Укажите пароль"
         onChange={(event) => {
           resetSecondPassword();
-          validate(event, userPasswordRef, passwordValidation);
+          validate(event.target.value, userPasswordRef.current?.classList, passwordValidation);
         }}
       ></input>
       <input
@@ -93,17 +97,25 @@ function Create() {
         type="password"
         ref={repeatPasswordRef}
         placeholder="Повторите пароль"
+        autoComplete="current-password"
         onChange={(event) => {
           validate(
-            event,
-            repeatPasswordRef,
+            event.target.value,
+            repeatPasswordRef.current?.classList,
             secondPasswordValidation
           );
         }}
       ></input>
-      <button className="btn" onClick={() => register()}>Создать аккаунт</button>
+      <button className="btn" onClick={() => register()}>
+        Создать аккаунт
+      </button>
     </div>
   );
+}
+
+
+Create.propTypes = {
+  validate: PropTypes.func.isRequired
 }
 
 export default Create;

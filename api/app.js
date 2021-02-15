@@ -30,9 +30,21 @@ app.get('/', (req, res) => {
 
 app.post('/app/reg', function (req, res) {
     console.log(req.body)
+    const {name, mail} = req.body;
     res.send(JSON.stringify({
-        name: 'anikitosiknik',
-        created: true,
+        name,
+        logined: true,
+        mail
+    }))
+});
+
+app.post('/app/login', function (req, res) {
+    console.log(req.body)
+    const {mail} = req.body;
+    res.send(JSON.stringify({
+        mail,
+        logined: true,
+        name: 'LOGIN SUCCSESS'
     }))
 });
 
