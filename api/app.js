@@ -5,6 +5,8 @@ const https = require('https');
 const fs = require('fs');
 const port = 3002;
 var bodyParser = require('body-parser');
+var cookieParser = require('cookie-parser');
+var crypto = require('crypto');
 
 const key = fs.readFileSync('./apiserver.key');
 const cert = fs.readFileSync('./apiserver.crt');
@@ -14,6 +16,7 @@ const cert = fs.readFileSync('./apiserver.crt');
 
 app = express()
 app.use(express.json());
+app.use(cookieParser());
 
 app.get('/', (req, res) => {
    res.send('Now using https..');
@@ -32,13 +35,24 @@ app.post('/app/reg', function (req, res) {
 
 app.post('/app/login', function (req, res) {
     const {mail} = req.body;
-    res.cookie('authKey', generateUUID(), {maxAge: 250000, httpOnly: true,  sameSite:"Lax" })
+    
+    res.cookie('authKey', generateAuthToken(), {maxAge: 250000, httpOnly: true,  sameSite:"Lax" })
+
     res.send(JSON.stringify({
         mail,
         logined: true,
         name: 'LOGIN SUCCSESS',
     }))
 });
+
+app.get('/app/autoLogin', function (req, res) {
+    
+    res.send(JSON.stringify({
+        mail: 'anikitosiknik@gmail.com',
+        logined: false,
+        name: 'LOGIN SUCCSESS',
+    }))
+})
 
 const server = https.createServer({key: key, cert: cert }, app);
 
@@ -61,4 +75,16 @@ function generateUUID()
 	});
 
 return uuid;
+}
+
+
+const getHashedPassword = (password) => {
+    const sha256 = crypto.createHash('sha256');
+    const hash = sha256.update(password).digest('base64');
+    return hash;
+}
+
+
+const generateAuthToken = () => {
+    return crypto.randomBytes(30).toString('hex');
 }
