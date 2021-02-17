@@ -37,7 +37,7 @@ function Login({validate}: InferProps<typeof Login.propTypes>) {
   return (
     <div className="form">
       <h2>Войдите в аккаунт</h2>
-      <input className="inp" type="email" ref={mailRef} placeholder="Адресс эл. почты" onChange={(event)=> validate(event.target.value, mailRef.current?.classList, emailValidation)}></input>
+      <input className="inp" autoComplete="email" type="email" ref={mailRef} placeholder="Адресс эл. почты" onChange={(event)=> validate(event.target.value, mailRef.current?.classList, emailValidation)}></input>
       <input className="inp" type="password" ref={passRef} placeholder="Пароль" onChange={(event)=> validate(event.target.value, passRef.current?.classList, passwordValidation)}></input>
       <button className="btn" onClick={() =>register()}>Войти</button>
     </div>

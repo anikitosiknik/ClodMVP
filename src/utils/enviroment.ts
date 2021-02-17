@@ -1,7 +1,7 @@
 export function getHref() {
-    return isLocal() ? 'https://localhost:3002/app' : '/app';
+    return isLocal() ? '/app' : '/app';
 }
 
 function isLocal() {
-    return window.location.href.includes('localhost')
+    return window.location.href.includes('localhost') || window.location.href.includes('127.0.0.1')
 }

@@ -15,14 +15,6 @@ const cert = fs.readFileSync('./apiserver.crt');
 app = express()
 app.use(express.json());
 
-let allowCrossDomain = function(req, res, next) {
-    res.header('Access-Control-Allow-Origin', "*");
-    res.header('Access-Control-Allow-Headers', "*");
-    next();
-  }
-  app.use(allowCrossDomain);
-
-
 app.get('/', (req, res) => {
    res.send('Now using https..');
 });
@@ -39,12 +31,12 @@ app.post('/app/reg', function (req, res) {
 });
 
 app.post('/app/login', function (req, res) {
-    console.log(req.body)
     const {mail} = req.body;
+    res.cookie('authKey', generateUUID(), {maxAge: 250000, httpOnly: true,  sameSite:"Lax" })
     res.send(JSON.stringify({
         mail,
         logined: true,
-        name: 'LOGIN SUCCSESS'
+        name: 'LOGIN SUCCSESS',
     }))
 });
 
@@ -54,3 +46,19 @@ const server = https.createServer({key: key, cert: cert }, app);
 
 
 server.listen(3002, () => { console.log('listening on 3002') });
+
+
+
+function generateUUID()
+{
+	var d = new Date().getTime();
+	
+	var uuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c)
+	{
+		var r = (d + Math.random()*16)%16 | 0;
+		d = Math.floor(d/16);
+		return (c=='x' ? r : (r&0x3|0x8)).toString(16);
+	});
+
+return uuid;
+}
