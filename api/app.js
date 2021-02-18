@@ -7,6 +7,28 @@ const port = 3002;
 var bodyParser = require('body-parser');
 var cookieParser = require('cookie-parser');
 var crypto = require('crypto');
+var mysql = require('mysql');
+
+mysql_host = 'localhost'
+mysql_user = 'clodsite_anikitosiknik'
+mysql_password = '***REMOVED***'
+mysql_database = 'clodsite_app'
+
+var connection = mysql.createConnection({
+    host     : mysql_host,
+    user     : mysql_user,
+    password : mysql_password,
+    database : mysql_database,
+    multipleStatements: true,
+    port: '3306'
+  });
+
+  connection.connect((error) => {
+      if(error) {
+          throw error
+      }
+      else console.log('connected')
+  })
 
 const key = fs.readFileSync('./apiserver.key');
 const cert = fs.readFileSync('./apiserver.crt');
@@ -23,35 +45,121 @@ app.get('/', (req, res) => {
 });
 
 
+
 app.post('/app/reg', function (req, res) {
-    console.log(req.body)
-    const {name, mail} = req.body;
-    res.send(JSON.stringify({
-        name,
-        logined: true,
-        mail
-    }))
+    const authKey = generateAuthToken();
+    let stmt = `INSERT INTO users (name, mail, password, authKey) VALUES ('${req.body.name}', '${req.body.mail}', '${getHashedPassword(req.body.password)}', '${authKey}')`;
+
+    connection.query(stmt,  (err, results, fields) => {
+        if (err) {
+            if(err.code === "ER_DUP_ENTRY") {
+                res.status(409)
+                res.send({
+                    error: 'Duplicate Mail'
+                }); 
+            }
+            
+            
+            else res.send(err)
+            return console.error(err.message);
+        }
+        res.cookie('authKey', authKey, {maxAge: 250000, httpOnly: true,  sameSite:"Lax" })
+        res.status(201)
+        res.send({
+            name: req.body.name,
+            mail: req.body.mail,
+            logined: true
+        })
+    });
 });
+
 
 app.post('/app/login', function (req, res) {
-    const {mail} = req.body;
-    
-    res.cookie('authKey', generateAuthToken(), {maxAge: 250000, httpOnly: true,  sameSite:"Lax" })
+    const authToken = generateAuthToken()
+    // `UPDATE users SET authKey = '${authToken}' WHERE mail = '${req.body.mail}' AND password = '${getHashedPassword(req.body.password)}';
+    let stmt = `UPDATE users SET authKey = '${authToken}' WHERE mail = '${req.body.mail}' AND password = '${getHashedPassword(req.body.password)}';
+    SELECT * FROM users WHERE mail = '${req.body.mail}' AND password = '${getHashedPassword(req.body.password)}' `;
 
-    res.send(JSON.stringify({
-        mail,
-        logined: true,
-        name: 'LOGIN SUCCSESS',
-    }))
+    connection.query(stmt,  (err, results, fields) => {
+        if (err) {
+            return console.error(err.message);
+        }
+        if (!results.length) {
+            res.status(401)
+            res.send({
+                error: 'password or mail not found'
+            })
+            return;
+        }
+        res.status(200)
+    res.cookie('authKey', authToken, {maxAge: 2500000, httpOnly: true,   })
+        const {name, mail} = results[1][0];
+        res.send({
+            name,
+            mail,
+            logined: true
+        })
+    });
 });
 
+
 app.get('/app/autoLogin', function (req, res) {
-    
-    res.send(JSON.stringify({
-        mail: 'anikitosiknik@gmail.com',
-        logined: false,
-        name: 'LOGIN SUCCSESS',
-    }))
+    if(!req.cookies) {
+        res.status(401)
+            res.send({
+                error: 'password or mail not found'
+            })
+            return;
+    }
+    let stmt = `SELECT * FROM users WHERE  authKey = '${req.cookies.authKey}'`;
+    connection.query(stmt,  (err, results, fields) => {
+        if (err) {
+            return console.error(err.message);
+        }
+        if (!results.length) {
+            res.status(401)
+            res.send({
+                error: 'autoLogin Failed'
+            })
+            return;
+        }
+        res.status(200)
+        const {name, mail} = results[0];
+        res.send({
+            name,
+            mail,
+            logined: true
+        })
+    });
+
+})
+
+app.get('/app/logOut', function (req, res) {
+    if(!req.cookies) {
+        res.status(401)
+            res.send({
+                error: 'password or mail not found'
+            })
+            return;
+    }
+    let stmt = `UPDATE users SET authKey = NULL WHERE  authKey = '${req.cookies.authKey}'`;
+    connection.query(stmt,  (err, results, fields) => {
+        res.cookie('authKey', '', {maxAge: 0, httpOnly: true,  })
+        if (err) {
+            return console.error(err.message);
+        }
+        if (results.changedRows === 0 ) {
+            res.status(401)
+            res.send({
+                error: 'autoLogin Failed'
+            })
+            return;
+        }
+        res.status(200)
+        res.send({
+            logined: false
+        })
+    });
 })
 
 const server = https.createServer({key: key, cert: cert }, app);

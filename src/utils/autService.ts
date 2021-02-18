@@ -41,3 +41,10 @@ export function autoLoginRequest() {
         method: 'get'
     })
 }
+export function logOutRequest() {
+    const baseUrl = getHref();
+    
+    return fetch(`${baseUrl}/logOut`, {
+        method: 'get'
+    })
+}

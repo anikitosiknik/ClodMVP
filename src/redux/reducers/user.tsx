@@ -1,4 +1,4 @@
-import { FETCH_AUTOLOGIN_USER, FETCH_LOGIN_USER, FETCH_REGISTER_USER, SET_USER } from "../actionTypes";
+import { FETCH_AUTOLOGIN_USER, FETCH_LOGIN_USER, FETCH_LOGOUT, FETCH_REGISTER_USER, SET_USER } from "../actionTypes";
 import { userState } from "../types";
 
 const initialState: userState = {
@@ -32,3 +32,4 @@ export const setUser = (payload:any) => ({type: SET_USER, payload });
 export const fetchRegister = (payload: {name: string, mail: string, password: string}) => ({type: FETCH_REGISTER_USER, payload});
 export const fetchLogin = (payload: { mail: string, password: string}) => ({type: FETCH_LOGIN_USER, payload});
 export const fetchAutoLogin = (() => ({type: FETCH_AUTOLOGIN_USER}))
+export const fetchLogOut = (() => ({type: FETCH_LOGOUT}))
