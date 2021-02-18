@@ -3,8 +3,6 @@ import logo from "../../imgs/logo.svg";
 import Create from "./Create";
 import Login from "./Login";
 import "./LoginPage.css";
-import "./Button.css";
-import "./Input.css";
 
 function LoginPage() {
   const [pageStatus, changeStatus] = useState("");

@@ -4,7 +4,10 @@ import './normalize.css';
 import LoginPage from './components/login/LoginPage';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from './redux/types';
-import { fetchAutoLogin, fetchLogOut } from './redux/reducers/user';
+import { fetchAutoLogin } from './redux/reducers/user';
+import AppContainer from './components/appContainer/AppContainer';
+
+
 
 function App() {
   const userData = useSelector((state: RootState) => state.user);
@@ -16,7 +19,7 @@ function App() {
   return (
     <div className="App">
       {
-        userData.logined ? <button onClick={() => dispatch(fetchLogOut())}>{userData.name}</button> : <LoginPage />
+        userData.logined ? <AppContainer />: <LoginPage />
       }
     </div>
   );

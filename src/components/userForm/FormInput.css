@@ -1,0 +1,22 @@
+.userForm {
+    display: grid;
+    gap: 18px;
+    font-family: Roboto;
+    font-style: normal;
+    font-weight: 500;
+    font-size: 18px;
+    line-height: 22px;
+    color: #515151;
+    margin: 20px 0px;
+}
+
+.userForm h2 {
+    font-size: 22px;
+    color: #699c8b;
+    margin: 0px;
+}
+
+.useForm-button {
+    justify-self: center;
+    padding: 10px 30px;
+}

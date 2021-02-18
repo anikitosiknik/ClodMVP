@@ -7,12 +7,17 @@ export interface userState {
   hips: number,
   height: number,
   age: number,
-  color: number,
+  skin: string,
   hair: string,
   eyes: string,
-  style: string,
+  // style: string,
+  needChanges: boolean,
 }
 
 export interface RootState {
     user: userState,
 }
+
+export type userKeys = keyof userState
+export type userNumberKeys = "chest" | "waist" | "hips" | "height" | "age"
+export type userStringKeys = "skin" | "hair" | "eyes"

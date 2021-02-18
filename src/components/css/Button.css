@@ -10,6 +10,10 @@
     background-color: #F2F3F7;
 }
 
+.btn.sm {
+    /* max-width: 120px; */
+}
+
 @keyframes button {
     from {
         filter: drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.25));
