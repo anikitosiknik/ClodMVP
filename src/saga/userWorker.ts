@@ -1,7 +1,7 @@
 import { all, call, put, takeEvery } from "redux-saga/effects";
-import { FETCH_AUTOLOGIN_USER, FETCH_LOGIN_USER, FETCH_REGISTER_USER } from "../redux/actionTypes";
+import { FETCH_AUTOLOGIN_USER, FETCH_LOGIN_USER, FETCH_LOGOUT, FETCH_REGISTER_USER } from "../redux/actionTypes";
 import { setUser } from "../redux/reducers/user";
-import { registerUserRequest, loginUserRequest, autoLoginRequest } from "../utils/autService";
+import { registerUserRequest, loginUserRequest, autoLoginRequest, logOutRequest } from "../utils/autService";
 
 
 
@@ -28,14 +28,24 @@ export function* watchLoginUser() {
     yield takeEvery(FETCH_LOGIN_USER, loginUserAsync )
 }
 
-export function* autoLoginUserAsyn() {
+export function* autoLoginUserAsync() {
     const data = yield call(() => autoLoginRequest());
     const json = yield call(() => new Promise(res => res(data.json())))
     yield put(setUser(json));
 }
 
 export function* watchAutoLoginUser() {
-    yield takeEvery(FETCH_AUTOLOGIN_USER, autoLoginUserAsyn)
+    yield takeEvery(FETCH_AUTOLOGIN_USER, autoLoginUserAsync)
+}
+
+export function* logOutUserAsync() {
+    const data = yield call(() => logOutRequest());
+    const json = yield call(()=> new Promise(res => res(data.json())))
+    yield put(setUser(json));
+}
+
+export function* watchLogOutUser() {
+    yield takeEvery(FETCH_LOGOUT, logOutUserAsync)
 }
 
 export default function* () {
@@ -43,5 +53,6 @@ export default function* () {
         watchLoginUser(),
         watchRegisterUser(),
         watchAutoLoginUser(),
+        watchLogOutUser(),
     ])
 }
