@@ -10,10 +10,11 @@ const initialState: userState = {
   hips: 0,
   height: 0,
   age: 0,
-  color: 0,
+  skin: '',
   hair: '',
   eyes: '',
-  style: '',
+  // style: '',
+  needChanges: true,
 };
 
 export default function(state = initialState, action: { type: string, payload: userState}) {

@@ -63,7 +63,7 @@ app.post('/app/reg', function (req, res) {
             else res.send(err)
             return console.error(err.message);
         }
-        res.cookie('authKey', authKey, {maxAge: 250000, httpOnly: true,  sameSite:"Lax" })
+        res.cookie('authKey', authKey, {maxAge: 25000000, httpOnly: true,  sameSite:"Lax" })
         res.status(201)
         res.send({
             name: req.body.name,
@@ -84,7 +84,7 @@ app.post('/app/login', function (req, res) {
         if (err) {
             return console.error(err.message);
         }
-        if (!results.length) {
+        if (!results[1].length) {
             res.status(401)
             res.send({
                 error: 'password or mail not found'
@@ -92,7 +92,7 @@ app.post('/app/login', function (req, res) {
             return;
         }
         res.status(200)
-    res.cookie('authKey', authToken, {maxAge: 2500000, httpOnly: true,   })
+    res.cookie('authKey', authToken, {maxAge: 25000000, httpOnly: true,   })
         const {name, mail} = results[1][0];
         res.send({
             name,
