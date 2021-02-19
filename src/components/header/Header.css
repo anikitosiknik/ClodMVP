@@ -1,0 +1,120 @@
+.header {
+    margin: 32px;
+    display: grid;
+    grid-auto-flow: column;
+    justify-items: center;
+    align-items: center;
+}
+
+.header-logo {
+    height: 45px;
+}
+
+
+.userIcon {
+    height: 35px;
+    border-radius: 50%;
+    filter: drop-shadow(2px 4px 4px rgba(0, 0, 0, 0.25));
+    justify-self: self-end;
+}
+
+.emptyIcon {
+    height: 35px;
+    width: 35px;
+}
+
+
+.userPopupContainer {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100vw;
+    height: 100vh;
+    
+    background-color: rgba(0, 0, 0, 0);
+    transition:  background-color 0.3s;
+    transition-delay: 0.3s;
+}
+
+.userPopupContainer.shown {
+    background-color: rgba(0, 0, 0, 0.6);
+    transition:  background-color 0.3s;
+}
+
+.userPopup {
+    position: relative;
+    background-color: #fff;
+    height: 50vh;
+    top: 100%;
+    border-top-left-radius: 20px;
+    border-top-right-radius: 20px;
+    transition: top 0.3s;
+
+    display: grid;
+    justify-items: center;
+    align-items: center;
+}
+
+.userPopup.shown {
+    transition: top 0.3s;
+    transition-delay: 0.3s;
+     top: 50%;
+}
+
+.userPopup-iconContainer{
+    align-self: flex-end;
+    position: relative;
+}
+
+.userPopup-icon {
+    width: 80px;
+    border-radius: 50%;
+    filter: drop-shadow(2px 4px 4px rgba(0, 0, 0, 0.25));
+    border: 1px solid black;
+
+}
+
+.userPopup-plus {
+    position: absolute;
+    right: 0px;
+    bottom: 7px;
+    font-size: 22px;
+    background: #f2f3f7;
+    width: 23px;
+    height: 23px;
+    border-radius: 50%;
+    border: 1px solid #A1A1A1;
+    color: #A1A1A1;
+    display: grid;
+    justify-content: center;
+    align-content: center;
+    justify-items: center;
+    align-items: center;
+}
+
+.userPopup-plus p {
+    margin-left: 2px;
+}
+
+.userPopup-infoContainer {
+    align-self: flex-start;
+    color: #515151
+}
+
+.userPopup-infoContainer h2 {
+font-size: 25px;
+color: #515151;
+margin: 20px 0px 7px;
+}
+.userPopup-infoContainer p {
+    font-size: 16px;
+    margin: 0px;
+}
+
+.userPopup-buttons {
+    display: grid;
+    align-items: center;
+    justify-content: center;
+    max-width: 160px;
+    gap: 15px;
+}
