@@ -6,6 +6,7 @@ import { HAIR_COLORS, EYES_COLORS, SKIN_COLORS } from "../../utils/const";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState, userNumberKeys, userState, userStringKeys } from "../../redux/types";
 import { fetchSetUserInfo } from "../../redux/reducers/user";
+import Header from "../header/Header";
 
 interface NumberInputType {
     element: JSX.Element,
@@ -66,6 +67,8 @@ function UserForm () {
 
    
     return (
+        <React.Fragment>
+        <Header logoOnly/>
         <div className="userForm">
         <h2>Введите  свои данные</h2>
         {numbersInput.map((elements) => elements.element)}
@@ -81,6 +84,7 @@ function UserForm () {
         
         <button className='btn sm useForm-button' onClick={submitForm}>Готово</button>
         </div>
+        </React.Fragment>
     )
 } 
 
