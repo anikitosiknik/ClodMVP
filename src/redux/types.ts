@@ -12,6 +12,7 @@ export interface userState {
   eyes: string,
   // style: string,
   needChanges: boolean,
+  isInfoSetted: boolean,
 }
 
 export interface RootState {

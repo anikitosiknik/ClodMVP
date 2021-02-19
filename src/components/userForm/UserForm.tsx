@@ -3,8 +3,9 @@ import "./NumberInput.css"
 import "./FormInput.css"
 import ColorInput from "../colorInput/ColorInput";
 import { HAIR_COLORS, EYES_COLORS, SKIN_COLORS } from "../../utils/const";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { RootState, userNumberKeys, userState, userStringKeys } from "../../redux/types";
+import { fetchSetUserInfo } from "../../redux/reducers/user";
 
 interface NumberInputType {
     element: JSX.Element,
@@ -19,6 +20,7 @@ export interface StringInputType {
 }
 
 function UserForm () {
+    const dispatch = useDispatch();
     const user = useSelector((state: RootState) => state.user)
     const hairInput: StringInputType = ColorInput('Цвет волос', HAIR_COLORS , 'hair');
     const eyeInput: StringInputType = ColorInput('Цвет глаз', EYES_COLORS, 'eyes');
@@ -39,7 +41,7 @@ function UserForm () {
     const submitForm = () => {
         const formValues = compileInputValues(getNumbersValues(numbersInput),getColorsValues(colorInputs))
         const generatedUser: userState = {...user, ...formValues};
-        console.log(generatedUser)
+        dispatch(fetchSetUserInfo(generatedUser))
     }
 
     const getNumbersValues = (inputs: NumberInputType[] ) => {
