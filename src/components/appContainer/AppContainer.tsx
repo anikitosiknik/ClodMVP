@@ -9,7 +9,7 @@ function AppContainer () {
     return (
         <React.Fragment>
             {
-                user.needChanges ? 
+                user.needChanges || !user.isInfoSetted ? 
                 <UserForm></UserForm>: 
                 <div>main app</div>
             }
