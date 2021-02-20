@@ -13,11 +13,16 @@ export interface userState {
   // style: string,
   needChanges: boolean,
   isInfoSetted: boolean,
+  userPicture: string,
 }
 
 export interface RootState {
     user: userState,
 }
+
+
+
+export type Pages = "clothPage" | "lookPage"
 
 export type userKeys = keyof userState
 export type userNumberKeys = "chest" | "waist" | "hips" | "height" | "age"

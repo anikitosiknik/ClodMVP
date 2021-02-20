@@ -37,7 +37,7 @@ const cert = fs.readFileSync('./apiserver.crt');
 
 
 app = express()
-app.use(express.json());
+app.use(express.json({limit: '100mb'}));
 app.use(cookieParser());
 
 app.get('/', (req, res) => {
@@ -93,10 +93,27 @@ app.post('/app/login', function (req, res) {
         }
         res.status(200)
         res.cookie('authKey', authToken, { maxAge: 25000000, httpOnly: true, })
-        const { name, mail, isInfoSetted } = results[1][0];
+        const { name, mail, isInfoSetted, chest,
+            waist,
+            hips,
+            height,
+            age,
+            skin,
+            hair,
+            eyes,
+            userPicture } = results[1][0];
         res.send({
             name,
             mail,
+            chest,
+            waist,
+            hips,
+            height,
+            age,
+            skin,
+            hair,
+            eyes,
+            userPicture,
             logined: true,
             isInfoSetted: !!isInfoSetted
         })
@@ -125,10 +142,27 @@ app.get('/app/autoLogin', function (req, res) {
             return;
         }
         res.status(200)
-        const { name, mail, isInfoSetted } = results[0];
+        const { name, mail, isInfoSetted, chest,
+            waist,
+            hips,
+            height,
+            age,
+            skin,
+            hair,
+            eyes,
+            userPicture } = results[0];
         res.send({
             name,
             mail,
+            chest,
+            waist,
+            hips,
+            height,
+            age,
+            skin,
+            hair,
+            eyes,
+            userPicture,
             isInfoSetted: !!isInfoSetted,
             logined: true
         })
@@ -178,11 +212,15 @@ app.post('/app/setUserInfo', function (req, res) {
 
     connection.query(stmt, (err, results, fields) => {
         if (err) {
-            return console.error(err.message);
+            console.error(err.message);
+            res.status(406)
+            return res.send({
+                error: err.message
+            })
         }
         res.status(200)
         if (results.changedRows) {
-            
+
             res.send({
                 chest,
                 waist,
@@ -195,10 +233,42 @@ app.post('/app/setUserInfo', function (req, res) {
                 needChanges: false,
                 isInfoSetted: true,
             })
-        } else 
-        {
+        } else {
             res.send({
                 needChanges: false
+            })
+        }
+
+    })
+})
+
+app.post('/app/setUserPicture', function (req, res) {
+    if (!req.cookies) {
+        res.status(401)
+        res.send({
+            error: 'not auth'
+        })
+        return;
+    }
+    let stmt = `UPDATE users SET userPicture = '${req.body.userPicture}' WHERE  authKey = '${req.cookies.authKey}'`;
+
+    connection.query(stmt, (err, results, fields) => {
+        if (err) {
+            console.error(err.message);
+            res.status(406)
+            return res.send({
+                error: err.message
+            })
+        }
+        res.status(200)
+        if (results.changedRows) {
+            res.send({
+                userPicture: req.body.userPicture
+            })
+        } else {
+            res.status(406)
+            return res.send({
+                error: 'nothing to change'
             })
         }
 

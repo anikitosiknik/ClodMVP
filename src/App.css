@@ -1,4 +1,9 @@
 .App {
   text-align: center;
   font-family: 'Roboto', sans-serif;
+  height: calc(100vh - 64px);
+  padding: 32px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
 }
