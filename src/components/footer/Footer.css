@@ -1,0 +1,14 @@
+.footer {
+    display: grid;
+    grid-auto-flow: column;
+    justify-content: space-around;
+    justify-items: center;
+    align-items: center;
+    align-content: center;
+    gap: 5px;
+    grid-template-columns: 1fr 1fr 1fr;
+}
+
+.footer .btn {
+    width: auto;
+}

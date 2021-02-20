@@ -23,3 +23,17 @@ export function setUserInfoRequest(user: userState) {
         },
     })
 }
+
+export function setUserPictureRequest(userPicture: string) {
+    const baseUrl = getHref();
+    return fetch(`${baseUrl}/setUserPicture`, {
+        method: 'post',
+        body: JSON.stringify({
+            userPicture
+        }),
+        mode: 'cors',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+    })
+}

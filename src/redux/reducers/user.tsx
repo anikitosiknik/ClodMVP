@@ -1,4 +1,4 @@
-import { FETCH_SET_USER_INFO, FETCH_AUTOLOGIN_USER, FETCH_LOGIN_USER, FETCH_LOGOUT, FETCH_REGISTER_USER, SET_USER } from "../actionTypes";
+import { FETCH_SET_USER_INFO, FETCH_AUTOLOGIN_USER, FETCH_LOGIN_USER, FETCH_LOGOUT, FETCH_REGISTER_USER, SET_USER, FETCH_SET_USER_PICTURE } from "../actionTypes";
 import { userState } from "../types";
 
 const initialState: userState = {
@@ -16,6 +16,7 @@ const initialState: userState = {
   // style: '',
   needChanges: false,
   isInfoSetted: false,
+  userPicture: ''
 };
 
 export default function(state = initialState, action: { type: string, payload: userState}) {
@@ -33,6 +34,7 @@ export default function(state = initialState, action: { type: string, payload: u
 export const setUser = (payload: userState) => ({type: SET_USER, payload });
 export const fetchRegister = (payload: {name: string, mail: string, password: string}) => ({type: FETCH_REGISTER_USER, payload});
 export const fetchLogin = (payload: { mail: string, password: string}) => ({type: FETCH_LOGIN_USER, payload});
-export const fetchAutoLogin = (() => ({type: FETCH_AUTOLOGIN_USER}))
-export const fetchLogOut = (() => ({type: FETCH_LOGOUT}))
-export const fetchSetUserInfo = ((payload: userState) => ({type: FETCH_SET_USER_INFO, payload}))
+export const fetchAutoLogin = (() => ({type: FETCH_AUTOLOGIN_USER}));
+export const fetchLogOut = (() => ({type: FETCH_LOGOUT}));
+export const fetchSetUserInfo = ((payload: userState) => ({type: FETCH_SET_USER_INFO, payload}));
+export const fetchSetUserPicture = ((userPicture: string) => ({type: FETCH_SET_USER_PICTURE, userPicture}));

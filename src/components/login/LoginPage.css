@@ -1,6 +1,6 @@
 .loginPage {
     display: grid;
-    min-height: 100vh;
+    min-height: 100%;
     grid-auto-flow: row;
     justify-items: center;
     grid-template-rows: 2fr 3fr;

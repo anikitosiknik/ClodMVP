@@ -1,5 +1,4 @@
 .header {
-    margin: 32px;
     display: grid;
     grid-auto-flow: column;
     justify-items: center;
@@ -30,15 +29,16 @@
     top: 0;
     width: 100vw;
     height: 100vh;
-    
+
     background-color: rgba(0, 0, 0, 0);
-    transition:  background-color 0.3s;
+    transition: background-color 0.3s;
     transition-delay: 0.3s;
+    overflow: hidden;
 }
 
 .userPopupContainer.shown {
     background-color: rgba(0, 0, 0, 0.6);
-    transition:  background-color 0.3s;
+    transition: background-color 0.3s;
 }
 
 .userPopup {
@@ -50,24 +50,29 @@
     border-top-right-radius: 20px;
     transition: top 0.3s;
 
-    display: grid;
+
     justify-items: center;
     align-items: center;
+    display: grid;
+    z-index: 1;
+    
 }
 
 .userPopup.shown {
+  
     transition: top 0.3s;
     transition-delay: 0.3s;
-     top: 50%;
+    top: 50%;
 }
 
-.userPopup-iconContainer{
+.userPopup-iconContainer {
     align-self: flex-end;
     position: relative;
 }
 
 .userPopup-icon {
     width: 80px;
+    height: 80px;
     border-radius: 50%;
     filter: drop-shadow(2px 4px 4px rgba(0, 0, 0, 0.25));
     border: 1px solid black;
@@ -96,16 +101,21 @@
     margin-left: 2px;
 }
 
+.userPopup-plus input {
+    display: none;
+}
+
 .userPopup-infoContainer {
     align-self: flex-start;
     color: #515151
 }
 
 .userPopup-infoContainer h2 {
-font-size: 25px;
-color: #515151;
-margin: 20px 0px 7px;
+    font-size: 25px;
+    color: #515151;
+    margin: 20px 0px 7px;
 }
+
 .userPopup-infoContainer p {
     font-size: 16px;
     margin: 0px;
