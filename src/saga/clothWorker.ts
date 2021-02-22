@@ -1,10 +1,10 @@
 import { all, call, put, takeLatest } from "redux-saga/effects";
 import { FETCH_CREATE_CLOTH, FETCH_GET_CLOTHS } from "../redux/actionTypes";
 import { fetchGetCloths, updateCloths } from "../redux/reducers/cloth";
-import { cloth } from "../redux/types";
-import { createClothRequest, getClothsRequest } from "../utils/clothsService";
+import { clothList, createdCloth } from "../redux/types";
+import { clothListToObject, createClothRequest, getClothsRequest } from "../utils/clothsService";
 
-export function* createClothAsync({ payload } : { type: string, forceReload: any, payload: cloth}) {
+export function* createClothAsync({ payload } : { type: string, forceReload: any, payload: createdCloth}) {
      yield call(()=>createClothRequest(payload));
      yield put(fetchGetCloths());
     }
@@ -15,8 +15,8 @@ export function* watchCreateCloth() {
 
 export function* getClothsAsync() {
     const data = yield call(() => getClothsRequest());
-    const json = yield call(() => new Promise(res => res(data.json())))
-    yield put(updateCloths(json))
+    const json: clothList = yield call(() => new Promise(res => res(data.json())))
+    yield put(updateCloths(clothListToObject(json)))
 }
 
 export function* watchGetCloths() {

@@ -18,6 +18,7 @@ export interface userState {
 
 export interface RootState {
     user: userState,
+    cloth: clothState
 }
 
 
@@ -37,9 +38,12 @@ export type createdCloth = {
   type: string
 };
 
-export type cloth = createdCloth & {
+export type clothType = createdCloth & {
   id: string
 } 
 
-export type clothState = cloth[]
-
+export type clothChoosedType = clothType & {
+  choosed?: boolean
+} 
+export type clothState = { [key: string] : clothChoosedType}
+export type clothList = clothChoosedType[]

@@ -26,6 +26,18 @@ export const SKIN_COLORS = [
 ]
 
 export const CLOTH_TYPES = [
-    {title: 'Сапоги', value: 'shoes'},
-    {title: 'Кроссовки', value: 'shoes'}
+    {title: 'Куртка', value: 'jacket'},
+    {title: 'Свитер', value: 'sweater'},
+    {title: 'Юбка', value: 'skirt'},
+    {title: 'Пальто', value: 'coat'},
+    {title: 'Худи', value: 'hoodie'},
+    {title: 'Рубашка', value: 'shirt'},
+    {title: 'Жилет', value: 'vest'},
+    {title: 'Футболка', value: 'tshirt'},
+    {title: 'Обувь', value: 'footwer'},
+    {title: 'Брюки', value: 'trousers'},
+    {title: 'Поло', value: 'polo'},
+    {title: 'Сумка', value: 'bag'},
+    {title: 'Джинсы', value: 'jeans'},
+    {title: 'Аксессуары', value: 'accessories'},
 ]

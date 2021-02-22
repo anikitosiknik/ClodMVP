@@ -28,17 +28,19 @@
     left: 0;
     top: 0;
     width: 100vw;
-    height: 100vh;
+    height: 0vh;
 
     background-color: rgba(0, 0, 0, 0);
-    transition: background-color 0.3s;
+    transition: background-color 0.3s, height 0.1s;
     transition-delay: 0.3s;
     overflow: hidden;
 }
 
 .userPopupContainer.shown {
     background-color: rgba(0, 0, 0, 0.6);
-    transition: background-color 0.3s;
+    transition: background-color 0.3s ease-out, height 0.1s;
+
+    height: 100vh;
 }
 
 .userPopup {
