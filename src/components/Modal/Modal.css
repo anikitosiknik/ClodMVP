@@ -1,0 +1,20 @@
+.modalBg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0,0,0,0.6);
+    display: grid;
+    justify-content: center;
+    align-content: center;
+    justify-items: center;
+    align-items: center;
+}
+
+.modalContainer {
+    width: 80vw;
+    background-color: #F2F3F7;
+    border-radius: 20px;
+    padding: 20px
+}

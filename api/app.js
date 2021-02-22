@@ -37,7 +37,7 @@ const cert = fs.readFileSync('./apiserver.crt');
 
 
 app = express()
-app.use(express.json({limit: '100mb'}));
+app.use(express.json({ limit: '100mb' }));
 app.use(cookieParser());
 
 app.get('/', (req, res) => {
@@ -164,7 +164,7 @@ app.get('/app/autoLogin', function (req, res) {
             eyes,
             userPicture,
             isInfoSetted: !!isInfoSetted,
-            logined: true
+            logined: true,
         })
     });
 
@@ -275,6 +275,72 @@ app.post('/app/setUserPicture', function (req, res) {
     })
 })
 
+
+
+app.post('/app/createCloth', function (req, res) {
+    if (!req.cookies) {
+        res.status(401)
+        res.send({
+            error: 'not auth'
+        })
+        return;
+    }
+
+    const clothId = generateAuthToken()
+    const { img, color, type, createdBy } = req.body;
+
+    let stmt = `INSERT INTO cloth (id, img, color, type, createdBy) VALUES ('${clothId}', '${img}', '${color}', '${type}', '${createdBy}')`;
+
+    connection.query(stmt, (err, results, fields) => {
+        if (err) {
+            if (err.code === "ER_DUP_ENTRY") {
+                res.status(409)
+                res.send({
+                    error: 'Duplicate Mail'
+                });
+            }
+
+
+            else res.send(err)
+            return console.error(err.message);
+        }
+        res.status(201)
+        res.send({
+            message: 'created succsfully'
+        })
+    });
+})
+
+app.get('/app/cloths', function (req, res) {
+    if (!req.cookies) {
+        res.status(401)
+        res.send({
+            error: 'not auth'
+        })
+        return;
+    }
+
+
+    let stmt = `SELECT * FROM cloth WHERE createdBy = (SELECT mail FROM users WHERE authKey = '${req.cookies.authKey}')`;
+
+    connection.query(stmt, (err, results, fields) => {
+        if (err) {
+            if (err.code === "ER_DUP_ENTRY") {
+                res.status(409)
+                res.send({
+                    error: 'Duplicate Mail'
+                });
+            }
+
+
+            else res.send(err)
+            return console.error(err.message);
+        }
+        res.status(201)
+        res.send(results)
+    });
+})
+
 const server = https.createServer({ key: key, cert: cert }, app);
 
 
@@ -283,18 +349,6 @@ const server = https.createServer({ key: key, cert: cert }, app);
 server.listen(3002, () => { console.log('listening on 3002') });
 
 
-
-function generateUUID() {
-    var d = new Date().getTime();
-
-    var uuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
-        var r = (d + Math.random() * 16) % 16 | 0;
-        d = Math.floor(d / 16);
-        return (c == 'x' ? r : (r & 0x3 | 0x8)).toString(16);
-    });
-
-    return uuid;
-}
 
 
 const getHashedPassword = (password) => {

@@ -22,7 +22,6 @@ const initialState: userState = {
 export default function(state = initialState, action: { type: string, payload: userState}) {
   switch (action.type) {
     case SET_USER: {
-      console.log(action.payload);
       return { ...state, ...action.payload };
     }
     default:
