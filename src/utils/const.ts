@@ -24,3 +24,8 @@ export const SKIN_COLORS = [
     {hex: '#ffffff', name: 'white'}, 
     {hex: '#81634e', name: 'brown'},
 ]
+
+export const CLOTH_TYPES = [
+    {title: 'Сапоги', value: 'shoes'},
+    {title: 'Кроссовки', value: 'shoes'}
+]
