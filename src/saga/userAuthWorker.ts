@@ -44,7 +44,7 @@ export function* watchAutoLoginUser() {
 export function* logOutUserAsync() {
     const data = yield call(() => logOutRequest());
     const json = yield call(()=> new Promise(res => res(data.json())))
-    yield put(updateCloths([]))
+    yield put(updateCloths({}))
     yield put(setUser(json));
 }
 

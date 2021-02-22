@@ -1,83 +1,83 @@
-import React, { useRef, useState } from "react";
-import { CLOTH_TYPES, HAIR_COLORS } from "../../utils/const";
-import ColorInput from "../colorInput/ColorInput";
+import React, { useState } from "react";
 import Header from "../header/Header";
-import Modal from "../Modal/Modal";
 import "./ClothPage.css";
-import plus from "../../imgs/plus.svg";
-import { getImgFromFile } from "../../utils/fileService";
-import { createdCloth, RootState } from "../../redux/types";
+import plusIcon from "../../imgs/plus.svg";
+import { clothChoosedType, clothList, RootState } from "../../redux/types";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchCreateCloth } from "../../redux/reducers/cloth";
+import PropTypes from "prop-types";
+import CreateCloth from "./CreateCloth";
+import ClothFilters from "./ClothFilters";
+import { clothObjectToList } from "../../utils/clothsService";
+import { toggleChoosedCloth } from "../../redux/reducers/cloth";
 
 function ClothPage() {
-  const [isClothCreating, changeClothCreating] = useState(true);
-
+  const [isClothCreating, changeClothCreating] = useState(false);
+  const cloths = useSelector((state: RootState) => state.cloth);
+  const [filterCloth, changeFilter] = useState("");
   return (
     <>
       <Header />
       {isClothCreating ? (
-        <Modal
+        <CreateCloth
           closeEvent={() => {
             changeClothCreating(false);
           }}
-        >
-          <CreateCloth></CreateCloth>
-        </Modal>
+        />
       ) : null}
 
-      <div>cloth</div>
+      <div className="clothPageContainer">
+        <ClothFilters
+          createCloth={() => changeClothCreating(true)}
+          changeFilter={changeFilter}
+          filterCloth={filterCloth}
+        />
+        {Object.keys(cloths) ? (
+        
+          <ClothList filterCloth={filterCloth}/>
+        ) : (
+          <div
+            className="addClothButton"
+            onClick={() => changeClothCreating(true)}
+          >
+            <img src={plusIcon} alt="" />
+            <p className="addClothText">
+              Добавьте фотографии <br /> Вашей одежды
+            </p>
+          </div>
+        )}
+      </div>
     </>
   );
 }
 
 export default ClothPage;
 
-function CreateCloth() {
-  const user = useSelector((state: RootState) => state.user)
-  const [clothPicture, changeClothPicture] = useState("");
-  const colorInput = ColorInput("Выберите цвет", HAIR_COLORS, "hair");
-  const typeRef = useRef<HTMLSelectElement>(null);
-  const dispatch = useDispatch()
-
-  const submitForm = () => {
-    
-    if (typeRef.current) {
-      const generatedCloth: createdCloth = {
-        img: clothPicture,
-        color: colorInput.currentColor,
-        type: typeRef.current.value,
-        createdBy: user.mail
-      }
-      dispatch(fetchCreateCloth(generatedCloth))
-    }
-  };
-
-  const uploadPicture = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const files = event.target.files;
-    if (!files || !files[0]) return;
-    const file = files[0];
-    getImgFromFile(file).then((img) => {
-      changeClothPicture(img);
+function ClothList(
+  {filterCloth}: {filterCloth: string}
+) {
+  const cloths = useSelector((state: RootState) => state.cloth);
+  const dispatch = useDispatch();
+  const getClothsList = (): clothList => {
+    return clothObjectToList(cloths).filter((cloth: clothChoosedType) => {
+      return (cloth.type === filterCloth || !filterCloth) || cloth.choosed
     });
   };
   return (
-    <div className="createCloth">
-      <label htmlFor="uploadClothPicture">
-        <img src={clothPicture || plus} alt="" />
-      </label>
-      <input type="file" id="uploadClothPicture" onChange={uploadPicture} />
-      <select ref={typeRef}>
-        {CLOTH_TYPES.map((cloth) => (
-          <option key={cloth.title} value={cloth.value}>
-            {cloth.title}
-          </option>
-        ))}
-      </select>
-      {colorInput.element}
-      <button className="btn sm" onClick={() => submitForm()}>
-        Сохранить
-      </button>
+    <div className="clothList">
+      {getClothsList().map((cloth: clothChoosedType) => {
+        return (
+          <img
+            className={`clothItem ${cloth.choosed ? "choosed" : ""}`}
+            onClick={() => dispatch(toggleChoosedCloth(cloth.id))}
+            key={cloth.id}
+            src={cloth.img}
+          ></img>
+        );
+      })}
     </div>
   );
 }
+
+ClothList.propTypes = {
+  filterCloth: PropTypes.string.isRequired,
+};

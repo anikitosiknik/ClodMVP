@@ -1,4 +1,4 @@
-import { createdCloth } from "../redux/types";
+import { clothChoosedType, clothList, clothState, createdCloth } from "../redux/types";
 import { getHref } from "./enviroment";
 
 export function createClothRequest(cloth: createdCloth) {
@@ -26,3 +26,23 @@ export function getClothsRequest() {
         },
     })
 }
+
+export function clothListToObject(cloths: clothList) {
+    const clothsObject: clothState = {};
+    cloths.forEach((cloth: clothChoosedType) => {
+        clothsObject[cloth.id] = {
+            ...cloth,
+            choosed: cloth.choosed
+        }
+    })
+    return clothsObject;
+}
+
+export function clothObjectToList(cloths: clothState): clothList {
+    const clothsList: clothList = [];
+    for (let cloth in cloths) {
+        clothsList.push(cloths[cloth])
+    }
+    return clothsList;
+}
+ 
