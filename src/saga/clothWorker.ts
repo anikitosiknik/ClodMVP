@@ -1,8 +1,8 @@
 import { all, call, put, takeLatest } from "redux-saga/effects";
-import { FETCH_CREATE_CLOTH, FETCH_GET_CLOTHS } from "../redux/actionTypes";
+import { FETCH_CREATE_CLOTH, FETCH_GET_CLOTHS, FETCH_DELETE_CLOTH } from "../redux/actionTypes";
 import { fetchGetCloths, updateCloths } from "../redux/reducers/cloth";
 import { clothList, createdCloth } from "../redux/types";
-import { clothListToObject, createClothRequest, getClothsRequest } from "../utils/clothsService";
+import { clothListToObject, createClothRequest, getClothsRequest, deleteClothRequest } from "../utils/clothsService";
 
 export function* createClothAsync({ payload } : { type: string, forceReload: any, payload: createdCloth}) {
      yield call(()=>createClothRequest(payload));
@@ -23,11 +23,19 @@ export function* watchGetCloths() {
     yield takeLatest(FETCH_GET_CLOTHS, getClothsAsync )
 }
 
+export function* deleteClothAsync({ payload } : { type: string, forceReload: any, payload: string[]}) {
+    yield call(() => deleteClothRequest(payload))
+    yield put(fetchGetCloths());
+}
 
+export function* watchDeleteCloth() {
+    yield takeLatest(FETCH_DELETE_CLOTH, deleteClothAsync)
+}
 
 export default function* () {
     yield all([
         watchCreateCloth(),
-        watchGetCloths()
+        watchGetCloths(),
+        watchDeleteCloth()
     ])
 }

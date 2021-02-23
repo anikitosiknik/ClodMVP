@@ -77,8 +77,7 @@ app.post('/app/reg', function (req, res) {
 app.post('/app/login', function (req, res) {
     const authToken = generateAuthToken()
     // `UPDATE users SET authKey = '${authToken}' WHERE mail = '${req.body.mail}' AND password = '${getHashedPassword(req.body.password)}';
-    let stmt = `UPDATE users SET authKey = '${authToken}' WHERE mail = '${req.body.mail}' AND password = '${getHashedPassword(req.body.password)}';
-    SELECT * FROM users WHERE mail = '${req.body.mail}' AND password = '${getHashedPassword(req.body.password)}' `;
+    let stmt = `UPDATE users SET authKey = '${authToken}' WHERE mail = '${req.body.mail}' AND password = '${getHashedPassword(req.body.password)}'; SELECT * FROM users WHERE mail = '${req.body.mail}' AND password = '${getHashedPassword(req.body.password)}' `;
 
     connection.query(stmt, (err, results, fields) => {
         if (err) {
@@ -340,6 +339,151 @@ app.get('/app/cloths', function (req, res) {
         res.send(results)
     });
 })
+
+app.delete('/app/cloths', function (req, res) {
+    if (!req.cookies) {
+        res.status(401)
+        res.send({
+            error: 'not auth'
+        })
+        return;
+    }
+    let stmt = `DELETE FROM cloth WHERE`;
+
+    const ids = req.body;
+    ids.forEach((id, index) => {
+        stmt = stmt + ` ${index === 0 ? '' : 'OR'} id = '${id}'`
+    })
+    connection.query(stmt, (err, results, fields) => {
+        if (err) {
+            if (err.code === "ER_DUP_ENTRY") {
+                res.status(409)
+                res.send({
+                    error: 'asd'
+                });
+            }
+            else res.send(err)
+            return console.error(err.message);
+        }
+        res.status(201)
+        res.send({
+            message: `removed ${results.affectedRows}`
+        })
+    });
+})
+
+
+
+
+
+
+app.post('/app/createLook', function (req, res) {
+    if (!req.cookies) {
+        res.status(401)
+        res.send({
+            error: 'not auth'
+        })
+        return;
+    }
+    const lookId = generateAuthToken();
+    const {type, clothIds} = req.body;
+    let stmt = `INSERT INTO look (id, type, createdBy) VALUES ('${lookId}', '${type}', (SELECT mail FROM users WHERE authKey = '${req.cookies.authKey}'));`
+
+    clothIds.forEach( clothId => {
+        stmt = stmt + ` INSERT INTO look_has_cloth (look_id, cloth_id) VALUES ('${lookId}', '${clothId}');`
+    })
+    
+
+
+    connection.query(stmt, (err, results, fields) => {
+        if (err) {
+            if (err.code === "ER_DUP_ENTRY") {
+                res.status(409)
+                res.send({
+                    error: 'Duplicate Mail'
+                });
+            }
+
+
+            else res.send(err)
+            return console.error(err.message);
+        }
+        res.status(201)
+        res.send({
+            message: 'created succsfully'
+        })
+    });
+})
+
+app.get('/app/looks', function (req, res) {
+    if (!req.cookies) {
+        res.status(401)
+        res.send({
+            error: 'not auth'
+        })
+        return;
+    }
+
+
+    let stmt = `SELECT * FROM look WHERE createdBy = (SELECT mail FROM users WHERE authKey = '${req.cookies.authKey}')`;
+
+    connection.query(stmt, (err, results, fields) => {
+        if (err) {
+            if (err.code === "ER_DUP_ENTRY") {
+                res.status(409)
+                res.send({
+                    error: 'Duplicate Mail'
+                });
+            }
+
+
+            else res.send(err)
+            return console.error(err.message);
+        }
+        res.status(201)
+        res.send(results)
+    });
+})
+
+app.post('/app/looksIds', function (req, res) {
+    if (!req.cookies) {
+        res.status(401)
+        res.send({
+            error: 'not auth'
+        })
+        return;
+    }
+
+    let stmt = '';
+    req.body.forEach(lookId => {
+        stmt = stmt + ` SELECT * FROM look_has_cloth WHERE look_id = '${lookId}';`
+    })
+
+    connection.query(stmt, (err, results, fields) => {
+        if (err) {
+            if (err.code === "ER_DUP_ENTRY") {
+                res.status(409)
+                res.send({
+                    error: 'Duplicate Mail'
+                });
+            }
+
+
+            else res.send(err)
+            return console.error(err.message);
+        }
+        const result = {};
+        req.body.forEach((lookId, index) => {
+            result[lookId] = results[index]
+        })
+        res.status(201)
+        res.send(results)
+    });
+})
+
+
+
+
 
 const server = https.createServer({ key: key, cert: cert }, app);
 
