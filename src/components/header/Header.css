@@ -3,6 +3,7 @@
     grid-auto-flow: column;
     justify-items: center;
     align-items: center;
+    grid-template-columns: 1fr 1fr 1fr;
 }
 
 .header-logo {
@@ -17,10 +18,6 @@
     justify-self: self-end;
 }
 
-.emptyIcon {
-    height: 35px;
-    width: 35px;
-}
 
 
 .userPopupContainer {
@@ -31,15 +28,15 @@
     height: 0vh;
 
     background-color: rgba(0, 0, 0, 0);
-    transition: background-color 0.3s, height 0.1s;
-    transition-delay: 0.3s;
+    transition: background-color 0.3s 0.3s, height 0s 0.6s;
     overflow: hidden;
+
+    z-index: 1;
 }
 
 .userPopupContainer.shown {
     background-color: rgba(0, 0, 0, 0.6);
-    transition: background-color 0.3s ease-out, height 0.1s;
-
+    transition: background-color 0.3s ease-out, height 0s;
     height: 100vh;
 }
 

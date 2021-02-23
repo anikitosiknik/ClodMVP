@@ -1,6 +1,7 @@
 import { all, call, put, takeEvery } from "redux-saga/effects";
 import { FETCH_AUTOLOGIN_USER, FETCH_LOGIN_USER, FETCH_LOGOUT, FETCH_REGISTER_USER } from "../redux/actionTypes";
 import { fetchGetCloths, updateCloths } from "../redux/reducers/cloth";
+import { fetchGetLooks } from "../redux/reducers/look";
 import { setUser } from "../redux/reducers/user";
 import { registerUserRequest, loginUserRequest, autoLoginRequest, logOutRequest } from "../utils/autService";
 
@@ -24,6 +25,7 @@ export function* loginUserAsync({ payload } : { type: string, forceReload: any, 
     const json = yield call(() => new Promise(res => res(data.json())))
     yield put(setUser(json));
     yield put(fetchGetCloths())
+    yield put(fetchGetLooks())
 }
 
 export function* watchLoginUser() {
@@ -35,6 +37,7 @@ export function* autoLoginUserAsync() {
     const json = yield call(() => new Promise(res => res(data.json())))
     yield put(setUser(json));
     yield put(fetchGetCloths())
+    yield put(fetchGetLooks())
 }
 
 export function* watchAutoLoginUser() {

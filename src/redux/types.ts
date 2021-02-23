@@ -47,3 +47,27 @@ export type clothChoosedType = clothType & {
 } 
 export type clothState = { [key: string] : clothChoosedType}
 export type clothList = clothChoosedType[]
+
+
+
+
+
+export type createdLook = {
+  ready: boolean
+  clothIds: string[]
+  type: lookType
+}
+
+export type Look = createdLook & {
+  createdBy: string
+  category: "" | "date"
+  id: string
+}
+
+export type clothInLookIds = {look_id: string, cloth_id: string}[][]
+
+
+export type lookType = 'hand' | 'clod' | 'clod+'
+
+export type  lookState = { [key: string] : Look}
+export type lookList = Look[]
