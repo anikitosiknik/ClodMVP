@@ -125,6 +125,77 @@
     align-self: center;
 }
 
-.basketContainer .basketIcon{ 
+.basketContainer .basketIcon {
     width: 30px;
+}
+
+
+
+.createModal {
+    display: grid;
+    gap: 35px;
+}
+
+.createModal .createModalHeader {
+    font-size: 20px;
+    text-align: center;
+    margin: 0;
+    color: #699C8B;
+}
+
+.createModal .createModalText {
+    font-size: 16px;
+    color: #515151;
+    text-align: center;
+    margin: 0px;
+}
+
+.createModal .createModalWarning {
+    color: #C4C4C4;
+    font-size: 14px;
+    text-align: center;
+
+    margin: 0px;
+}
+
+.deleteModal {
+    display: grid;
+    grid-template-areas:
+        'header header'
+        'no yes'
+        'warning warning';
+    grid-template-rows: 2fr 1fr 0.5fr;
+    gap: 15px;
+    align-items: center;
+
+}
+
+.deleteModal .deleteModalHeader {
+    grid-area: header;
+    font-size: 16px;
+    color: #515151;
+    text-align: center;
+    margin: 0px;
+
+}
+
+.deleteModal .deleteModalNo {
+    grid-area: no;
+    margin: 0px 10px;
+}
+
+.deleteModal .deleteModalYes {
+    grid-area: yes;
+    background: #D86D6D;
+    color: white;
+    margin: 0px 10px;
+}
+
+.deleteModal .deleteModalWarning {
+    grid-area: warning;
+    color: #C4C4C4;
+    font-size: 14px;
+    text-align: center;
+
+    margin: 0px;
 }

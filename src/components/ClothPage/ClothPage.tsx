@@ -20,6 +20,7 @@ import {
   toggleChoosedCloth,
 } from "../../redux/reducers/cloth";
 import { fetchCreateLook } from "../../redux/reducers/look";
+import Modal from "../Modal/Modal";
 
 function ClothPage() {
   const [isClothCreating, changeClothCreating] = useState(false);
@@ -118,18 +119,28 @@ ClothList.propTypes = {
 };
 
 function LookButtons({ choosedCloth }: { choosedCloth: clothList }) {
+  const [isCreateModalOpened, changeCreateModalOpened] = useState(false);
   const dispatch = useDispatch();
 
-
-
   const createLookHandler = (type: lookType) => {
-    dispatch(fetchCreateLook({
-      ready: false,
-      type: type,
-      clothIds: choosedCloth.map(cloth=>cloth.id),
-    }))
+    changeCreateModalOpened(true);
+    dispatch(
+      fetchCreateLook({
+        ready: false,
+        type: type,
+        clothIds: choosedCloth.map((cloth) => cloth.id),
+      })
+    );
   };
-  return (
+  return isCreateModalOpened ? (
+    <Modal closeEvent={() => changeCreateModalOpened(false)}>
+      <div className="createModal">
+        <h2 className="createModalHeader">Мы приняли вашу заявку</h2>
+        <h3 className="createModalText"> Clod как можно быстрее подберёт вам лучшие образы</h3>
+        <p className="createModalWarning">Это займет не более 12 часов</p>
+      </div>
+    </Modal>
+  ) : (
     <div className="lookButtons">
       <button className="btn">Вручную</button>
       <button className="btn" onClick={() => createLookHandler("clod")}>
@@ -148,10 +159,35 @@ LookButtons.propTypes = {
 
 function ClothBusket({ choosedCloths }: { choosedCloths: clothList }) {
   const dispatch = useDispatch();
+  const [isDeleteModalOpened, changeDeleteModalOpened] = useState(false);
   const deleteClothHandler = () =>
     dispatch(fetchDeleteCloth(choosedCloths.map((cloth) => cloth.id)));
-  return (
-    <div className="basketContainer" onClick={() => deleteClothHandler()}>
+  return isDeleteModalOpened ? (
+    <Modal closeEvent={() => changeDeleteModalOpened(false)}>
+      <div className="deleteModal">
+        <h2 className="deleteModalHeader">
+          Вы действительно хотите удалить выбранные вещи?
+        </h2>
+        <button
+          className="deleteModalNo btn"
+          onClick={() => changeDeleteModalOpened(false)}
+        >
+          Нет
+        </button>
+        <button
+          className="deleteModalYes btn"
+          onClick={() => deleteClothHandler()}
+        >
+          Да
+        </button>
+        <p className="deleteModalWarning">Одежда удалится безвозвратно</p>
+      </div>
+    </Modal>
+  ) : (
+    <div
+      className="basketContainer"
+      onClick={() => changeDeleteModalOpened(true)}
+    >
       <img src={BasketIcon} className="basketIcon" alt="" />
     </div>
   );

@@ -348,12 +348,18 @@ app.delete('/app/cloths', function (req, res) {
         })
         return;
     }
-    let stmt = `DELETE FROM cloth WHERE`;
+    let stmt = '';
+   
 
     const ids = req.body;
     ids.forEach((id, index) => {
+        stmt = stmt + `DELETE FROM look_has_cloth WHERE cloth_id = '${id}' ; `
+    })
+    stmt = stmt + `DELETE FROM cloth WHERE`;
+    ids.forEach((id, index) => {
         stmt = stmt + ` ${index === 0 ? '' : 'OR'} id = '${id}'`
     })
+   
     connection.query(stmt, (err, results, fields) => {
         if (err) {
             if (err.code === "ER_DUP_ENTRY") {
