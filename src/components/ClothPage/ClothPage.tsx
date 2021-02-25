@@ -61,7 +61,7 @@ function ClothPage() {
           changeFilter={changeFilter}
           filterCloth={filterCloth}
         />
-        {getChoosedClothList().length ? (
+        {getChoosedClothList().length > 1 ? (
           <LookButtons choosedCloth={getChoosedClothList()} />
         ) : (
           <></>
