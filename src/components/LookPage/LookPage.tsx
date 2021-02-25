@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import {
+  Look,
   lookCategories,
   lookList,
   looksSorted,
@@ -11,9 +12,20 @@ import { looksObjectToList } from "../../utils/lookService";
 import Header from "../header/Header";
 import "./LookPage.css";
 import plus from "../../imgs/plus.svg";
+import backIcon from "../../imgs/backIcon.svg";
+import { LookModal } from "./LookModal";
+
+type categoryPage = {
+  title: string;
+  looks: lookList;
+};
 
 function LookPage() {
   const looksState = useSelector((state: RootState) => state.look);
+  const [categoryPage, changeCategoryPage] = useState<categoryPage>({
+    title: "",
+    looks: [],
+  });
   const [looks, changeLooks] = useState<looksSorted>({
     all: [],
     favorite: [],
@@ -41,31 +53,52 @@ function LookPage() {
 
   return (
     <>
-      <Header />
-      <div className="lookPage">
-        {LOOKS_CATEGORIES.map((category) => (
-          <LookCategory
-            looks={looks[category.type]}
-            key={category.type}
-            category={category}
-          />
-        ))}
-      </div>
+      <Header
+        additionalElement={
+          categoryPage.title ? (
+            <img
+              className="backButton"
+              src={backIcon}
+              onClick={() => changeCategoryPage({ title: "", looks: [] })}
+            />
+          ) : null
+        }
+      />
+      {categoryPage.title ? (
+        <CategoryPage page={categoryPage} />
+      ) : (
+        <div className="lookPage">
+          {LOOKS_CATEGORIES.map((category) => (
+            <LookCategories
+              openCategory={changeCategoryPage}
+              looks={looks[category.type]}
+              key={category.type}
+              category={category}
+            />
+          ))}
+        </div>
+      )}
     </>
   );
 }
 
 export default LookPage;
 
-function LookCategory({
+function LookCategories({
   category,
   looks,
+  openCategory,
 }: {
   category: { title: string; type: lookCategories };
   looks: lookList;
+  openCategory: (page: categoryPage) => void;
 }) {
   return (
-    <div key={category.type} className="lookCategory">
+    <div
+      key={category.type}
+      className="lookCategory"
+      onClick={() => openCategory({ title: category.title, looks })}
+    >
       <div className="lookCategoryImgContainer">
         {looks.slice(0, 4).map((look) => (
           <div className="lookCategoryCloth" key={look.id}>
@@ -75,5 +108,35 @@ function LookCategory({
       </div>
       <h2>{category.title}</h2>
     </div>
+  );
+}
+
+const emptyLook = (): Look => ({
+  createdBy: "",
+  category: "",
+  id: "",
+  favorite: false,
+  img: "",
+  ready: false,
+  clothIds: [],
+  type: "clod",
+});
+
+function CategoryPage({ page }: { page: categoryPage }) {
+  const [lookModal, changeLookModal] = useState<Look>(emptyLook());
+  return (
+    <>
+      {lookModal.id ? (
+        <LookModal look={lookModal} closeEvent={() => changeLookModal(emptyLook())}></LookModal>
+      ) : null}
+      <h2>{page.title}</h2>
+      <div className="categoryPage">
+        {page.looks.map((look) => (
+          <div onClick={()=>changeLookModal(look)} className="categoryPageLook" key={look.id}>
+            <img src={look.img || plus}></img>
+          </div>
+        ))}
+      </div>
+    </>
   );
 }

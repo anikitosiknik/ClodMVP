@@ -378,6 +378,35 @@ app.delete('/app/cloths', function (req, res) {
     });
 })
 
+app.post('/app/clothsById', function (req,res) {
+    if (!req.cookies) {
+        res.status(401)
+        res.send({
+            error: 'not auth'
+        })
+        return;
+    }
+    
+    let stmt = 'SELECT * FROM cloth WHERE '
+    req.body.forEach((id, index) => {
+        stmt = stmt + ` ${index === 0 ? '' : 'OR'} id = '${id}'`
+    })
+    connection.query(stmt, (err, results, fields) => {
+        if (err) {
+            if (err.code === "ER_DUP_ENTRY") {
+                res.status(409)
+                res.send({
+                    error: 'asd'
+                });
+            }
+            else res.send(err)
+            return console.error(err.message);
+        }
+        res.status(201)
+        res.send(results)
+    });
+})
+
 
 
 
@@ -489,6 +518,8 @@ app.post('/app/looksIds', function (req, res) {
         res.send(results)
     });
 })
+
+
 
 
 
