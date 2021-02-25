@@ -18,7 +18,8 @@ export interface userState {
 
 export interface RootState {
     user: userState,
-    cloth: clothState
+    cloth: clothState,
+    look: lookState
 }
 
 
@@ -60,14 +61,23 @@ export type createdLook = {
 
 export type Look = createdLook & {
   createdBy: string
-  category: "" | "date"
-  id: string
+  category: lookUserCategories | ''
+  id: string,
+  favorite: boolean,
+  img: string
 }
+
 
 export type clothInLookIds = {look_id: string, cloth_id: string}[][]
 
 
-export type lookType = 'hand' | 'clod' | 'clod+'
+export type lookType = 'hand' | 'clod' | 'clod+';
+export type lookUserCategories ='date' | 'sport' | 'casual' | 'beach'
+export type lookCategories = lookUserCategories | 'all' | 'favorite'; 
 
 export type  lookState = { [key: string] : Look}
 export type lookList = Look[]
+
+export type looksSorted = {
+  [key in lookCategories]: lookList;
+};

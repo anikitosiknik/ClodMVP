@@ -1,4 +1,4 @@
-import { createdLook } from "../redux/types";
+import { createdLook, lookList, lookState } from "../redux/types";
 import { getHref } from "./enviroment";
 
 export function createLookRequest(cloth: createdLook) {
@@ -64,11 +64,11 @@ export function getLookIdsRequest(lookIds: string[]) {
 //     return clothsObject;
 // }
 
-// export function clothObjectToList(cloths: clothState): clothList {
-//     const clothsList: clothList = [];
-//     for (let cloth in cloths) {
-//         clothsList.push(cloths[cloth])
-//     }
-//     return clothsList;
-// }
+export function looksObjectToList(looks: lookState): lookList {
+    const lookList: lookList = [];
+    for (let look in looks) {
+        lookList.push(looks[look])
+    }
+    return lookList;
+}
  

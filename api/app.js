@@ -349,7 +349,7 @@ app.delete('/app/cloths', function (req, res) {
         return;
     }
     let stmt = '';
-   
+
 
     const ids = req.body;
     ids.forEach((id, index) => {
@@ -359,7 +359,7 @@ app.delete('/app/cloths', function (req, res) {
     ids.forEach((id, index) => {
         stmt = stmt + ` ${index === 0 ? '' : 'OR'} id = '${id}'`
     })
-   
+
     connection.query(stmt, (err, results, fields) => {
         if (err) {
             if (err.code === "ER_DUP_ENTRY") {
@@ -392,13 +392,13 @@ app.post('/app/createLook', function (req, res) {
         return;
     }
     const lookId = generateAuthToken();
-    const {type, clothIds} = req.body;
+    const { type, clothIds } = req.body;
     let stmt = `INSERT INTO look (id, type, createdBy) VALUES ('${lookId}', '${type}', (SELECT mail FROM users WHERE authKey = '${req.cookies.authKey}'));`
 
-    clothIds.forEach( clothId => {
+    clothIds.forEach(clothId => {
         stmt = stmt + ` INSERT INTO look_has_cloth (look_id, cloth_id) VALUES ('${lookId}', '${clothId}');`
     })
-    
+
 
 
     connection.query(stmt, (err, results, fields) => {
@@ -447,7 +447,7 @@ app.get('/app/looks', function (req, res) {
             return console.error(err.message);
         }
         res.status(201)
-        res.send(results)
+        res.send(results.map(look=>({...look, favorite: !!look.favorite, ready: !!look.ready})))
     });
 })
 
@@ -478,10 +478,13 @@ app.post('/app/looksIds', function (req, res) {
             else res.send(err)
             return console.error(err.message);
         }
-        const result = {};
-        req.body.forEach((lookId, index) => {
-            result[lookId] = results[index]
-        })
+        if (req.body.length === 1) {
+            const result = [[]]
+            results.forEach(item => result[0].push(item))
+            res.status(201)
+            res.send(result)
+            return
+        }
         res.status(201)
         res.send(results)
     });

@@ -1,3 +1,5 @@
+import { lookCategories } from "../redux/types"
+
 export  const HAIR_COLORS = [
     {hex: '#ffffff', name: 'white'}, 
     {hex: '#c4c4c4', name: 'gray'},
@@ -40,4 +42,13 @@ export const CLOTH_TYPES = [
     {title: 'Сумка', value: 'bag'},
     {title: 'Джинсы', value: 'jeans'},
     {title: 'Аксессуары', value: 'accessories'},
+]
+
+export const LOOKS_CATEGORIES: { title: string, type: lookCategories}[] = [
+    {title: 'Все', type: 'all'},
+    {title: 'Избранное', type: 'favorite'},
+    {title: 'Вечерние', type: 'date'},
+    {title: 'Повседневние', type: 'casual'},
+    {title: 'Спортивные', type: 'sport'},
+    {title: 'Пляжные', type: 'beach'},
 ]
