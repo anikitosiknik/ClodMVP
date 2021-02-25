@@ -2,6 +2,7 @@ import {
   FETCH_CREATE_CLOTH,
   FETCH_DELETE_CLOTH,
   FETCH_GET_CLOTHS,
+  FETCH_GET_CLOTHS_BY_ID,
   TOGGLE_CHOOSED_CLOTH,
   UPDATE_CLOTHS,
 } from "../actionTypes";
@@ -45,6 +46,7 @@ export const fetchCreateCloth = (payload: createdCloth) => ({
   payload,
 });
 export const fetchGetCloths = () => ({ type: FETCH_GET_CLOTHS });
+export const fetchGetClothsById = (payload: string[]) => ({ type: FETCH_GET_CLOTHS_BY_ID, payload });
 export const fetchDeleteCloth = (payload: string[]) => ({
   type: FETCH_DELETE_CLOTH,
   payload,

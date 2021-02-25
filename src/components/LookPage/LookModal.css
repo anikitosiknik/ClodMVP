@@ -1,0 +1,10 @@
+.lookModal {
+    display: flex;
+    flex-direction: column;
+    max-height: 80vh;
+    overflow-y: scroll;
+}
+.lookModalImg {
+    height: 100%;
+    width: 100%;
+}

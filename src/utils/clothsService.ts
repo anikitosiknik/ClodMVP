@@ -40,6 +40,18 @@ export function deleteClothRequest(ids: string[]) {
     })
 }
 
+export function getClothsByIdRequest(ids: string[]) {
+    const baseUrl = getHref();
+    return fetch(`${baseUrl}/clothsById`, {
+        method: 'post',
+        body: JSON.stringify(ids),
+        mode: 'cors',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+    })
+}
+
 export function clothListToObject(cloths: clothList) {
     const clothsObject: clothState = {};
     cloths.forEach((cloth: clothChoosedType) => {
