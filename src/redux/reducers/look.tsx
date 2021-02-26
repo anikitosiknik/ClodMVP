@@ -1,7 +1,9 @@
 import {
   FETCH_CREATE_LOOK,
+  FETCH_DELETE_LOOKS,
   FETCH_GET_LOOKS,
   FETCH_GET_LOOK_IDS,
+  FETCH_TOGGLE_LIKE_LOOK,
   UPDATE_LOOKS,
 } from "../actionTypes";
 import { createdLook, lookList, lookState } from "../types";
@@ -32,3 +34,5 @@ export const fetchCreateLook = (payload: createdLook) => ({
 });
 export const fetchGetLooks = () => ({ type: FETCH_GET_LOOKS });
 export const fetchGetLookIds = (payload: lookList) => ({ type: FETCH_GET_LOOK_IDS, payload})
+export const fetchDeleteLooks = (payload: string[]) => ({type: FETCH_DELETE_LOOKS, payload})
+export const fetchToggleLikeLook = (payload: string) => ({type: FETCH_TOGGLE_LIKE_LOOK, payload})

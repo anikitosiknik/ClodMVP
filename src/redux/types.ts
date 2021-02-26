@@ -14,6 +14,7 @@ export interface userState {
   needChanges: boolean,
   isInfoSetted: boolean,
   userPicture: string,
+  isMailCodeReady: boolean
 }
 
 export interface RootState {
@@ -40,7 +41,8 @@ export type createdCloth = {
 };
 
 export type clothType = createdCloth & {
-  id: string
+  id: string,
+  link?: string
 } 
 
 export type clothChoosedType = clothType & {
@@ -64,7 +66,7 @@ export type Look = createdLook & {
   category: lookUserCategories | ''
   id: string,
   favorite: boolean,
-  img: string
+  img: string,
 }
 
 
@@ -73,7 +75,7 @@ export type clothInLookIds = {look_id: string, cloth_id: string}[][]
 
 export type lookType = 'hand' | 'clod' | 'clod+';
 export type lookUserCategories ='date' | 'sport' | 'casual' | 'beach'
-export type lookCategories = lookUserCategories | 'all' | 'favorite'; 
+export type lookCategories = lookUserCategories | 'all' | 'favorite' | 'notready'; 
 
 export type  lookState = { [key: string] : Look}
 export type lookList = Look[]

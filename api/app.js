@@ -8,6 +8,7 @@ var bodyParser = require('body-parser');
 var cookieParser = require('cookie-parser');
 var crypto = require('crypto');
 var mysql = require('mysql');
+const nodemailer = require('nodemailer')
 
 mysql_host = 'localhost'
 mysql_user = 'clodsite_anikitosiknik'
@@ -44,9 +45,63 @@ app.get('/', (req, res) => {
     res.send('Now using https..');
 });
 
+app.post('/api/setmailcode', function (req, res) {
+    const mail = req.body.mail;
+    const code = genereateMailToken();
+    let transporter = nodemailer.createTransport({
+        service: 'gmail',
+        auth: {
+            user: 'clodapp.info@gmail.com',
+            pass: 'rkjl1020'
+        }
+    })
+    const a = transporter.sendMail({
+        from: 'anikitosiknik@gmail.com',
+        to: mail,
+        subject: 'Attachments',
+        text: `This message with attachments.  ${code}`,
+
+    }).then(() => {
+        let stmt = `INSERT INTO mail (mail ,code) VALUES ('${mail}', '${code}') ON DUPLICATE KEY UPDATE  code = '${code}';`
+        connection.query(stmt, (err, results, fields) => {
+            if (err) {
+                if (err.code === "ER_DUP_ENTRY") {
+                    res.status(409)
+                    res.send({
+                        error: 'Duplicate Mail'
+                    });
+                }
 
 
-app.post('/app/reg', function (req, res) {
+                else res.send(err)
+                return console.error(err.message);
+            }
+
+            res.status(200)
+            res.send({
+                message: 'code ready'
+            })
+        });
+
+    }, err => {
+        res.send(err);
+    })
+})
+
+app.post('/api/checkmailcode', function (req, res) {
+    const {code, mail} = req.body
+    let stmt = `SELECT * FROM mail WHERE code = '${code}' AND mail = '${mail}'`
+    connection.query(stmt, (err, results, fields) => {
+        if(err) {
+            res.send(400)
+        }
+        
+        res.send(200)
+    })
+})
+
+
+app.post('/api/reg', function (req, res) {
     const authKey = generateAuthToken();
     let stmt = `INSERT INTO users (name, mail, password, authKey) VALUES ('${req.body.name}', '${req.body.mail}', '${getHashedPassword(req.body.password)}', '${authKey}')`;
 
@@ -74,7 +129,7 @@ app.post('/app/reg', function (req, res) {
 });
 
 
-app.post('/app/login', function (req, res) {
+app.post('/api/login', function (req, res) {
     const authToken = generateAuthToken()
     // `UPDATE users SET authKey = '${authToken}' WHERE mail = '${req.body.mail}' AND password = '${getHashedPassword(req.body.password)}';
     let stmt = `UPDATE users SET authKey = '${authToken}' WHERE mail = '${req.body.mail}' AND password = '${getHashedPassword(req.body.password)}'; SELECT * FROM users WHERE mail = '${req.body.mail}' AND password = '${getHashedPassword(req.body.password)}' `;
@@ -120,7 +175,7 @@ app.post('/app/login', function (req, res) {
 });
 
 
-app.get('/app/autoLogin', function (req, res) {
+app.get('/api/autoLogin', function (req, res) {
     if (!req.cookies) {
         res.status(401)
         res.send({
@@ -169,7 +224,7 @@ app.get('/app/autoLogin', function (req, res) {
 
 })
 
-app.get('/app/logOut', function (req, res) {
+app.get('/api/logOut', function (req, res) {
     if (!req.cookies) {
         res.status(401)
         res.send({
@@ -197,7 +252,7 @@ app.get('/app/logOut', function (req, res) {
     });
 })
 
-app.post('/app/setUserInfo', function (req, res) {
+app.post('/api/setUserInfo', function (req, res) {
     if (!req.cookies) {
         res.status(401)
         res.send({
@@ -241,7 +296,7 @@ app.post('/app/setUserInfo', function (req, res) {
     })
 })
 
-app.post('/app/setUserPicture', function (req, res) {
+app.post('/api/setUserPicture', function (req, res) {
     if (!req.cookies) {
         res.status(401)
         res.send({
@@ -276,7 +331,7 @@ app.post('/app/setUserPicture', function (req, res) {
 
 
 
-app.post('/app/createCloth', function (req, res) {
+app.post('/api/createCloth', function (req, res) {
     if (!req.cookies) {
         res.status(401)
         res.send({
@@ -310,7 +365,7 @@ app.post('/app/createCloth', function (req, res) {
     });
 })
 
-app.get('/app/cloths', function (req, res) {
+app.get('/api/cloths', function (req, res) {
     if (!req.cookies) {
         res.status(401)
         res.send({
@@ -340,7 +395,7 @@ app.get('/app/cloths', function (req, res) {
     });
 })
 
-app.delete('/app/cloths', function (req, res) {
+app.delete('/api/cloths', function (req, res) {
     if (!req.cookies) {
         res.status(401)
         res.send({
@@ -378,7 +433,7 @@ app.delete('/app/cloths', function (req, res) {
     });
 })
 
-app.post('/app/clothsById', function (req,res) {
+app.post('/api/clothsById', function (req, res) {
     if (!req.cookies) {
         res.status(401)
         res.send({
@@ -386,7 +441,7 @@ app.post('/app/clothsById', function (req,res) {
         })
         return;
     }
-    
+
     let stmt = 'SELECT * FROM cloth WHERE '
     req.body.forEach((id, index) => {
         stmt = stmt + ` ${index === 0 ? '' : 'OR'} id = '${id}'`
@@ -412,7 +467,7 @@ app.post('/app/clothsById', function (req,res) {
 
 
 
-app.post('/app/createLook', function (req, res) {
+app.post('/api/createLook', function (req, res) {
     if (!req.cookies) {
         res.status(401)
         res.send({
@@ -450,7 +505,7 @@ app.post('/app/createLook', function (req, res) {
     });
 })
 
-app.get('/app/looks', function (req, res) {
+app.get('/api/looks', function (req, res) {
     if (!req.cookies) {
         res.status(401)
         res.send({
@@ -476,11 +531,50 @@ app.get('/app/looks', function (req, res) {
             return console.error(err.message);
         }
         res.status(201)
-        res.send(results.map(look=>({...look, favorite: !!look.favorite, ready: !!look.ready})))
+        res.send(results.map(look => ({ ...look, favorite: !!look.favorite, ready: !!look.ready })))
     });
 })
 
-app.post('/app/looksIds', function (req, res) {
+
+app.delete('/api/looks', function (req, res) {
+    if (!req.cookies) {
+        res.status(401)
+        res.send({
+            error: 'not auth'
+        })
+        return;
+    }
+    let stmt = '';
+
+
+    const ids = req.body;
+    ids.forEach((id, index) => {
+        stmt = stmt + `DELETE FROM look_has_cloth WHERE look_id = '${id}' ; `
+    })
+    stmt = stmt + `DELETE FROM look WHERE`;
+    ids.forEach((id, index) => {
+        stmt = stmt + ` ${index === 0 ? '' : 'OR'} id = '${id}'`
+    })
+
+    connection.query(stmt, (err, results, fields) => {
+        if (err) {
+            if (err.code === "ER_DUP_ENTRY") {
+                res.status(409)
+                res.send({
+                    error: 'asd'
+                });
+            }
+            else res.send(err)
+            return console.error(err.message);
+        }
+        res.status(201)
+        res.send({
+            message: `removed ${results.affectedRows}`
+        })
+    });
+})
+
+app.post('/api/looksIds', function (req, res) {
     if (!req.cookies) {
         res.status(401)
         res.send({
@@ -519,6 +613,52 @@ app.post('/app/looksIds', function (req, res) {
     });
 })
 
+app.put('/api/looksLike', function (req, res) {
+    req.body = req.body.a
+    if (!req.cookies) {
+        res.status(401)
+        res.send({
+            error: 'not auth'
+        })
+        return;
+    }
+    stmt = `SELECT favorite FROM look WHERE id = '${req.body}'`
+    connection.query(stmt, (err, results, fields) => {
+
+
+        if (err) {
+            if (err.code === "ER_DUP_ENTRY") {
+                res.status(409)
+                res.send({
+                    error: 'Duplicate Mail'
+                });
+            }
+
+
+            else res.send(err)
+            return console.error(err.message);
+        }
+        const result = results[0].favorite;
+        let stmt = `UPDATE look SET  favorite = '${result ? 0 : 1}'  WHERE  id = '${req.body}';
+         SELECT * FROM look WHERE id = '${req.body}'`;
+        connection.query(stmt, (err, results, fields) => {
+            if (err) {
+                if (err.code === "ER_DUP_ENTRY") {
+                    res.status(409)
+                    res.send({
+                        error: 'Duplicate Mail'
+                    });
+                }
+
+
+                else res.send(err)
+                return console.error(err.message);
+            }
+            res.send(results[1].map(look => ({ ...look, favorite: !!look.favorite, ready: !!look.ready })))
+        })
+    });
+})
+
 
 
 
@@ -544,4 +684,8 @@ const getHashedPassword = (password) => {
 
 const generateAuthToken = () => {
     return crypto.randomBytes(30).toString('hex');
+}
+
+const genereateMailToken = () => {
+    return crypto.randomBytes(3).toString('hex');
 }
