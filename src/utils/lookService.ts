@@ -40,6 +40,34 @@ export function getLookIdsRequest(lookIds: string[]) {
     })
 }
 
+export function deleteLooskRequest(lookId: string[]) {
+    const baseUrl = getHref();
+
+    return fetch(`${baseUrl}/looks`, {
+        method: 'delete',
+        mode: 'cors',
+        body: JSON.stringify(lookId),
+        headers: {
+            'Content-Type': 'application/json'
+        },
+    })
+}
+
+export function toggleLikeLookRequest(lookId: string) {
+    const baseUrl = getHref();
+
+    return fetch(`${baseUrl}/looksLike`, {
+        method: 'put',
+        mode: 'cors',
+        body: JSON.stringify({
+            a: lookId
+        }),
+        headers: {
+            'Content-Type': 'application/json'
+        },
+    })
+}
+
 // export function deleteClothRequest(ids: string[]) {
 //     const baseUrl = getHref();
 

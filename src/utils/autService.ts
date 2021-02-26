@@ -17,6 +17,43 @@ export function registerUserRequest(name: string, mail: string, password: string
     })
     
 }
+export function setMailCodeRequest(name: string, mail: string, password: string) {
+    const baseUrl = getHref();
+
+    return fetch(`${baseUrl}/setmailcode`, {
+        method: 'post',
+        body: JSON.stringify({
+            name,
+            mail,
+            password
+        }),
+        mode: 'cors',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+    })
+    
+}
+
+export  function checkMailCodeRequest(name: string ,mail: string, password: string, code: string) {
+    const baseUrl = getHref();
+
+    return fetch(`${baseUrl}/checkmailcode`, {
+        method: 'post',
+        body: JSON.stringify({
+            name,
+            mail,
+            password,
+            code
+        }),
+        mode: 'cors',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+    })
+    
+}
+
 
 export function loginUserRequest(mail: string, password: string) {
     const baseUrl = getHref();

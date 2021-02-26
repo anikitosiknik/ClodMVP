@@ -1,21 +1,25 @@
 import React, { useRef } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import {
   emailValidation,
   nicklValidation,
   passwordValidation,
 } from "../../utils/validation";
-import { fetchRegister } from "../../redux/reducers/user";
+import { fetchCheckMailCode, fetchSetMailCode } from "../../redux/reducers/user";
 import PropTypes, { InferProps } from "prop-types";
+import { RootState } from "../../redux/types";
+import Modal from "../Modal/Modal";
 
-function Create({validate}: InferProps<typeof Create.propTypes>) {
+function Create({ validate }: InferProps<typeof Create.propTypes>) {
   const userNameRef: React.RefObject<HTMLInputElement> = useRef(null);
   const userMailRef: React.RefObject<HTMLInputElement> = useRef(null);
   const userPasswordRef: React.RefObject<HTMLInputElement> = useRef(null);
   const repeatPasswordRef: React.RefObject<HTMLInputElement> = useRef(null);
 
+  const isMailCodeReady = useSelector(
+    (state: RootState) => state.user.isMailCodeReady
+  );
   const dispatch = useDispatch();
-  
 
   const inputRefs = [
     userNameRef,
@@ -23,9 +27,6 @@ function Create({validate}: InferProps<typeof Create.propTypes>) {
     userPasswordRef,
     repeatPasswordRef,
   ];
-
-
-  
 
   const secondPasswordValidation = (
     secondPassword: string | null | undefined
@@ -38,8 +39,7 @@ function Create({validate}: InferProps<typeof Create.propTypes>) {
     repeatPasswordRef.current?.classList.remove("invalid");
   };
 
-  const register = () => {
-    
+  const sendCode = () => {
     if (
       inputRefs.filter((inputRef) => {
         if (!inputRef.current?.classList.contains("valid")) {
@@ -50,16 +50,30 @@ function Create({validate}: InferProps<typeof Create.propTypes>) {
       }).length !== inputRefs.length
     )
       return;
-      dispatch(fetchRegister({
-        name: userNameRef.current?.value || '',
-        mail: userMailRef.current?.value || '',
-        password: userPasswordRef.current?.value || '',
-      }))
+    dispatch(
+      fetchSetMailCode({
+        name: userNameRef.current?.value || "",
+        mail: userMailRef.current?.value || "",
+        password: userPasswordRef.current?.value || "",
+      })
+    );
   };
+
+  const register = (code: string) => {
+    dispatch(
+      fetchCheckMailCode({
+        name: userNameRef.current?.value || "",
+        mail: userMailRef.current?.value || "",
+        password: userPasswordRef.current?.value || "",
+        code: code
+      })
+    );
+  }
+
 
   return (
     <div className="form">
-      <h2>Созтайте аккаунт</h2>
+      <h2>Создайте аккаунт</h2>
       <input
         className="inp"
         ref={userNameRef}
@@ -79,7 +93,11 @@ function Create({validate}: InferProps<typeof Create.propTypes>) {
         ref={userMailRef}
         placeholder="Укажите эл. адрес"
         onChange={(event) => {
-          validate(event.target.value, userMailRef.current?.classList, emailValidation);
+          validate(
+            event.target.value,
+            userMailRef.current?.classList,
+            emailValidation
+          );
         }}
       ></input>
       <input
@@ -89,7 +107,11 @@ function Create({validate}: InferProps<typeof Create.propTypes>) {
         placeholder="Укажите пароль"
         onChange={(event) => {
           resetSecondPassword();
-          validate(event.target.value, userPasswordRef.current?.classList, passwordValidation);
+          validate(
+            event.target.value,
+            userPasswordRef.current?.classList,
+            passwordValidation
+          );
         }}
       ></input>
       <input
@@ -106,16 +128,30 @@ function Create({validate}: InferProps<typeof Create.propTypes>) {
           );
         }}
       ></input>
-      <button className="btn" onClick={() => register()}>
+      {isMailCodeReady ? <MailCodeModal register={register}/> : null}
+
+      <button className="btn" onClick={() => sendCode()}>
         Создать аккаунт
       </button>
     </div>
   );
 }
 
-
 Create.propTypes = {
-  validate: PropTypes.func.isRequired
-}
+  validate: PropTypes.func.isRequired,
+};
 
 export default Create;
+
+function MailCodeModal({register} : {register: Function}) {
+  const codeRef: React.RefObject<HTMLInputElement> = useRef(null);
+  return (
+    <Modal closeEvent={() => {}}>
+      <div>
+        <h2>Вам на почту отправленно письмо, пожалуйста введите код:</h2>
+        <input className="inp" placeholder="код" ref={codeRef}></input>
+        <button className="btn" onClick={() => register(codeRef.current?.value)}>Подтвердить</button>
+      </div>
+    </Modal>
+  );
+}

@@ -46,7 +46,7 @@ function LoginPage() {
             ref={createRef}
             onAnimationEnd={()=>{changeStatus("create")}}
           >
-            Созтать аккаунт
+            Создать аккаунт
           </button>
           <p>или</p>
           <button className="btn"

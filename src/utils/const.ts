@@ -51,4 +51,5 @@ export const LOOKS_CATEGORIES: { title: string, type: lookCategories}[] = [
     {title: 'Повседневние', type: 'casual'},
     {title: 'Спортивные', type: 'sport'},
     {title: 'Пляжные', type: 'beach'},
+    {title: 'В обработке', type: 'notready'},
 ]
