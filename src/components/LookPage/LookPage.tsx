@@ -139,7 +139,6 @@ const emptyLook = (): Look => ({
 
 function CategoryPage({ page }: { page: categoryPage }) {
   const [lookModal, changeLookModal] = useState<Look>(emptyLook());
-  console.log("rerender");
   return (
     <>
       {lookModal.id ? (

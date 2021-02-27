@@ -19,4 +19,27 @@
 .useForm-button {
     justify-self: center;
     padding: 10px 30px;
+    margin-bottom: 20px ;
+}
+
+.stringInputContainer {
+    margin: 15px 5px;
+    display: flex;
+   align-items: center;
+   justify-content: space-around;
+}
+
+.stringInput {
+    padding: 6px;
+    margin: 15px 17px;
+    gap: 15px;
+    background: #F9F9F9;
+    border-radius: 20px;
+    filter: drop-shadow(0px 2px 4px rgba(0, 0, 0, 0.25));
+    font-size: 16px;
+    outline: none;
+    border: none;
+    background: #F9F9F9;
+    text-align: center;
+    color: #515151;
 }

@@ -55,7 +55,6 @@ function ClothPage() {
         />
       ) : null}
 
-      <div className="clothPageContainer">
         <ClothFilters
           createCloth={() => changeClothCreating(true)}
           changeFilter={changeFilter}
@@ -79,7 +78,6 @@ function ClothPage() {
             </p>
           </div>
         )}
-      </div>
     </>
   );
 }
@@ -142,7 +140,7 @@ function LookButtons({ choosedCloth }: { choosedCloth: clothList }) {
     </Modal>
   ) : (
     <div className="lookButtons">
-      <button className="btn">Вручную</button>
+      <button className="btn soon">Вручную</button>
       <button className="btn" onClick={() => createLookHandler("clod")}>
         clod
       </button>

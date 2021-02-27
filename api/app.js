@@ -93,10 +93,17 @@ app.post('/api/checkmailcode', function (req, res) {
     let stmt = `SELECT * FROM mail WHERE code = '${code}' AND mail = '${mail}'`
     connection.query(stmt, (err, results, fields) => {
         if (err || !results.length) {
-            return res.send(400)
+            res.status(400)
+            return res.send({
+                error: 'wrongCode',
+                isMailCodeReady: false,
+            })
         }
 
-        res.send(200)
+        res.status(200)
+        res.send({
+            isMailCodeReady: false,
+        })
     })
 })
 
@@ -107,7 +114,7 @@ app.post('/api/reg', function (req, res) {
     if (code) {
         let stmt = `SELECT mail FROM mail WHERE code = '${code}'`;
         connection.query(stmt, (err, results, fields) => {
-            if (err || !results.length) {
+            if (err) {
                 if (err.code === "ER_DUP_ENTRY") {
                     res.status(409)
                     res.send({
@@ -118,6 +125,13 @@ app.post('/api/reg', function (req, res) {
 
                 else res.send(err)
                 return console.error(err.message);
+            }
+            if (!results.length) {
+                res.status(400)
+                return res.send({
+                    isMailCodeReady: false,
+                    error: 'wrongCode'
+                })
             }
             if (results[0].mail === mail) {
                 let stmt = `UPDATE users SET authKey = '${authKey}' , password = '${getHashedPassword(password)}' WHERE mail = '${mail}'; SELECT * FROM users WHERE mail = '${req.body.mail}'`
@@ -143,6 +157,8 @@ app.post('/api/reg', function (req, res) {
                         skin,
                         hair,
                         eyes,
+                        city,
+                        country,
                         userPicture } = results[1][0];
                     res.send({
                         name,
@@ -156,6 +172,9 @@ app.post('/api/reg', function (req, res) {
                         hair,
                         eyes,
                         userPicture,
+
+                        city,
+                        country,
                         logined: true,
                         isInfoSetted: !!isInfoSetted
                     })
@@ -180,7 +199,7 @@ app.post('/api/reg', function (req, res) {
             return console.error(err.message);
         }
         res.cookie('authKey', authKey, { maxAge: 25000000, httpOnly: true, sameSite: "Lax" })
-        
+
         res.status(201)
         res.send({
             name: req.body.name,
@@ -203,7 +222,8 @@ app.post('/api/login', function (req, res) {
         if (!results[1].length) {
             res.status(401)
             res.send({
-                error: 'password or mail not found'
+                error: 'password or mail not found',
+                isMailCodeReady: false,
             })
             return;
         }
@@ -217,6 +237,8 @@ app.post('/api/login', function (req, res) {
             skin,
             hair,
             eyes,
+            city,
+            country,
             userPicture } = results[1][0];
         res.send({
             name,
@@ -229,6 +251,8 @@ app.post('/api/login', function (req, res) {
             skin,
             hair,
             eyes,
+            city,
+            country,
             userPicture,
             logined: true,
             isInfoSetted: !!isInfoSetted
@@ -252,9 +276,7 @@ app.get('/api/autoLogin', function (req, res) {
         }
         if (!results.length) {
             res.status(401)
-            res.send({
-                error: 'autoLogin Failed'
-            })
+            res.send({})
             return;
         }
         res.status(200)
@@ -266,6 +288,8 @@ app.get('/api/autoLogin', function (req, res) {
             skin,
             hair,
             eyes,
+            city,
+            country,
             userPicture } = results[0];
         res.send({
             name,
@@ -278,6 +302,8 @@ app.get('/api/autoLogin', function (req, res) {
             skin,
             hair,
             eyes,
+            city,
+            country,
             userPicture,
             isInfoSetted: !!isInfoSetted,
             logined: true,
@@ -322,9 +348,9 @@ app.post('/api/setUserInfo', function (req, res) {
         })
         return;
     }
-    const { chest, waist, hips, height, age, skin, hair, eyes } = req.body
+    const { chest, waist, hips, height, age, skin, hair, eyes, city, country } = req.body
     // let stmt = `UPDATE users SET chest = ${chest} WHERE  authKey = '${req.cookies.authKey}'`;
-    let stmt = `UPDATE users SET chest = ${chest} , waist = ${waist} , hips = ${hips} , height = ${height} , age = ${age}  , skin = '${skin}' , hair = '${hair}' , eyes = '${eyes}', isInfoSetted = 1  WHERE  authKey = '${req.cookies.authKey}'`;
+    let stmt = `UPDATE users SET city = '${city}', country = '${country}', chest = ${chest} , waist = ${waist} , hips = ${hips} , height = ${height} , age = ${age}  , skin = '${skin}' , hair = '${hair}' , eyes = '${eyes}', isInfoSetted = 1  WHERE  authKey = '${req.cookies.authKey}'`;
 
     connection.query(stmt, (err, results, fields) => {
         if (err) {
@@ -346,6 +372,8 @@ app.post('/api/setUserInfo', function (req, res) {
                 skin,
                 hair,
                 eyes,
+                city,
+                country,
                 needChanges: false,
                 isInfoSetted: true,
             })

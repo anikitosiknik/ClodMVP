@@ -4,8 +4,8 @@ import PropTypes, { InferProps } from "prop-types";
 import { userStringKeys } from "../../redux/types";
 import { StringInputType } from '../userForm/UserForm';
 
-function ColorInput (title: string, colors: {hex: string, name: string}[], key: userStringKeys): StringInputType {
-    const [selectedColor, changeColor] = useState('')
+function ColorInput (title: string, colors: {hex: string, name: string}[], key: userStringKeys, defaultValue?: string): StringInputType {
+    const [selectedColor, changeColor] = useState(defaultValue || '')
     
     return {
         element: (
@@ -16,7 +16,7 @@ function ColorInput (title: string, colors: {hex: string, name: string}[], key: 
                 </div>
             </div>
         ),
-        currentColor: selectedColor,
+        value: selectedColor,
         key
 
     }

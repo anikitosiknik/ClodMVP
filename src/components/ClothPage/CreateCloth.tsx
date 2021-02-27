@@ -21,7 +21,7 @@ function CreateCloth({ closeEvent }: InferProps<typeof CreateCloth.propTypes>) {
     if (typeRef.current) {
       const generatedCloth: createdCloth = {
         img: clothPicture,
-        color: colorInput.currentColor,
+        color: colorInput.value,
         type: typeRef.current.value,
         createdBy: user.mail,
       };

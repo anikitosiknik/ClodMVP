@@ -10,11 +10,14 @@ export interface userState {
   skin: string,
   hair: string,
   eyes: string,
+  country: string,
+  city: string,
   // style: string,
   needChanges: boolean,
   isInfoSetted: boolean,
   userPicture: string,
-  isMailCodeReady: boolean
+  isMailCodeReady: boolean,
+  error?: string,
 }
 
 export interface RootState {
@@ -29,7 +32,7 @@ export type Pages = "clothPage" | "lookPage"
 
 export type userKeys = keyof userState
 export type userNumberKeys = "chest" | "waist" | "hips" | "height" | "age"
-export type userStringKeys = "skin" | "hair" | "eyes"
+export type userStringKeys = "skin" | "hair" | "eyes" |  "country" | "city"
 
 
 
