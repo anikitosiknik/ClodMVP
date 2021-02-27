@@ -73,6 +73,7 @@ function ForgotPassword({
       <input
         className="inp"
         type="email"
+        autoComplete="email"
         ref={userMailRef}
         placeholder="Укажите эл. адрес"
         onChange={(event) => {
@@ -129,7 +130,7 @@ function ForgotPassword({
         </Modal>
       ) : null}
 
-      <button className="btn" onClick={() => sendCode()}>
+      <button className="btn" onClick={() => {sendCode(); }}>
         Отправить код
       </button>
     </div>

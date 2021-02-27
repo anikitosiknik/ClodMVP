@@ -90,6 +90,7 @@ function Create({ validate }: InferProps<typeof Create.propTypes>) {
       <input
         className="inp"
         type="email"
+        autoComplete="email"
         ref={userMailRef}
         placeholder="Укажите эл. адрес"
         onChange={(event) => {

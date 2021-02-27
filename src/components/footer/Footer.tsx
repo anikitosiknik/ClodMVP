@@ -14,7 +14,7 @@ function Footer({ navigate, currentPage }: InferProps<typeof Footer.propTypes>) 
     <footer className="footer">
       <button className={`btn ${currentPage === 'clothPage' ? 'clicked' : ''}`} onClick={() => navigateHandler('clothPage')}>Одежда</button>
       <button className={`btn ${currentPage === 'lookPage' ? 'clicked' : ''}`} onClick={() => navigateHandler('lookPage')}>Образы</button>
-      <button className={`btn`}>Календарь</button>
+      <button className={`btn soon`}>Календарь</button>
     </footer>
   );
 }

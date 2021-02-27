@@ -1,14 +1,12 @@
 .lookPage {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    grid-template-rows: 1fr 1fr 1fr 1fr;
     gap: 15px;
-    margin: 30px 25px;
-    align-content: center;
-    justify-content: center;
-    height: 100%;
-
-    
+    padding: 10px 6px;
+    /* justify-content: space-around; */
+    overflow-y: scroll;
+    flex: 1;
+    margin: 10px 0px;
 }
 
 .lookCategory {
@@ -27,6 +25,7 @@
 
 .lookCategoryImgContainer {
     width: 80%;
+    height: 88px;
     display: grid;
     grid-template-columns: 1fr 1fr;
     grid-template-rows: 1fr 1fr;

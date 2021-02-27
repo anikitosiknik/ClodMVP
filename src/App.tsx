@@ -6,6 +6,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "./redux/types";
 import { fetchAutoLogin } from "./redux/reducers/user";
 import AppContainer from "./components/appContainer/AppContainer";
+import ErrorModals from "./components/appContainer/ErrorModals";
 
 function App() {
   const userData = useSelector((state: RootState) => state.user);
@@ -19,6 +20,7 @@ function App() {
       <div className="App">
         {userData.logined ? <AppContainer /> : <LoginPage />}
       </div>
+      <ErrorModals />
       <div id="modal-root" />
     </>
   );

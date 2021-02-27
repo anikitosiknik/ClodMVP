@@ -25,6 +25,8 @@ const initialState: userState = {
   skin: "",
   hair: "",
   eyes: "",
+  country: "",
+  city: "",
   // style: '',
   needChanges: false,
   isInfoSetted: false,

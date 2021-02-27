@@ -23,8 +23,16 @@ export  const EYES_COLORS = [
 ]
 
 export const SKIN_COLORS = [
-    {hex: '#ffffff', name: 'white'}, 
-    {hex: '#81634e', name: 'brown'},
+    {hex: '#F8D5C2', name: '#F8D5C2'}, 
+    {hex: '#EFBBA6', name: '#EFBBA6'}, 
+    {hex: '#E6AA86', name: '#E6AA86'}, 
+    {hex: '#D2946B', name: '#D2946B'}, 
+    {hex: '#C78E63', name: '#C78E63'}, 
+    {hex: '#AE7142', name: '#AE7142'}, 
+    {hex: '#AB5D33', name: '#AB5D33'}, 
+    {hex: '#845736', name: '#845736'}, 
+    {hex: '#664B32', name: '#664B32'}, 
+    {hex: '#4F3425', name: '#4F3425'}, 
 ]
 
 export const CLOTH_TYPES = [
