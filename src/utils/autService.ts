@@ -17,6 +17,20 @@ export function registerUserRequest(name: string, mail: string, password: string
     })
     
 }
+
+export function changePasswordRequest(payload:  {mail: string, password: string, code: string} ) {
+    const baseUrl = getHref();
+
+    return fetch(`${baseUrl}/reg`, {
+        method: 'post',
+        body: JSON.stringify(payload),
+        mode: 'cors',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+    })
+    
+}
 export function setMailCodeRequest(name: string, mail: string, password: string) {
     const baseUrl = getHref();
 

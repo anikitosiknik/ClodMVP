@@ -1,6 +1,7 @@
 import React, { useRef, useState } from "react";
 import logo from "../../imgs/logo.svg";
 import Create from "./Create";
+import ForgotPassword from "./ForgotPass";
 import Login from "./Login";
 import "./LoginPage.css";
 
@@ -58,12 +59,16 @@ function LoginPage() {
           >
             Войти
           </button>
+          <p onClick={()=>{changeStatus("forgot")}}>
+            забыли пароль?
+          </p>
         </div>
+        
       ) : pageStatus === "create" ? (
         <Create validate={validate}></Create>
-      ) : (
+      ) : pageStatus !== 'forgot' ? (
         <Login validate={validate}></Login>
-      )}
+      ) : <ForgotPassword validate={validate} />}
     </div>
   );
 }

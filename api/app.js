@@ -89,13 +89,13 @@ app.post('/api/setmailcode', function (req, res) {
 })
 
 app.post('/api/checkmailcode', function (req, res) {
-    const {code, mail} = req.body
+    const { code, mail } = req.body
     let stmt = `SELECT * FROM mail WHERE code = '${code}' AND mail = '${mail}'`
     connection.query(stmt, (err, results, fields) => {
-        if(err) {
-            res.send(400)
+        if (err || !results.length) {
+            return res.send(400)
         }
-        
+
         res.send(200)
     })
 })
@@ -103,6 +103,67 @@ app.post('/api/checkmailcode', function (req, res) {
 
 app.post('/api/reg', function (req, res) {
     const authKey = generateAuthToken();
+    const { name, mail, password, code } = req.body;
+    if (code) {
+        let stmt = `SELECT mail FROM mail WHERE code = '${code}'`;
+        connection.query(stmt, (err, results, fields) => {
+            if (err || !results.length) {
+                if (err.code === "ER_DUP_ENTRY") {
+                    res.status(409)
+                    res.send({
+                        error: 'Duplicate Mail'
+                    });
+                }
+
+
+                else res.send(err)
+                return console.error(err.message);
+            }
+            if (results[0].mail === mail) {
+                let stmt = `UPDATE users SET authKey = '${authKey}' , password = '${getHashedPassword(password)}' WHERE mail = '${mail}'; SELECT * FROM users WHERE mail = '${req.body.mail}'`
+                connection.query(stmt, (err, results, fields) => {
+                    if (err) {
+                        if (err.code === "ER_DUP_ENTRY") {
+                            res.status(409)
+                            res.send({
+                                error: 'Duplicate Mail'
+                            });
+                        }
+
+
+                        else res.send(err)
+                        return console.error(err.message);
+                    }
+                    res.cookie('authKey', authKey, { maxAge: 25000000, httpOnly: true, sameSite: "Lax" })
+                    const { name, mail, isInfoSetted, chest,
+                        waist,
+                        hips,
+                        height,
+                        age,
+                        skin,
+                        hair,
+                        eyes,
+                        userPicture } = results[1][0];
+                    res.send({
+                        name,
+                        mail,
+                        chest,
+                        waist,
+                        hips,
+                        height,
+                        age,
+                        skin,
+                        hair,
+                        eyes,
+                        userPicture,
+                        logined: true,
+                        isInfoSetted: !!isInfoSetted
+                    })
+                });
+            }
+        });
+        return;
+    }
     let stmt = `INSERT INTO users (name, mail, password, authKey) VALUES ('${req.body.name}', '${req.body.mail}', '${getHashedPassword(req.body.password)}', '${authKey}')`;
 
     connection.query(stmt, (err, results, fields) => {
@@ -119,6 +180,7 @@ app.post('/api/reg', function (req, res) {
             return console.error(err.message);
         }
         res.cookie('authKey', authKey, { maxAge: 25000000, httpOnly: true, sameSite: "Lax" })
+        
         res.status(201)
         res.send({
             name: req.body.name,
