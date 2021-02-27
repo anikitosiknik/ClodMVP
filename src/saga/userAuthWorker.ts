@@ -1,9 +1,9 @@
 import { all, call, put, takeEvery } from "redux-saga/effects";
-import { FETCH_AUTOLOGIN_USER, FETCH_SET_MAILCODE, FETCH_LOGIN_USER, FETCH_LOGOUT, FETCH_REGISTER_USER, FETCH_CHECK_MAILCODE } from "../redux/actionTypes";
+import { FETCH_AUTOLOGIN_USER, FETCH_SET_MAILCODE, FETCH_LOGIN_USER, FETCH_LOGOUT, FETCH_REGISTER_USER, FETCH_CHECK_MAILCODE, FETCH_CHANGE_PASSWORD } from "../redux/actionTypes";
 import { fetchGetCloths, updateCloths } from "../redux/reducers/cloth";
 import { fetchGetLooks } from "../redux/reducers/look";
 import {  fetchRegister, setMailCodeStatus, setUser } from "../redux/reducers/user";
-import { registerUserRequest, loginUserRequest, autoLoginRequest, logOutRequest, setMailCodeRequest, checkMailCodeRequest } from "../utils/autService";
+import { registerUserRequest, loginUserRequest, autoLoginRequest, logOutRequest, setMailCodeRequest, checkMailCodeRequest, changePasswordRequest } from "../utils/autService";
 
 
 
@@ -75,6 +75,16 @@ export function* watchLogOutUser() {
     yield takeEvery(FETCH_LOGOUT, logOutUserAsync)
 }
 
+export function* changePasswordAsync({ payload } : { type: string, forceReload: any, payload: {mail: string,password: string, code: string}}) {
+    const data = yield call(()=>changePasswordRequest(payload));
+    const json = yield call(() => new Promise(res => res(data.json())))
+    yield put(setUser(json));
+}
+
+export function* watchChangePassword() {
+    yield takeEvery(FETCH_CHANGE_PASSWORD, changePasswordAsync)
+}
+
 export default function* () {
     yield all([
         watchCheckMailCode(),
@@ -83,5 +93,6 @@ export default function* () {
         watchRegisterUser(),
         watchAutoLoginUser(),
         watchLogOutUser(),
+        watchChangePassword()
     ])
 }

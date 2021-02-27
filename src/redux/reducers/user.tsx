@@ -9,6 +9,7 @@ import {
   FETCH_SET_MAILCODE,
   SET_MAILCODE_STATUS,
   FETCH_CHECK_MAILCODE,
+  FETCH_CHANGE_PASSWORD,
 } from "../actionTypes";
 import { userState } from "../types";
 
@@ -87,3 +88,8 @@ export const fetchSetUserPicture = (userPicture: string) => ({
   type: FETCH_SET_USER_PICTURE,
   userPicture,
 });
+
+export const fetchChangePassword = (payload: { mail: string; password: string, code: string }) => ({
+  type: FETCH_CHANGE_PASSWORD,
+  payload,
+})
