@@ -8,7 +8,7 @@ var bodyParser = require('body-parser');
 var cookieParser = require('cookie-parser');
 var crypto = require('crypto');
 var mysql = require('mysql');
-const nodemailer = require('nodemailer')
+
 
 mysql_host = 'localhost'
 mysql_user = 'clodsite_anikitosiknik'
@@ -36,7 +36,7 @@ const cert = fs.readFileSync('./apiserver.crt');
 
 
 
-
+const nodemailer = require('nodemailer')
 app = express()
 app.use(express.json({ limit: '100mb' }));
 app.use(cookieParser());
@@ -58,8 +58,8 @@ app.post('/api/setmailcode', function (req, res) {
     const a = transporter.sendMail({
         from: 'anikitosiknik@gmail.com',
         to: mail,
-        subject: 'Attachments',
-        text: `This message with attachments.  ${code}`,
+        subject: 'Авторизация',
+        text: `Ваш код:  ${code}`,
 
     }).then(() => {
         let stmt = `INSERT INTO mail (mail ,code) VALUES ('${mail}', '${code}') ON DUPLICATE KEY UPDATE  code = '${code}';`
