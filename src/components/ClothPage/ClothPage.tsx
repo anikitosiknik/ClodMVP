@@ -55,29 +55,29 @@ function ClothPage() {
         />
       ) : null}
 
-        <ClothFilters
-          createCloth={() => changeClothCreating(true)}
-          changeFilter={changeFilter}
-          filterCloth={filterCloth}
-        />
-        {getChoosedClothList().length > 1 ? (
-          <LookButtons choosedCloth={getChoosedClothList()} />
-        ) : (
-          <></>
-        )}
-        {Object.keys(cloths) ? (
-          <ClothList clothList={getClothsList()} />
-        ) : (
-          <div
-            className="addClothButton"
-            onClick={() => changeClothCreating(true)}
-          >
-            <img src={plusIcon} alt="" />
-            <p className="addClothText">
-              Добавьте фотографии <br /> Вашей одежды
-            </p>
-          </div>
-        )}
+      <ClothFilters
+        createCloth={() => changeClothCreating(true)}
+        changeFilter={changeFilter}
+        filterCloth={filterCloth}
+      />
+      {getChoosedClothList().length > 1 ? (
+        <LookButtons choosedCloth={getChoosedClothList()} />
+      ) : (
+        <></>
+      )}
+      {Object.keys(cloths) ? (
+        <ClothList clothList={getClothsList()} />
+      ) : (
+        <div
+          className="addClothButton"
+          onClick={() => changeClothCreating(true)}
+        >
+          <img src={plusIcon} alt="" />
+          <p className="addClothText">
+            Добавьте фотографии <br /> Вашей одежды
+          </p>
+        </div>
+      )}
     </>
   );
 }
@@ -89,25 +89,31 @@ function ClothList({ clothList }: { clothList: clothList }) {
 
   return (
     <div className="clothList">
-      {clothList.map((cloth: clothChoosedType) => {
-        return (
-          <div
-            key={cloth.id}
-            className={`clothItem ${cloth.choosed ? "choosed" : ""}`}
-          >
-            <img
-              src={ChoosedIcon}
-              alt=""
-              className={`clothChoosed ${cloth.choosed ? "choosed" : ""}`}
-            />
-            <img
-              className={"clothImage"}
-              onClick={() => dispatch(toggleChoosedCloth(cloth.id))}
-              src={cloth.img}
-            />
-          </div>
-        );
-      })}
+      {[0, 1, 2].map((row) => (
+        <div key={row} className="clothListColumn">
+          {clothList
+            .filter((c, index) => (index + row) % 3 === 0)
+            .map((cloth: clothChoosedType) => {
+              return (
+                <div
+                  key={cloth.id}
+                  className={`clothItem ${cloth.choosed ? "choosed" : ""}`}
+                >
+                  <img
+                    src={ChoosedIcon}
+                    alt=""
+                    className={`clothChoosed ${cloth.choosed ? "choosed" : ""}`}
+                  />
+                  <img
+                    className={"clothImage"}
+                    onClick={() => dispatch(toggleChoosedCloth(cloth.id))}
+                    src={cloth.img}
+                  />
+                </div>
+              );
+            })}
+        </div>
+      ))}
     </div>
   );
 }
@@ -134,7 +140,10 @@ function LookButtons({ choosedCloth }: { choosedCloth: clothList }) {
     <Modal closeEvent={() => changeCreateModalOpened(false)}>
       <div className="createModal">
         <h2 className="createModalHeader">Мы приняли вашу заявку</h2>
-        <h3 className="createModalText"> Clod как можно быстрее подберёт вам лучшие образы</h3>
+        <h3 className="createModalText">
+          {" "}
+          Clod как можно быстрее подберёт вам лучшие образы
+        </h3>
         <p className="createModalWarning">Это займет не более 12 часов</p>
       </div>
     </Modal>

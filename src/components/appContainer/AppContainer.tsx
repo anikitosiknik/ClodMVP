@@ -7,6 +7,7 @@ import UserForm from "../userForm/UserForm";
 
 import { Pages } from "../../redux/types";
 import LookPage from "../LookPage/LookPage";
+import AdminPage from "../adminPage/AdminPage";
 
 function AppContainer() {
   const user = useSelector((store: RootState) => store.user);
@@ -21,6 +22,7 @@ function AppContainer() {
         <>
           {currentPage === "clothPage" ? <ClothPage /> : null}
           {currentPage === "lookPage" ? <LookPage /> : null}
+          {currentPage === "admin" ? <AdminPage /> : null}
           <Footer navigate={changeCurrentPage} currentPage={currentPage} />
         </>
       )}

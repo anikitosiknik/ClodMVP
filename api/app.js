@@ -1,5 +1,3 @@
-
-
 const express = require('express');
 const https = require('https');
 const fs = require('fs');
@@ -239,6 +237,7 @@ app.post('/api/login', function (req, res) {
             eyes,
             city,
             country,
+            isAdmin,
             userPicture } = results[1][0];
         res.send({
             name,
@@ -255,6 +254,7 @@ app.post('/api/login', function (req, res) {
             country,
             userPicture,
             logined: true,
+            isAdmin: !!isAdmin,
             isInfoSetted: !!isInfoSetted
         })
     });
@@ -290,6 +290,7 @@ app.get('/api/autoLogin', function (req, res) {
             eyes,
             city,
             country,
+            isAdmin,
             userPicture } = results[0];
         res.send({
             name,
@@ -305,6 +306,7 @@ app.get('/api/autoLogin', function (req, res) {
             city,
             country,
             userPicture,
+            isAdmin: !!isAdmin,
             isInfoSetted: !!isInfoSetted,
             logined: true,
         })
@@ -750,8 +752,102 @@ app.put('/api/looksLike', function (req, res) {
 })
 
 
+app.get('/api/looksAdmin', function (req, res) {
+    if (!req.cookies) {
+        res.status(401)
+        res.send({
+            error: 'not auth'
+        })
+        return;
+    }
+
+    let stmt = `SELECT isAdmin FROM users WHERE authKey = '${req.cookies.authKey}'`
+    connection.query(stmt, (err, results, fields) => {
+        if (err) {
+            if (err.code === "ER_DUP_ENTRY") {
+                res.status(409)
+                res.send({
+                    error: 'error please contact admin'
+                });
+            }
+            else res.send(err)
+            return console.error(err.message);
+        }
+        if(results[0] && results[0].isAdmin) {
+            let stmt = `SELECT * FROM look WHERE ready = 0`;
+
+            connection.query(stmt, (err, results, fields) => {
+                if (err) {
+                    if (err.code === "ER_DUP_ENTRY") {
+                        res.status(409)
+                        res.send({
+                            error: 'error please contact admin'
+                        });
+                    }
+                    else res.send(err)
+                    return console.error(err.message);
+                }
+                    res.send(results)
+            })
+        }
+        else res.send({
+            isAdmin: false
+        })
+    })
+})
 
 
+app.post('/api/updateLookAdmin', function (req, res) {
+    if (!req.cookies) {
+        res.status(401)
+        res.send({
+            error: 'not auth'
+        })
+        return;
+    }
+
+    let stmt = `SELECT isAdmin FROM users WHERE authKey = '${req.cookies.authKey}'`
+    connection.query(stmt, (err, results, fields) => {
+        if (err) {
+            if (err.code === "ER_DUP_ENTRY") {
+                res.status(409)
+                res.send({
+                    error: 'error please contact admin'
+                });
+            }
+            else res.send(err)
+            return console.error(err.message);
+        }
+        if(results[0] && results[0].isAdmin) {
+           
+
+            const {clothDelete, clothUpd, id, img} = req.body;
+            let stmt = `UPDATE look SET  img = '${img}', ready = 1 WHERE  id = '${id}';`
+            clothDelete.forEach(clothId=>{
+                 stmt = stmt + ` DELETE FROM look_has_cloth WHERE cloth_id = '${clothId}' AND  look_id = '${id}';`
+            })
+            clothUpd.forEach(clothUpdObj => {
+                 stmt = stmt + ` UPDATE cloth SET img = '${clothUpdObj.img}' WHERE id = '${clothUpdObj.id}';`
+            })
+            connection.query(stmt, (err, results, fields) => {
+                if (err) {
+                    if (err.code === "ER_DUP_ENTRY") {
+                        res.status(409)
+                        res.send({
+                            error: 'error please contact admin'
+                        });
+                    }
+                    else res.send(err)
+                    return console.error(err.message);
+                }
+                    res.send(results)
+            })
+        }
+        else res.send({
+            isAdmin: false
+        })
+    })
+})
 
 
 

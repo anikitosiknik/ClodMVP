@@ -1,4 +1,5 @@
 import { all } from 'redux-saga/effects'
+import adminWorker from './adminWorker';
 import clothWorker from './clothWorker';
 import lookWorker from './lookWorker';
 import authWatcher from './userAuthWorker'
@@ -15,7 +16,7 @@ export default function* rootSaga() {
         authWatcher(),
         userInfoWatcher(),
         clothWorker(),
-        lookWorker()
-
+        lookWorker(),
+        adminWorker()
     ])
 }

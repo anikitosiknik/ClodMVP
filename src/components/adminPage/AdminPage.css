@@ -1,0 +1,8 @@
+.lookModalHeader img.lookModalHeaderImage {
+    width: auto;
+    height: 300px;
+}
+
+#uploadLookPicture, .updateClothPicture {
+    display: none;
+}
