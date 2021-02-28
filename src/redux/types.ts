@@ -18,17 +18,19 @@ export interface userState {
   userPicture: string,
   isMailCodeReady: boolean,
   error?: string,
+  isAdmin?: boolean
 }
 
 export interface RootState {
     user: userState,
     cloth: clothState,
-    look: lookState
+    look: lookState,
+    admin: lookState
 }
 
 
 
-export type Pages = "clothPage" | "lookPage"
+export type Pages = "clothPage" | "lookPage" | "admin"
 
 export type userKeys = keyof userState
 export type userNumberKeys = "chest" | "waist" | "hips" | "height" | "age"

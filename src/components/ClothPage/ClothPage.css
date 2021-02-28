@@ -14,8 +14,13 @@
     margin-bottom: 15px;
 }
 
+.clothList .clothListColumn {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
 .clothList .clothItem {
-    height: 100%;
     border: 3px solid #C4C4C4;
     box-sizing: border-box;
     border-radius: 15px;

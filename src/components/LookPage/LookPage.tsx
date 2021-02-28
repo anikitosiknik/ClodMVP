@@ -137,7 +137,7 @@ const emptyLook = (): Look => ({
   type: "clod",
 });
 
-function CategoryPage({ page }: { page: categoryPage }) {
+ function CategoryPage({ page }: { page: categoryPage }) {
   const [lookModal, changeLookModal] = useState<Look>(emptyLook());
   return (
     <>
