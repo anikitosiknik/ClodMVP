@@ -43,11 +43,11 @@ export type createdCloth = {
   img: string
   color: string
   type: string
+  link?: string
 };
 
 export type clothType = createdCloth & {
   id: string,
-  link?: string
 } 
 
 export type clothChoosedType = clothType & {

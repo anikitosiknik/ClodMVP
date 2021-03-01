@@ -773,7 +773,7 @@ app.get('/api/looksAdmin', function (req, res) {
             else res.send(err)
             return console.error(err.message);
         }
-        if(results[0] && results[0].isAdmin) {
+        if (results[0] && results[0].isAdmin) {
             let stmt = `SELECT * FROM look WHERE ready = 0`;
 
             connection.query(stmt, (err, results, fields) => {
@@ -787,7 +787,7 @@ app.get('/api/looksAdmin', function (req, res) {
                     else res.send(err)
                     return console.error(err.message);
                 }
-                    res.send(results)
+                res.send(results)
             })
         }
         else res.send({
@@ -818,16 +818,20 @@ app.post('/api/updateLookAdmin', function (req, res) {
             else res.send(err)
             return console.error(err.message);
         }
-        if(results[0] && results[0].isAdmin) {
-           
+        if (results[0] && results[0].isAdmin) {
 
-            const {clothDelete, clothUpd, id, img} = req.body;
+
+            const { clothDelete, clothUpd, clothCreate, id, img } = req.body;
             let stmt = `UPDATE look SET  img = '${img}', ready = 1 WHERE  id = '${id}';`
-            clothDelete.forEach(clothId=>{
-                 stmt = stmt + ` DELETE FROM look_has_cloth WHERE cloth_id = '${clothId}' AND  look_id = '${id}';`
+            clothDelete.forEach(clothId => {
+                stmt = stmt + ` DELETE FROM look_has_cloth WHERE cloth_id = '${clothId}' AND  look_id = '${id}';`
             })
             clothUpd.forEach(clothUpdObj => {
-                 stmt = stmt + ` UPDATE cloth SET img = '${clothUpdObj.img}' WHERE id = '${clothUpdObj.id}';`
+                stmt = stmt + ` UPDATE cloth SET img = '${clothUpdObj.img}' WHERE id = '${clothUpdObj.id}';`
+            })
+            clothCreate.forEach(cloth => {
+                const clothId = generateAuthToken()
+                stmt = stmt + `INSERT INTO cloth (id, img, color, type, createdBy, link) VALUES ('${clothId}', '${cloth.img}', '${cloth.color}', '${cloth.type}', '${cloth.createdBy}', '${cloth.link}');  INSERT INTO look_has_cloth (look_id, cloth_id) VALUES ('${id}', '${clothId}');`;
             })
             connection.query(stmt, (err, results, fields) => {
                 if (err) {
@@ -840,7 +844,49 @@ app.post('/api/updateLookAdmin', function (req, res) {
                     else res.send(err)
                     return console.error(err.message);
                 }
-                    res.send(results)
+                res.send(results)
+            })
+        }
+        else res.send({
+            isAdmin: false
+        })
+    })
+})
+
+app.get('/api/user', function (req, res) {
+    if (!req.cookies) {
+        res.status(401)
+        res.send({
+            error: 'not auth'
+        })
+        return;
+    }
+
+    let stmt = `SELECT isAdmin FROM users WHERE authKey = '${req.cookies.authKey}'`
+    connection.query(stmt, (err, results, fields) => {
+        if (err) {
+            if (err.code === "ER_DUP_ENTRY") {
+                res.status(409)
+                res.send({
+                    error: 'error please contact admin'
+                });
+            }
+            else res.send(err)
+            return console.error(err.message);
+        }
+        if (results[0] && results[0].isAdmin) {
+            let stmt = `SELECT * FROM users WHERE mail = '${req.query.mail}'`
+
+
+            connection.query(stmt, (err, results, fields) => {
+                if (err) {
+                    res.send(err)
+                    return console.error(err.message);
+                }
+                const { mail, chest, waist,hair, hips, height, age, skin ,eyes, userPicture, country, city} = results[0]
+                res.send({
+                    mail, chest, waist,hair, hips, height, age, skin ,eyes, userPicture, country, city
+                })
             })
         }
         else res.send({

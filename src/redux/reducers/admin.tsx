@@ -41,6 +41,7 @@ export const fetchUpdateLookAdmin = (payload: UpdateLook) => ({
     type: FETCH_UPDATE_LOOK_ADMIN,
     payload
 })
+
 // export const fetchSetLookImgAdmin = (payload: {img: string, id: string}) => ({
 //     type: FETCH_SET_LOOK_IMG_ADMIN,
 //     payload
