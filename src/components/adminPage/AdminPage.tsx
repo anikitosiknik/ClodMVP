@@ -1,7 +1,16 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchGetLooksAdmin, fetchUpdateLookAdmin } from "../../redux/reducers/admin";
-import { Look, lookList, RootState } from "../../redux/types";
+import {
+  fetchGetLooksAdmin,
+  fetchUpdateLookAdmin,
+} from "../../redux/reducers/admin";
+import {
+  createdCloth,
+  Look,
+  lookList,
+  RootState,
+  userState,
+} from "../../redux/types";
 import { looksObjectToList } from "../../utils/lookService";
 import Modal from "../Modal/Modal";
 import backIcon from "../../imgs/backIcon.svg";
@@ -14,11 +23,13 @@ import {
   fetchDeleteLooks,
   fetchToggleLikeLook,
 } from "../../redux/reducers/look";
-import { CLOTH_TYPES } from "../../utils/const";
+import { CLOTH_TYPES, EYES_COLORS, HAIR_COLORS } from "../../utils/const";
 
 import plus from "../../imgs/plus.svg";
 import { fetchGetClothsById } from "../../redux/reducers/cloth";
 import { getImgFromFile } from "../../utils/fileService";
+import { getUserAdminRequest } from "../../utils/adminService";
+import ColorInput from "../colorInput/ColorInput";
 
 function AdminPage() {
   const dispatch = useDispatch();
@@ -81,11 +92,33 @@ CLOTH_TYPES.forEach((type) => {
   clothTypeObject[type.value] = type.title;
 });
 
+const initialState: userState = {
+  logined: false,
+  name: "",
+  mail: "",
+  chest: 0,
+  waist: 0,
+  hips: 0,
+  height: 0,
+  age: 0,
+  skin: "",
+  hair: "",
+  eyes: "",
+  country: "",
+  city: "",
+  // style: '',
+  needChanges: false,
+  isInfoSetted: false,
+  userPicture: "",
+  isMailCodeReady: false,
+};
+
 export type UpdateLook = {
   img: string;
   id: string;
   clothUpd: { img: string; id: string }[];
   clothDelete: string[];
+  clothCreate: createdCloth[];
 };
 
 export function LookModal({
@@ -97,17 +130,36 @@ export function LookModal({
 }) {
   const cloths = useSelector((store: RootState) => store.cloth);
   const dispatch = useDispatch();
+  const [user, changeUser] = useState<userState>(initialState);
+
   useEffect(() => {
     const searchIds = look.clothIds.filter((id) => !cloths[id]);
     searchIds.length ? dispatch(fetchGetClothsById(searchIds)) : null;
   }, [look.clothIds]);
+
+  useEffect(() => {
+    getUserAdminRequest(look.createdBy)
+      .then((res) => res.json())
+      .then((res) => {
+        changeUser(res);
+      });
+  }, []);
 
   const [updatedLook, updatedLookChange] = useState<UpdateLook>({
     id: look.id,
     img: "",
     clothUpd: [],
     clothDelete: [],
+    clothCreate: [],
   });
+
+  const updateCreateCloth = (look: createdCloth) => {
+    console.log(updatedLook);
+    updatedLookChange({
+      ...updatedLook,
+      clothCreate: [...updatedLook.clothCreate, look],
+    });
+  };
 
   const uplodaLookPicture = (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = event.target.files;
@@ -160,6 +212,48 @@ export function LookModal({
             alt=""
           />
         </div>
+        <div className="adminUser">
+          <img src={user.userPicture} alt="" className="adminUserImage" />
+          <div className="adminUserInfo">
+            <div>mail: {user.mail}</div>
+            <div>chest: {user.chest}</div>
+            <div>waist: {user.waist}</div>
+            <div>hips: {user.hips}</div>
+            <div>height: {user.height}</div>
+            <div>age: {user.age}</div>
+            <div>
+              skin:
+              <div
+                className="colorCircle"
+                style={{ backgroundColor: user.skin }}
+              ></div>
+            </div>
+            <div>
+              eyes:
+              <div
+                className="colorCircle"
+                style={{
+                  backgroundColor: EYES_COLORS.find(
+                    (el) => el.name === user.eyes
+                  )?.hex,
+                }}
+              ></div>
+            </div>
+            <div>
+              hair:
+              <div
+                className="colorCircle"
+                style={{
+                  backgroundColor: HAIR_COLORS.find(
+                    (el) => el.name === user.hair
+                  )?.hex,
+                }}
+              ></div>
+            </div>
+            <div> countrye: {user.country}</div>
+            <div> city: {user.city}</div>
+          </div>
+        </div>
         <div className="lookModalHeader">
           <input
             type="file"
@@ -193,7 +287,7 @@ export function LookModal({
                   />
                   <label htmlFor={`updateClothPicture${id}`}>
                     <img
-                      className="lookModalImg"
+                      className="lookModalImgAdmin"
                       src={
                         updatedLook.clothUpd.find((cloth) => {
                           return cloth.id === id;
@@ -226,9 +320,90 @@ export function LookModal({
                 </div>
               );
             })}
+          {look.type === 'clod+' ?  updatedLook.clothCreate.map((el, i) => {
+            return (
+              <div key={i} className="createdCloth">
+                <img src={el.img} alt="" />
+                <div>
+                  <div>type: {el.type}</div>
+                  <div>link: {el.link}</div>
+                  <div>
+                    hair:
+                    <div
+                      className="colorCircle"
+                      style={{
+                        backgroundColor: HAIR_COLORS.find(
+                          (elem) => elem.name === el.color
+                        )?.hex,
+                      }}
+                    ></div>
+                  </div>
+                </div>
+              </div>
+            );
+          }) : null}
+          {look.type === 'clod+' ? <CreateCloth create={updateCreateCloth} /> : null}
         </div>
-        <button className="btn" onClick={() => dispatch(fetchUpdateLookAdmin(updatedLook))}>Отправить</button>
+        <button
+          className="btn"
+          onClick={() =>{ dispatch(fetchUpdateLookAdmin(updatedLook));  closeEvent(); }}
+        >
+          Отправить
+        </button>
       </div>
     </Modal>
+  );
+}
+
+function CreateCloth({ create }: { create: (look: createdCloth) => void }) {
+  const [clothPicture, changeClothPicture] = useState("");
+  const colorInput = ColorInput("Выберите цвет", HAIR_COLORS, "hair");
+  const typeRef = useRef<HTMLSelectElement>(null);
+  const [link, changeLink] = useState("");
+
+  const submitForm = () => {
+    if (typeRef.current) {
+      const generatedCloth: createdCloth = {
+        img: clothPicture,
+        color: colorInput.value,
+        type: typeRef.current.value,
+        createdBy: 'admin',
+        link: link,
+      };
+      create(generatedCloth);
+    }
+  };
+
+  const uploadPicture = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const files = event.target.files;
+    if (!files || !files[0]) return;
+    const file = files[0];
+    getImgFromFile(file).then((img) => {
+      changeClothPicture(img);
+    });
+  };
+  return (
+    <div className="createCloth">
+      <label htmlFor="uploadClothPicture">
+        <img src={clothPicture || plus} alt="" />
+      </label>
+      <input type="file" id="uploadClothPicture" onChange={uploadPicture} />
+      <select ref={typeRef}>
+        {CLOTH_TYPES.map((cloth) => (
+          <option key={cloth.title} value={cloth.value}>
+            {cloth.title}
+          </option>
+        ))}
+      </select>
+      {colorInput.element}
+      <input
+        onChange={(e) => changeLink(e.target.value)}
+        className="createClothUrl"
+        type="text"
+      />
+      <button className="btn sm" onClick={() => submitForm()}>
+        Сохранить
+      </button>
+    </div>
   );
 }

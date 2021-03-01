@@ -25,3 +25,14 @@ export function updateLookAdminRequest(payload: UpdateLook) {
         },
     })
 }
+
+export function getUserAdminRequest(mail: string) {
+    const baseUrl = getHref();
+
+    return fetch(`${baseUrl}/user?mail=${mail}`,{
+        mode: 'cors',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+    })
+}
