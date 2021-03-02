@@ -1,16 +1,10 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
   fetchGetLooksAdmin,
   fetchUpdateLookAdmin,
 } from "../../redux/reducers/admin";
-import {
-  createdCloth,
-  Look,
-  lookList,
-  RootState,
-  userState,
-} from "../../redux/types";
+import { Look, lookList, RootState, userState } from "../../redux/types";
 import { looksObjectToList } from "../../utils/lookService";
 import Modal from "../Modal/Modal";
 import backIcon from "../../imgs/backIcon.svg";
@@ -29,7 +23,8 @@ import plus from "../../imgs/plus.svg";
 import { fetchGetClothsById } from "../../redux/reducers/cloth";
 import { getImgFromFile } from "../../utils/fileService";
 import { getUserAdminRequest } from "../../utils/adminService";
-import ColorInput from "../colorInput/ColorInput";
+import { ClothType, CreatedClothType } from "../../utils/clothsService";
+import CreateCloth from "../ClothPage/CreateCloth";
 
 function AdminPage() {
   const dispatch = useDispatch();
@@ -111,6 +106,7 @@ const initialState: userState = {
   isInfoSetted: false,
   userPicture: "",
   isMailCodeReady: false,
+  choosedImages: "",
 };
 
 export type UpdateLook = {
@@ -118,7 +114,7 @@ export type UpdateLook = {
   id: string;
   clothUpd: { img: string; id: string }[];
   clothDelete: string[];
-  clothCreate: createdCloth[];
+  clothCreate: ClothType[];
 };
 
 export function LookModal({
@@ -153,7 +149,7 @@ export function LookModal({
     clothCreate: [],
   });
 
-  const updateCreateCloth = (look: createdCloth) => {
+  const updateCreateCloth = (look: CreatedClothType) => {
     console.log(updatedLook);
     updatedLookChange({
       ...updatedLook,
@@ -221,6 +217,7 @@ export function LookModal({
             <div>hips: {user.hips}</div>
             <div>height: {user.height}</div>
             <div>age: {user.age}</div>
+            <div>likes: {user.choosedImages}</div>
             <div>
               skin:
               <div
@@ -320,33 +317,40 @@ export function LookModal({
                 </div>
               );
             })}
-          {look.type === 'clod+' ?  updatedLook.clothCreate.map((el, i) => {
-            return (
-              <div key={i} className="createdCloth">
-                <img src={el.img} alt="" />
-                <div>
-                  <div>type: {el.type}</div>
-                  <div>link: {el.link}</div>
-                  <div>
-                    hair:
-                    <div
-                      className="colorCircle"
-                      style={{
-                        backgroundColor: HAIR_COLORS.find(
-                          (elem) => elem.name === el.color
-                        )?.hex,
-                      }}
-                    ></div>
+          {look.type === "clod+"
+            ? updatedLook.clothCreate.map((el, i) => {
+                return (
+                  <div key={i} className="createdCloth">
+                    <img src={el.img} alt="" />
+                    <div>
+                      <div>type: {el.type}</div>
+                      <div>link: {el.link}</div>
+                      <div>
+                        hair:
+                        <div
+                          className="colorCircle"
+                          style={{
+                            backgroundColor: HAIR_COLORS.find(
+                              (elem) => elem.name === el.color
+                            )?.hex,
+                          }}
+                        ></div>
+                      </div>
+                    </div>
                   </div>
-                </div>
-              </div>
-            );
-          }) : null}
-          {look.type === 'clod+' ? <CreateCloth create={updateCreateCloth} /> : null}
+                );
+              })
+            : null}
+          {look.type === "clod+" ? (
+            <CreateClothAdmin create={updateCreateCloth} />
+          ) : null}
         </div>
         <button
           className="btn"
-          onClick={() =>{ dispatch(fetchUpdateLookAdmin(updatedLook));  closeEvent(); }}
+          onClick={() => {
+            dispatch(fetchUpdateLookAdmin(updatedLook));
+            closeEvent();
+          }}
         >
           Отправить
         </button>
@@ -355,55 +359,27 @@ export function LookModal({
   );
 }
 
-function CreateCloth({ create }: { create: (look: createdCloth) => void }) {
-  const [clothPicture, changeClothPicture] = useState("");
-  const colorInput = ColorInput("Выберите цвет", HAIR_COLORS, "hair");
-  const typeRef = useRef<HTMLSelectElement>(null);
+function CreateClothAdmin({
+  create,
+}: {
+  create: (look: CreatedClothType) => void;
+}) {
   const [link, changeLink] = useState("");
 
-  const submitForm = () => {
-    if (typeRef.current) {
-      const generatedCloth: createdCloth = {
-        img: clothPicture,
-        color: colorInput.value,
-        type: typeRef.current.value,
-        createdBy: 'admin',
-        link: link,
-      };
-      create(generatedCloth);
-    }
+  const submitForm = (cloth: CreatedClothType) => {
+    cloth.link = link;
+    create(cloth);
   };
 
-  const uploadPicture = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const files = event.target.files;
-    if (!files || !files[0]) return;
-    const file = files[0];
-    getImgFromFile(file).then((img) => {
-      changeClothPicture(img);
-    });
-  };
   return (
-    <div className="createCloth">
-      <label htmlFor="uploadClothPicture">
-        <img src={clothPicture || plus} alt="" />
-      </label>
-      <input type="file" id="uploadClothPicture" onChange={uploadPicture} />
-      <select ref={typeRef}>
-        {CLOTH_TYPES.map((cloth) => (
-          <option key={cloth.title} value={cloth.value}>
-            {cloth.title}
-          </option>
-        ))}
-      </select>
-      {colorInput.element}
+    <div className="CreateClothAdmin">
       <input
         onChange={(e) => changeLink(e.target.value)}
-        className="createClothUrl"
+        className="createClothUrl inp"
         type="text"
+        placeholder="ссылка на вещь"
       />
-      <button className="btn sm" onClick={() => submitForm()}>
-        Сохранить
-      </button>
+      <CreateCloth createHandler={submitForm}></CreateCloth>
     </div>
   );
 }

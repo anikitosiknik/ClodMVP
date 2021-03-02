@@ -1,3 +1,5 @@
+import { ClothType } from "../utils/clothsService"
+
 export interface userState {
     logined: boolean,
   name: string,
@@ -12,18 +14,18 @@ export interface userState {
   eyes: string,
   country: string,
   city: string,
-  // style: string,
   needChanges: boolean,
   isInfoSetted: boolean,
   userPicture: string,
   isMailCodeReady: boolean,
   error?: string,
-  isAdmin?: boolean
+  isAdmin?: boolean,
+  choosedImages: string,
 }
 
 export interface RootState {
     user: userState,
-    cloth: clothState,
+    cloth: ClothStateType,
     look: lookState,
     admin: lookState
 }
@@ -38,23 +40,9 @@ export type userStringKeys = "skin" | "hair" | "eyes" |  "country" | "city"
 
 
 
-export type createdCloth = {
-  createdBy: string
-  img: string
-  color: string
-  type: string
-  link?: string
-};
 
-export type clothType = createdCloth & {
-  id: string,
-} 
 
-export type clothChoosedType = clothType & {
-  choosed?: boolean
-} 
-export type clothState = { [key: string] : clothChoosedType}
-export type clothList = clothChoosedType[]
+export type ClothStateType = { [key: string] : ClothType}
 
 
 

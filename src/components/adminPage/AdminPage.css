@@ -33,7 +33,7 @@
 .adminUserInfo {
     display: grid;
     grid-auto-flow: column;
-    grid-template-rows: 1fr 1fr;
+    grid-template-rows: 1fr 1fr 1fr;
     gap: 15px;
 }
 
@@ -44,21 +44,29 @@
     background-color: rgba(0,0,0,0.3);
 }
 
-.lookModalClothContainer .createCloth {
-    grid-template:
-        'img select'
-        'img input'
-        'button url';
+.CreateClothAdmin {
+    margin: 5px;
+    background-color: rgba(0,0,0,0.2);
+    padding: 15px;
+    border-radius: 5px;
+    display: grid;
+    justify-items: center;
 }
 
-.lookModalClothContainer .createCloth .createClothUrl {
-    grid-area: 'url'
+.CreateClothAdmin .createClothUrl {
+    width: 70%;
+    margin: 5px;
+    
 }
 
 .createdCloth {
     display: grid;
     grid-auto-flow: column;
     grid-template-columns: 1fr 5fr;
+    margin: 5px;
+    background-color: rgba(0,0,0,0.2);
+    padding: 15px;
+    border-radius: 5px;
 }
 
 .createdCloth img {

@@ -68,29 +68,6 @@ export function toggleLikeLookRequest(lookId: string) {
     })
 }
 
-// export function deleteClothRequest(ids: string[]) {
-//     const baseUrl = getHref();
-
-//     return fetch(`${baseUrl}/cloths`, {
-//         method: 'delete',
-//         body: JSON.stringify(ids),
-//         mode: 'cors',
-//         headers: {
-//             'Content-Type': 'application/json'
-//         },
-//     })
-// }
-
-// export function clothListToObject(cloths: clothList) {
-//     const clothsObject: clothState = {};
-//     cloths.forEach((cloth: clothChoosedType) => {
-//         clothsObject[cloth.id] = {
-//             ...cloth,
-//             choosed: cloth.choosed
-//         }
-//     })
-//     return clothsObject;
-// }
 
 export function looksObjectToList(looks: lookState): lookList {
     const lookList: lookList = [];
