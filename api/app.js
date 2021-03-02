@@ -44,15 +44,12 @@ app.get('/', (req, res) => {
 });
 
 
-function authMiddleware(req, res, next) {
-    if (!req.cookies) {
-        res.status(401)
-        return res.send({
-            error: 'not auth'
-        })
-    } return next()
+const generateInsertSQLCommand = (table, params) => {
+    const values = Object.values(params).map((value) => typeof value === "string" ? `'${value}'` : `${value}`)
 
+    return `INSERT INTO ${table} (${Object.keys(params).join(', ')}) VALUES (${values.join(', ')})`;
 }
+
 
 app.post('/api/setmailcode', function (req, res) {
     const mail = req.body.mail;
@@ -71,7 +68,7 @@ app.post('/api/setmailcode', function (req, res) {
         text: `Ваш код:  ${code}`,
 
     }).then(() => {
-        let stmt = `INSERT INTO mail (mail ,code) VALUES ('${mail}', '${code}') ON DUPLICATE KEY UPDATE  code = '${code}';`
+        let stmt = generateInsertSQLCommand('mail', { code, mail }) + ` ON DUPLICATE KEY UPDATE  code = '${code}';`
         connection.query(stmt, (err, results, fields) => {
             if (err) {
                 if (err.code === "ER_DUP_ENTRY") {
@@ -168,7 +165,9 @@ app.post('/api/reg', function (req, res) {
                         eyes,
                         city,
                         country,
-                        userPicture } = results[1][0];
+                        userPicture,
+                        choosedImages
+                    } = results[1][0];
                     res.send({
                         name,
                         mail,
@@ -181,7 +180,7 @@ app.post('/api/reg', function (req, res) {
                         hair,
                         eyes,
                         userPicture,
-
+                        choosedImages,
                         city,
                         country,
                         logined: true,
@@ -192,7 +191,7 @@ app.post('/api/reg', function (req, res) {
         });
         return;
     }
-    let stmt = `INSERT INTO users (name, mail, password, authKey) VALUES ('${req.body.name}', '${req.body.mail}', '${getHashedPassword(req.body.password)}', '${authKey}')`;
+    let stmt = generateInsertSQLCommand('users', { name, mail, password, authKey })
 
     connection.query(stmt, (err, results, fields) => {
         if (err) {
@@ -249,6 +248,7 @@ app.post('/api/login', function (req, res) {
             city,
             country,
             isAdmin,
+            choosedImages,
             userPicture } = results[1][0];
         res.send({
             name,
@@ -263,6 +263,7 @@ app.post('/api/login', function (req, res) {
             eyes,
             city,
             country,
+            choosedImages,
             userPicture,
             logined: true,
             isAdmin: !!isAdmin,
@@ -295,6 +296,7 @@ app.get('/api/autoLogin', authMiddleware, function (req, res) {
             city,
             country,
             isAdmin,
+            choosedImages,
             userPicture } = results[0];
         res.send({
             name,
@@ -310,6 +312,7 @@ app.get('/api/autoLogin', authMiddleware, function (req, res) {
             city,
             country,
             userPicture,
+            choosedImages,
             isAdmin: !!isAdmin,
             isInfoSetted: !!isInfoSetted,
             logined: true,
@@ -340,9 +343,8 @@ app.get('/api/logOut', authMiddleware, function (req, res) {
 })
 
 app.post('/api/setUserInfo', authMiddleware, function (req, res) {
-    const { chest, waist, hips, height, age, skin, hair, eyes, city, country } = req.body
-    // let stmt = `UPDATE users SET chest = ${chest} WHERE  authKey = '${req.cookies.authKey}'`;
-    let stmt = `UPDATE users SET city = '${city}', country = '${country}', chest = ${chest} , waist = ${waist} , hips = ${hips} , height = ${height} , age = ${age}  , skin = '${skin}' , hair = '${hair}' , eyes = '${eyes}', isInfoSetted = 1  WHERE  authKey = '${req.cookies.authKey}'`;
+    const { chest, waist, hips, height, age, skin, hair, eyes, city, country, choosedImages } = req.body
+    let stmt = `UPDATE users SET choosedImages = '${choosedImages}', city = '${city}', country = '${country}', chest = ${chest} , waist = ${waist} , hips = ${hips} , height = ${height} , age = ${age}  , skin = '${skin}' , hair = '${hair}' , eyes = '${eyes}', isInfoSetted = 1  WHERE  authKey = '${req.cookies.authKey}'`;
 
     connection.query(stmt, (err, results, fields) => {
         if (err) {
@@ -366,6 +368,7 @@ app.post('/api/setUserInfo', authMiddleware, function (req, res) {
                 eyes,
                 city,
                 country,
+                choosedImages,
                 needChanges: false,
                 isInfoSetted: true,
             })
@@ -411,7 +414,13 @@ app.post('/api/createCloth', authMiddleware, function (req, res) {
     const clothId = generateAuthToken()
     const { img, color, type, createdBy } = req.body;
 
-    let stmt = `INSERT INTO cloth (id, img, color, type, createdBy) VALUES ('${clothId}', '${img}', '${color}', '${type}', '${createdBy}')`;
+    let stmt = generateInsertSQLCommand('cloth', {
+        id: clothId,
+        img,
+        color,
+        type,
+        createdBy
+    })
 
     connection.query(stmt, (err, results, fields) => {
         if (err) {
@@ -520,7 +529,8 @@ app.post('/api/createLook', authMiddleware, function (req, res) {
     let stmt = `INSERT INTO look (id, type, createdBy) VALUES ('${lookId}', '${type}', (SELECT mail FROM users WHERE authKey = '${req.cookies.authKey}'));`
 
     clothIds.forEach(clothId => {
-        stmt = stmt + ` INSERT INTO look_has_cloth (look_id, cloth_id) VALUES ('${lookId}', '${clothId}');`
+
+        stmt = stmt + `${generateInsertSQLCommand('look_has_cloth', { look_id: lookId, cloth_id: clothId })};`
     })
 
 
@@ -710,7 +720,7 @@ app.get('/api/looksAdmin', authMiddleware, function (req, res) {
 })
 
 
-app.post('/api/updateLookAdmin', authMiddleware ,function (req, res) {
+app.post('/api/updateLookAdmin', authMiddleware, function (req, res) {
 
     let stmt = `SELECT isAdmin FROM users WHERE authKey = '${req.cookies.authKey}'`
     connection.query(stmt, (err, results, fields) => {
@@ -737,7 +747,7 @@ app.post('/api/updateLookAdmin', authMiddleware ,function (req, res) {
             })
             clothCreate.forEach(cloth => {
                 const clothId = generateAuthToken()
-                stmt = stmt + `INSERT INTO cloth (id, img, color, type, createdBy, link) VALUES ('${clothId}', '${cloth.img}', '${cloth.color}', '${cloth.type}', '${cloth.createdBy}', '${cloth.link}');  INSERT INTO look_has_cloth (look_id, cloth_id) VALUES ('${id}', '${clothId}');`;
+                stmt = stmt + `${generateInsertSQLCommand('cloth', { id: clothId, img, color, type, createdBy, link })};  ${generateInsertSQLCommand('look_has_cloth', { look_id: id, cloth_id: clothId })};`;
             })
             connection.query(stmt, (err, results, fields) => {
                 if (err) {
@@ -782,9 +792,9 @@ app.get('/api/user', authMiddleware, function (req, res) {
                     res.send(err)
                     return console.error(err.message);
                 }
-                const { mail, chest, waist, hair, hips, height, age, skin, eyes, userPicture, country, city } = results[0]
+                const { mail, chest, waist, hair, hips, height, age, skin, eyes, userPicture, country, city, choosedImages } = results[0]
                 res.send({
-                    mail, chest, waist, hair, hips, height, age, skin, eyes, userPicture, country, city
+                    mail, chest, waist, hair, hips, height, age, skin, eyes, userPicture, country, city, choosedImages
                 })
             })
         }
@@ -819,4 +829,13 @@ const generateAuthToken = () => {
 
 const genereateMailToken = () => {
     return crypto.randomBytes(3).toString('hex');
+}
+
+function authMiddleware(req, res, next) {
+    if (!req.cookies) {
+        res.status(401)
+        return res.send({
+            error: 'not auth'
+        })
+    } return next()
 }

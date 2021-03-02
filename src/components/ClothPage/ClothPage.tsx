@@ -4,36 +4,38 @@ import "./ClothPage.css";
 import plusIcon from "../../imgs/plus.svg";
 import ChoosedIcon from "../../imgs/choosedIcon.svg";
 import BasketIcon from "../../imgs/basketIcon.svg";
-import {
-  clothChoosedType,
-  clothList,
-  lookType,
-  RootState,
-} from "../../redux/types";
+import { lookType, RootState } from "../../redux/types";
 import { useDispatch, useSelector } from "react-redux";
 import PropTypes from "prop-types";
-import CreateCloth from "./CreateCloth";
+import { CreateClothModal } from "./CreateCloth";
 import ClothFilters from "./ClothFilters";
-import { clothObjectToList } from "../../utils/clothsService";
 import {
+  fetchCreateCloth,
   fetchDeleteCloth,
   toggleChoosedCloth,
 } from "../../redux/reducers/cloth";
 import { fetchCreateLook } from "../../redux/reducers/look";
 import Modal from "../Modal/Modal";
+import { Cloth, ClothType, CreatedClothType } from "../../utils/clothsService";
 
 function ClothPage() {
   const [isClothCreating, changeClothCreating] = useState(false);
   const cloths = useSelector((state: RootState) => state.cloth);
   const [filterCloth, changeFilter] = useState("");
+  const dispatch = useDispatch();
 
-  const getClothsList = (): clothList => {
-    return clothObjectToList(cloths).filter((cloth: clothChoosedType) => {
+  const createCloth = (cloth: CreatedClothType) => {
+    dispatch(fetchCreateCloth(cloth))
+    changeClothCreating(false);
+  }
+
+  const getClothsList = (): ClothType[] => {
+    return Cloth.objectToList(cloths).filter((cloth: ClothType) => {
       return cloth.type === filterCloth || !filterCloth || cloth.choosed;
     });
   };
-  const getChoosedClothList = (): clothList => {
-    return clothObjectToList(cloths).filter((cloth: clothChoosedType) => {
+  const getChoosedClothList = (): ClothType[] => {
+    return Cloth.objectToList(cloths).filter((cloth: ClothType) => {
       return cloth.choosed;
     });
   };
@@ -48,10 +50,11 @@ function ClothPage() {
         }
       />
       {isClothCreating ? (
-        <CreateCloth
+        <CreateClothModal
           closeEvent={() => {
             changeClothCreating(false);
           }}
+          createHandler={createCloth}
         />
       ) : null}
 
@@ -84,7 +87,7 @@ function ClothPage() {
 
 export default ClothPage;
 
-function ClothList({ clothList }: { clothList: clothList }) {
+function ClothList({ clothList }: { clothList: ClothType[] }) {
   const dispatch = useDispatch();
 
   return (
@@ -93,7 +96,7 @@ function ClothList({ clothList }: { clothList: clothList }) {
         <div key={row} className="clothListColumn">
           {clothList
             .filter((c, index) => (index + row) % 3 === 0)
-            .map((cloth: clothChoosedType) => {
+            .map((cloth: ClothType) => {
               return (
                 <div
                   key={cloth.id}
@@ -106,7 +109,7 @@ function ClothList({ clothList }: { clothList: clothList }) {
                   />
                   <img
                     className={"clothImage"}
-                    onClick={() => dispatch(toggleChoosedCloth(cloth.id))}
+                    onClick={() => dispatch(toggleChoosedCloth(cloth.id || ""))}
                     src={cloth.img}
                   />
                 </div>
@@ -122,7 +125,7 @@ ClothList.propTypes = {
   clothList: PropTypes.array.isRequired,
 };
 
-function LookButtons({ choosedCloth }: { choosedCloth: clothList }) {
+function LookButtons({ choosedCloth }: { choosedCloth: ClothType[] }) {
   const [isCreateModalOpened, changeCreateModalOpened] = useState(false);
   const dispatch = useDispatch();
 
@@ -132,7 +135,7 @@ function LookButtons({ choosedCloth }: { choosedCloth: clothList }) {
       fetchCreateLook({
         ready: false,
         type: type,
-        clothIds: choosedCloth.map((cloth) => cloth.id),
+        clothIds: choosedCloth.map((cloth) => cloth.id || ""),
       })
     );
   };
@@ -164,11 +167,11 @@ LookButtons.propTypes = {
   choosedCloth: PropTypes.array.isRequired,
 };
 
-function ClothBusket({ choosedCloths }: { choosedCloths: clothList }) {
+function ClothBusket({ choosedCloths }: { choosedCloths: ClothType[] }) {
   const dispatch = useDispatch();
   const [isDeleteModalOpened, changeDeleteModalOpened] = useState(false);
   const deleteClothHandler = () =>
-    dispatch(fetchDeleteCloth(choosedCloths.map((cloth) => cloth.id)));
+    dispatch(fetchDeleteCloth(choosedCloths.map((cloth) => cloth.id || "")));
   return isDeleteModalOpened ? (
     <Modal closeEvent={() => changeDeleteModalOpened(false)}>
       <div className="deleteModal">

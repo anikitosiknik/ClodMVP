@@ -28,7 +28,8 @@ export interface StringInputType {
 function UserForm() {
   const dispatch = useDispatch();
   const user = useSelector((state: RootState) => state.user);
-
+  const [isImagePage, changeImagePage] = useState(false);
+  const [choosedImages, changeChoosedImages] = useState<number[]>(user.choosedImages.split(',').map(el=>Number(el)));
 
   const numbersInput = [
     NumberInput("Обхват груди", "см", "chest", user.chest.toString()),
@@ -76,25 +77,62 @@ function UserForm() {
     stringValues.map((value) => {
       response[value.key] = value.value;
     });
+
+    response.choosedImages = choosedImages.join(',')
     return response;
   };
+
+  const handleChooseImage = (index: number) => {
+    let images = [...choosedImages];
+    if (images.includes(index)) images = images.filter((el) => el !== index);
+    else {
+      if (images.length === 3) images.shift();
+      images.push(index);
+    }
+
+    changeChoosedImages(images);
+  };
+
+  const mockdata = [1, 2, 3, 4, 5];
 
   return (
     <React.Fragment>
       <Header logoOnly />
-      <div className="userForm">
-        <h2>Введите свои данные</h2>
-        {numbersInput.map((elements) => elements.element)}
-        {colorInputs.map((stringInput) => (
-          <div key={stringInput.key} className="inputContainer">
-            {stringInput.element}
-          </div>
-        ))}
+      {!isImagePage ? (
+        <div className="userForm">
+          <h2>Введите свои данные</h2>
+          {numbersInput.map((elements) => elements.element)}
+          {colorInputs.map((stringInput) => (
+            <div key={stringInput.key} className="inputContainer">
+              {stringInput.element}
+            </div>
+          ))}
 
-        <button className="btn sm useForm-button" onClick={submitForm}>
-          Готово
-        </button>
-      </div>
+          <button
+            className="btn sm useForm-button"
+            onClick={() => changeImagePage(true)}
+          >
+            Готово
+          </button>
+        </div>
+      ) : (
+        <div>
+          {mockdata.map((el) => (
+            <div
+              key={el}
+              onClick={() => handleChooseImage(el)}
+              className={`styleImages ${
+                choosedImages.includes(el) ? "choosed" : ""
+              }`}
+            >
+              {el}
+            </div>
+          ))}
+          <button className="btn sm useForm-button" onClick={submitForm}>
+            Готово
+          </button>
+        </div>
+      )}
     </React.Fragment>
   );
 }
@@ -105,16 +143,22 @@ function NumberInput(
   title: string,
   postfix: string,
   key: userNumberKeys,
-  defaultValue? : string
+  defaultValue?: string
 ): NumberInputType {
-    const [value, changeValue] = useState((defaultValue !== '0' && defaultValue) || '')
+  const [value, changeValue] = useState(
+    (defaultValue !== "0" && defaultValue) || ""
+  );
 
   return {
     element: (
       <div key={title} className="numberInput inputContainer">
         <span className="numberInput-title">{title}</span>
         <div className="numberInput-container">
-          <input type="number" value={value} onChange={e=>changeValue(e.target.value)} />
+          <input
+            type="number"
+            value={value}
+            onChange={(e) => changeValue(e.target.value)}
+          />
           <span>{postfix}</span>
         </div>
       </div>
@@ -127,14 +171,18 @@ function NumberInput(
 function StringInput(
   title: string,
   key: userStringKeys,
-  defaultValue?: string,
+  defaultValue?: string
 ): StringInputType {
-  const [value, changeValue] = useState<string>(defaultValue || '');
+  const [value, changeValue] = useState<string>(defaultValue || "");
   return {
     element: (
       <div className="stringInputContainer">
         <span className="string-title">{title}</span>
-        <input value={value}  className="stringInput" onChange={e=>changeValue(e.target.value)} />
+        <input
+          value={value}
+          className="stringInput"
+          onChange={(e) => changeValue(e.target.value)}
+        />
       </div>
     ),
     value: value,

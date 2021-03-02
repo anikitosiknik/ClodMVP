@@ -1,3 +1,4 @@
+import { CreatedClothType } from "../../utils/clothsService";
 import {
   FETCH_CREATE_CLOTH,
   FETCH_DELETE_CLOTH,
@@ -6,9 +7,9 @@ import {
   TOGGLE_CHOOSED_CLOTH,
   UPDATE_CLOTHS,
 } from "../actionTypes";
-import { clothState, createdCloth } from "../types";
+import { ClothStateType,  } from "../types";
 
-const initialState: clothState = {};
+const initialState: ClothStateType = {};
 
 export default function (
   state = initialState,
@@ -32,7 +33,7 @@ export default function (
   }
 }
 
-export const updateCloths = (payload: clothState) => ({
+export const updateCloths = (payload: ClothStateType) => ({
   type: UPDATE_CLOTHS,
   payload,
 });
@@ -41,7 +42,7 @@ export const toggleChoosedCloth = (id: string) => ({
   payload: id,
 });
 
-export const fetchCreateCloth = (payload: createdCloth) => ({
+export const fetchCreateCloth = (payload: CreatedClothType) => ({
   type: FETCH_CREATE_CLOTH,
   payload,
 });

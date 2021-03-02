@@ -32,6 +32,7 @@ const initialState: userState = {
   isInfoSetted: false,
   userPicture: "",
   isMailCodeReady: false,
+  choosedImages: ''
 };
 
 export default function (
