@@ -43,6 +43,17 @@ app.get('/', (req, res) => {
     res.send('Now using https..');
 });
 
+
+function authMiddleware(req, res, next) {
+    if (!req.cookies) {
+        res.status(401)
+        return res.send({
+            error: 'not auth'
+        })
+    } return next()
+
+}
+
 app.post('/api/setmailcode', function (req, res) {
     const mail = req.body.mail;
     const code = genereateMailToken();
@@ -261,14 +272,7 @@ app.post('/api/login', function (req, res) {
 });
 
 
-app.get('/api/autoLogin', function (req, res) {
-    if (!req.cookies) {
-        res.status(401)
-        res.send({
-            error: 'password or mail not found'
-        })
-        return;
-    }
+app.get('/api/autoLogin', authMiddleware, function (req, res) {
     let stmt = `SELECT * FROM users WHERE  authKey = '${req.cookies.authKey}'`;
     connection.query(stmt, (err, results, fields) => {
         if (err) {
@@ -314,14 +318,7 @@ app.get('/api/autoLogin', function (req, res) {
 
 })
 
-app.get('/api/logOut', function (req, res) {
-    if (!req.cookies) {
-        res.status(401)
-        res.send({
-            error: 'password or mail not found'
-        })
-        return;
-    }
+app.get('/api/logOut', authMiddleware, function (req, res) {
     let stmt = `UPDATE users SET authKey = NULL WHERE  authKey = '${req.cookies.authKey}'`;
     connection.query(stmt, (err, results, fields) => {
         res.cookie('authKey', '', { maxAge: 0, httpOnly: true, })
@@ -342,14 +339,7 @@ app.get('/api/logOut', function (req, res) {
     });
 })
 
-app.post('/api/setUserInfo', function (req, res) {
-    if (!req.cookies) {
-        res.status(401)
-        res.send({
-            error: 'not auth'
-        })
-        return;
-    }
+app.post('/api/setUserInfo', authMiddleware, function (req, res) {
     const { chest, waist, hips, height, age, skin, hair, eyes, city, country } = req.body
     // let stmt = `UPDATE users SET chest = ${chest} WHERE  authKey = '${req.cookies.authKey}'`;
     let stmt = `UPDATE users SET city = '${city}', country = '${country}', chest = ${chest} , waist = ${waist} , hips = ${hips} , height = ${height} , age = ${age}  , skin = '${skin}' , hair = '${hair}' , eyes = '${eyes}', isInfoSetted = 1  WHERE  authKey = '${req.cookies.authKey}'`;
@@ -388,14 +378,7 @@ app.post('/api/setUserInfo', function (req, res) {
     })
 })
 
-app.post('/api/setUserPicture', function (req, res) {
-    if (!req.cookies) {
-        res.status(401)
-        res.send({
-            error: 'not auth'
-        })
-        return;
-    }
+app.post('/api/setUserPicture', authMiddleware, function (req, res) {
     let stmt = `UPDATE users SET userPicture = '${req.body.userPicture}' WHERE  authKey = '${req.cookies.authKey}'`;
 
     connection.query(stmt, (err, results, fields) => {
@@ -423,14 +406,7 @@ app.post('/api/setUserPicture', function (req, res) {
 
 
 
-app.post('/api/createCloth', function (req, res) {
-    if (!req.cookies) {
-        res.status(401)
-        res.send({
-            error: 'not auth'
-        })
-        return;
-    }
+app.post('/api/createCloth', authMiddleware, function (req, res) {
 
     const clothId = generateAuthToken()
     const { img, color, type, createdBy } = req.body;
@@ -457,14 +433,7 @@ app.post('/api/createCloth', function (req, res) {
     });
 })
 
-app.get('/api/cloths', function (req, res) {
-    if (!req.cookies) {
-        res.status(401)
-        res.send({
-            error: 'not auth'
-        })
-        return;
-    }
+app.get('/api/cloths', authMiddleware, function (req, res) {
 
 
     let stmt = `SELECT * FROM cloth WHERE createdBy = (SELECT mail FROM users WHERE authKey = '${req.cookies.authKey}')`;
@@ -487,14 +456,7 @@ app.get('/api/cloths', function (req, res) {
     });
 })
 
-app.delete('/api/cloths', function (req, res) {
-    if (!req.cookies) {
-        res.status(401)
-        res.send({
-            error: 'not auth'
-        })
-        return;
-    }
+app.delete('/api/cloths', authMiddleware, function (req, res) {
     let stmt = '';
 
 
@@ -525,14 +487,7 @@ app.delete('/api/cloths', function (req, res) {
     });
 })
 
-app.post('/api/clothsById', function (req, res) {
-    if (!req.cookies) {
-        res.status(401)
-        res.send({
-            error: 'not auth'
-        })
-        return;
-    }
+app.post('/api/clothsById', authMiddleware, function (req, res) {
 
     let stmt = 'SELECT * FROM cloth WHERE '
     req.body.forEach((id, index) => {
@@ -559,14 +514,7 @@ app.post('/api/clothsById', function (req, res) {
 
 
 
-app.post('/api/createLook', function (req, res) {
-    if (!req.cookies) {
-        res.status(401)
-        res.send({
-            error: 'not auth'
-        })
-        return;
-    }
+app.post('/api/createLook', authMiddleware, function (req, res) {
     const lookId = generateAuthToken();
     const { type, clothIds } = req.body;
     let stmt = `INSERT INTO look (id, type, createdBy) VALUES ('${lookId}', '${type}', (SELECT mail FROM users WHERE authKey = '${req.cookies.authKey}'));`
@@ -597,14 +545,7 @@ app.post('/api/createLook', function (req, res) {
     });
 })
 
-app.get('/api/looks', function (req, res) {
-    if (!req.cookies) {
-        res.status(401)
-        res.send({
-            error: 'not auth'
-        })
-        return;
-    }
+app.get('/api/looks', authMiddleware, function (req, res) {
 
 
     let stmt = `SELECT * FROM look WHERE createdBy = (SELECT mail FROM users WHERE authKey = '${req.cookies.authKey}')`;
@@ -628,14 +569,7 @@ app.get('/api/looks', function (req, res) {
 })
 
 
-app.delete('/api/looks', function (req, res) {
-    if (!req.cookies) {
-        res.status(401)
-        res.send({
-            error: 'not auth'
-        })
-        return;
-    }
+app.delete('/api/looks', authMiddleware, function (req, res) {
     let stmt = '';
 
 
@@ -666,14 +600,7 @@ app.delete('/api/looks', function (req, res) {
     });
 })
 
-app.post('/api/looksIds', function (req, res) {
-    if (!req.cookies) {
-        res.status(401)
-        res.send({
-            error: 'not auth'
-        })
-        return;
-    }
+app.post('/api/looksIds', authMiddleware, function (req, res) {
 
     let stmt = '';
     req.body.forEach(lookId => {
@@ -705,15 +632,8 @@ app.post('/api/looksIds', function (req, res) {
     });
 })
 
-app.put('/api/looksLike', function (req, res) {
+app.put('/api/looksLike', authMiddleware, function (req, res) {
     req.body = req.body.a
-    if (!req.cookies) {
-        res.status(401)
-        res.send({
-            error: 'not auth'
-        })
-        return;
-    }
     stmt = `SELECT favorite FROM look WHERE id = '${req.body}'`
     connection.query(stmt, (err, results, fields) => {
 
@@ -752,14 +672,7 @@ app.put('/api/looksLike', function (req, res) {
 })
 
 
-app.get('/api/looksAdmin', function (req, res) {
-    if (!req.cookies) {
-        res.status(401)
-        res.send({
-            error: 'not auth'
-        })
-        return;
-    }
+app.get('/api/looksAdmin', authMiddleware, function (req, res) {
 
     let stmt = `SELECT isAdmin FROM users WHERE authKey = '${req.cookies.authKey}'`
     connection.query(stmt, (err, results, fields) => {
@@ -797,14 +710,7 @@ app.get('/api/looksAdmin', function (req, res) {
 })
 
 
-app.post('/api/updateLookAdmin', function (req, res) {
-    if (!req.cookies) {
-        res.status(401)
-        res.send({
-            error: 'not auth'
-        })
-        return;
-    }
+app.post('/api/updateLookAdmin', authMiddleware ,function (req, res) {
 
     let stmt = `SELECT isAdmin FROM users WHERE authKey = '${req.cookies.authKey}'`
     connection.query(stmt, (err, results, fields) => {
@@ -853,14 +759,7 @@ app.post('/api/updateLookAdmin', function (req, res) {
     })
 })
 
-app.get('/api/user', function (req, res) {
-    if (!req.cookies) {
-        res.status(401)
-        res.send({
-            error: 'not auth'
-        })
-        return;
-    }
+app.get('/api/user', authMiddleware, function (req, res) {
 
     let stmt = `SELECT isAdmin FROM users WHERE authKey = '${req.cookies.authKey}'`
     connection.query(stmt, (err, results, fields) => {
@@ -883,9 +782,9 @@ app.get('/api/user', function (req, res) {
                     res.send(err)
                     return console.error(err.message);
                 }
-                const { mail, chest, waist,hair, hips, height, age, skin ,eyes, userPicture, country, city} = results[0]
+                const { mail, chest, waist, hair, hips, height, age, skin, eyes, userPicture, country, city } = results[0]
                 res.send({
-                    mail, chest, waist,hair, hips, height, age, skin ,eyes, userPicture, country, city
+                    mail, chest, waist, hair, hips, height, age, skin, eyes, userPicture, country, city
                 })
             })
         }
