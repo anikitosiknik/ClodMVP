@@ -4,6 +4,7 @@ import Create from "./Create";
 import ForgotPassword from "./ForgotPass";
 import Login from "./Login";
 import "./LoginPage.css";
+import "./DesktopLoginPage.css";
 
 function LoginPage() {
   const [pageStatus, changeStatus] = useState("");

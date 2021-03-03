@@ -61,3 +61,13 @@
     color: #C4C4C4;
 
 }
+
+
+
+@media (min-width: 700px) { 
+    .inp {
+        font-size: 22px;
+        width: 100%;
+        justify-self: center;
+    }
+}

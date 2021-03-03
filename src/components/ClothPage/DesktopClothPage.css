@@ -1,0 +1,22 @@
+@media (min-width: 700px) {
+    .header-logo {
+        height: 85px;
+        transform: translate(20px);
+    }
+
+    .clothFiltres {
+        margin: 20px 0;
+    }
+
+    .addClothText {
+        font-size: 26px;
+    }
+
+    .addClothText br {
+        display: none;
+    }
+
+    .clothFiltresPlus {
+        font-size: 45px;
+    }
+}

@@ -1,6 +1,7 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Header from "../header/Header";
 import "./ClothPage.css";
+import "./DesktopClothPage.css";
 import plusIcon from "../../imgs/plus.svg";
 import ChoosedIcon from "../../imgs/choosedIcon.svg";
 import BasketIcon from "../../imgs/basketIcon.svg";
@@ -24,10 +25,11 @@ function ClothPage() {
   const [filterCloth, changeFilter] = useState("");
   const dispatch = useDispatch();
 
+
   const createCloth = (cloth: CreatedClothType) => {
-    dispatch(fetchCreateCloth(cloth))
+    dispatch(fetchCreateCloth(cloth));
     changeClothCreating(false);
-  }
+  };
 
   const getClothsList = (): ClothType[] => {
     return Cloth.objectToList(cloths).filter((cloth: ClothType) => {
@@ -89,13 +91,14 @@ export default ClothPage;
 
 function ClothList({ clothList }: { clothList: ClothType[] }) {
   const dispatch = useDispatch();
+  const columnsList = useColumnList();
 
   return (
-    <div className="clothList">
-      {[0, 1, 2].map((row) => (
-        <div key={row} className="clothListColumn">
+    <div className="clothList" style={{gridTemplateColumns: `repeat(${columnsList.length}, 1fr)`}}>
+      {columnsList.map((row) => (
+        <div key={row} className="clothListColumn" >
           {clothList
-            .filter((c, index) => (index + row) % 3 === 0)
+            .filter((el, index) => (index + row - clothList.length + 1 ) % columnsList.length === 0)
             .map((cloth: ClothType) => {
               return (
                 <div
@@ -205,4 +208,23 @@ function ClothBusket({ choosedCloths }: { choosedCloths: ClothType[] }) {
 
 ClothBusket.propTypes = {
   choosedCloths: PropTypes.array.isRequired,
+};
+
+const useColumnList = () => {
+  const [columnCount, changeColumnCount] = useState(3);
+
+  useEffect(() => {
+    function handleResize() {
+      const width = window.innerWidth;
+      changeColumnCount(Math.round(width/140));
+    }
+
+    window.addEventListener("resize", handleResize);
+
+    handleResize();
+
+    return () => window.removeEventListener("resize", handleResize);
+  }, []); 
+
+  return Array.from(Array(columnCount).keys())
 };

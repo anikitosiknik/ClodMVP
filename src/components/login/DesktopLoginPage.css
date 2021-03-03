@@ -1,0 +1,16 @@
+@media (min-width: 700px) {
+    .loginPage .form  {
+        width: 400px;
+    }
+
+    .loginPage img {
+        width: 400px;
+        transform: translate(30px);
+    }
+
+    .loginPage .form .btn {
+        width: 60%;
+        justify-self: center;
+    }
+
+}

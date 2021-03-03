@@ -8,7 +8,7 @@
 .clothList {
     display: grid;
     gap: 15px;
-    grid-template-columns: 1fr 1fr 1fr;
+   grid-template-columns: repeat(3, 1fr);
     overflow-y: scroll;
     flex: 1;
     margin-bottom: 15px;
