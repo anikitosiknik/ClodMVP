@@ -26,7 +26,7 @@ import { getUserAdminRequest } from "../../utils/adminService";
 import { ClothType, CreatedClothType } from "../../utils/clothsService";
 import CreateCloth from "../ClothPage/CreateCloth";
 
-function AdminPage() {
+export default function AdminPage() {
   const dispatch = useDispatch();
   const admin = useSelector((state: RootState) => state.admin);
   useEffect(() => {
@@ -43,8 +43,6 @@ function AdminPage() {
     </div>
   );
 }
-
-export default AdminPage;
 
 const emptyLook = (): Look => ({
   createdBy: "",

@@ -1,5 +1,5 @@
+import { UpdateLook } from "../redux/types";
 import { getHref } from "./enviroment";
-import { UpdateLook } from '../components/adminPage/AdminPage';
 
 export function getLookAdminRequest() {
     const baseUrl = getHref();

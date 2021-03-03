@@ -1,4 +1,3 @@
-import { UpdateLook } from "../../components/adminPage/AdminPage";
 import {
   FETCH_GET_LOOKS_ADMIN,
   FETCH_GET_LOOK_IDS_ADMIN,
@@ -6,7 +5,7 @@ import {
 //   FETCH_SET_LOOK_IMG_ADMIN,
   UPDATE_LOOKS_ADMIN,
 } from "../actionTypes";
-import { lookList, lookState } from "../types";
+import { lookList, lookState, UpdateLook } from "../types";
 
 const initialState: lookState = {};
 

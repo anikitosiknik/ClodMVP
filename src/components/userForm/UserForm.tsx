@@ -13,6 +13,66 @@ import {
 import { fetchSetUserInfo } from "../../redux/reducers/user";
 import Header from "../header/Header";
 
+import buisnes1 from "../../imgs/style/buisnes1.png";
+import buisnes2 from "../../imgs/style/buisnes2.png";
+
+const styles = [
+  {
+    id: 1,
+    title: "Деловой стиль",
+    img1: buisnes1,
+    img2: buisnes2,
+  },
+  {
+    id: 2,
+    title: "Деловой стиль",
+    img1: buisnes1,
+    img2: buisnes2,
+  },
+  {
+    id: 3,
+    title: "Деловой стиль",
+    img1: buisnes1,
+    img2: buisnes2,
+  },
+  {
+    id: 4,
+    title: "Деловой стиль",
+    img1: buisnes1,
+    img2: buisnes2,
+  },
+  {
+    id: 5,
+    title: "Деловой стиль",
+    img1: buisnes1,
+    img2: buisnes2,
+  },
+  {
+    id: 6,
+    title: "Деловой стиль",
+    img1: buisnes1,
+    img2: buisnes2,
+  },
+  {
+    id: 7,
+    title: "Деловой стиль",
+    img1: buisnes1,
+    img2: buisnes2,
+  },
+  {
+    id: 8,
+    title: "Деловой стиль",
+    img1: buisnes1,
+    img2: buisnes2,
+  },
+  {
+    id: 9,
+    title: "Деловой стиль",
+    img1: buisnes1,
+    img2: buisnes2,
+  },
+];
+
 interface NumberInputType {
   element: JSX.Element;
   value: string;
@@ -29,7 +89,9 @@ function UserForm() {
   const dispatch = useDispatch();
   const user = useSelector((state: RootState) => state.user);
   const [isImagePage, changeImagePage] = useState(false);
-  const [choosedImages, changeChoosedImages] = useState<number[]>(user.choosedImages.split(',').map(el=>Number(el)));
+  const [choosedImages, changeChoosedImages] = useState<number[]>(
+    user.choosedImages.split(",").map((el) => Number(el))
+  );
 
   const numbersInput = [
     NumberInput("Обхват груди", "см", "chest", user.chest.toString()),
@@ -78,7 +140,7 @@ function UserForm() {
       response[value.key] = value.value;
     });
 
-    response.choosedImages = choosedImages.join(',')
+    response.choosedImages = choosedImages.join(",");
     return response;
   };
 
@@ -92,8 +154,6 @@ function UserForm() {
 
     changeChoosedImages(images);
   };
-
-  const mockdata = [1, 2, 3, 4, 5];
 
   return (
     <React.Fragment>
@@ -116,18 +176,30 @@ function UserForm() {
           </button>
         </div>
       ) : (
-        <div>
-          {mockdata.map((el) => (
-            <div
-              key={el}
-              onClick={() => handleChooseImage(el)}
-              className={`styleImages ${
-                choosedImages.includes(el) ? "choosed" : ""
-              }`}
-            >
-              {el}
-            </div>
-          ))}
+        <div className="userForm">
+          <h2>Выберите стиль, который Вам нравится</h2>
+          <div className="styleImgsContainer">
+            {styles.map((el) => (
+              <div
+                key={el.id}
+                onClick={() => handleChooseImage(el.id)}
+                className={`style ${
+                  choosedImages.includes(el.id) ? "choosed" : ""
+                }`}
+              >
+                <div
+                  className={`styleCircle ${
+                    choosedImages.includes(el.id) ? "choosed" : ""
+                  }`}
+                ></div>
+                <p className="styleTitle">{el.title}</p>
+                <div className="styleImgs">
+                  <img src={el.img1} alt="" />
+                  <img src={el.img2} alt="" />
+                </div>
+              </div>
+            ))}
+          </div>
           <button className="btn sm useForm-button" onClick={submitForm}>
             Готово
           </button>
