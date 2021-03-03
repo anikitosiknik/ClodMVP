@@ -1,12 +1,15 @@
-import React, { useEffect } from "react";
+import React, { Suspense, useEffect } from "react";
 import "./App.css";
 import "./normalize.css";
 import LoginPage from "./components/login/LoginPage";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "./redux/types";
 import { fetchAutoLogin } from "./redux/reducers/user";
-import AppContainer from "./components/appContainer/AppContainer";
 import ErrorModals from "./components/appContainer/ErrorModals";
+import Roller from "./components/Roller/Roller";
+const AppContainer = React.lazy(
+  () => import("./components/appContainer/AppContainer")
+);
 
 function App() {
   const userData = useSelector((state: RootState) => state.user);
@@ -18,7 +21,13 @@ function App() {
   return (
     <>
       <div className="App">
-        {userData.logined ? <AppContainer /> : <LoginPage />}
+        {userData.logined ? (
+          <Suspense fallback={<Roller />}>
+            <AppContainer />
+          </Suspense>
+        ) : (
+          <LoginPage />
+        )}
       </div>
       <ErrorModals />
       <div id="modal-root" />
