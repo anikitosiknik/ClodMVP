@@ -1,0 +1,6 @@
+@media (min-width: 700px) {
+    .modalContainer {
+        max-width: fit-content;
+    }
+
+}

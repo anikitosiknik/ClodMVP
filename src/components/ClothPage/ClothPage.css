@@ -14,6 +14,10 @@
     margin-bottom: 15px;
 }
 
+.clothList::-webkit-scrollbar {
+    display: none;
+}
+
 .clothList .clothListColumn {
     display: flex;
     flex-direction: column;

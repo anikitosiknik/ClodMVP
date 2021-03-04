@@ -11,7 +11,8 @@ import { LOOKS_CATEGORIES } from "../../utils/const";
 import { looksObjectToList } from "../../utils/lookService";
 import Header from "../header/Header";
 import "./LookPage.css";
-import plus from "../../imgs/plus.svg";
+import "./DesktopLookPage.css";
+import dots from "../../imgs/dots.svg";
 import backIcon from "../../imgs/backIcon.svg";
 import { LookModal } from "./LookModal";
 
@@ -116,8 +117,8 @@ function LookCategories({
     >
       <div className="lookCategoryImgContainer">
         {looks.slice(0, 4).map((look) => (
-          <div className="lookCategoryCloth" key={look.id}>
-            <img src={look.img || plus} />
+          <div className={`lookCategoryCloth ${look.img ? 'cover' : ''}`} key={look.id}>
+            <img src={look.img || dots} />
           </div>
         ))}
       </div>
@@ -155,7 +156,7 @@ const emptyLook = (): Look => ({
             className="categoryPageLook"
             key={look.id}
           >
-            <img src={look.img || plus}></img>
+            <img src={look.img || dots}></img>
           </div>
         ))}
       </div>

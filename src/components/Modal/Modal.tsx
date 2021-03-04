@@ -3,6 +3,7 @@ import React from "react";
 import ReactDOM from "react-dom";
 import PropTypes, { InferProps } from "prop-types";
 import "./Modal.css";
+import "./DesktopModal.css";
 
 function Modal({ children, closeEvent }: InferProps<typeof Modal.propTypes>) {
   let root = document.getElementById("modal-root");

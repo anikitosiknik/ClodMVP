@@ -3,6 +3,7 @@ import PropTypes, { InferProps } from "prop-types";
 import { Pages, RootState } from '../../redux/types';
 
 import "./Footer.css";
+import "./DesktopFooter.css";
 import { useSelector } from "react-redux";
 
 function Footer({ navigate, currentPage }: InferProps<typeof Footer.propTypes>) {

@@ -19,4 +19,11 @@
     .clothFiltresPlus {
         font-size: 45px;
     }
+
+    .lookButtons {
+        justify-content: center;
+        grid-template-columns: auto;
+        grid-template-columns: repeat(3, 180px);
+        gap: 18px;
+    }
 }

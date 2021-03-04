@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import "./NumberInput.css";
 import "./FormInput.css";
+import "./DesktopFormInput.css";
 import ColorInput from "../colorInput/ColorInput";
 import { HAIR_COLORS, EYES_COLORS, SKIN_COLORS } from "../../utils/const";
 import { useDispatch, useSelector } from "react-redux";
@@ -15,6 +16,23 @@ import Header from "../header/Header";
 
 import buisnes1 from "../../imgs/style/buisnes1.png";
 import buisnes2 from "../../imgs/style/buisnes2.png";
+import casual1 from "../../imgs/style/casual1.png";
+import casual2 from "../../imgs/style/casual2.png";
+import sport1 from "../../imgs/style/sport1.png";
+import sport2 from "../../imgs/style/sport2.png";
+import glamour1 from "../../imgs/style/glamour1.png";
+import glamour2 from "../../imgs/style/glamour2.png";
+import grange1 from "../../imgs/style/grange1.png";
+import grange2 from "../../imgs/style/grange2.png";
+import romantic1 from "../../imgs/style/romantic1.png";
+import romantic2 from "../../imgs/style/romantic2.png";
+import minimalism1 from "../../imgs/style/minimalism1.png";
+import minimalism2 from "../../imgs/style/minimalism2.png";
+import military1 from "../../imgs/style/military1.png";
+import military2 from "../../imgs/style/military2.png";
+import eclectick1 from "../../imgs/style/eclectick1.png";
+import eclectick2 from "../../imgs/style/eclectick2.png";
+
 
 const styles = [
   {
@@ -25,51 +43,51 @@ const styles = [
   },
   {
     id: 2,
-    title: "Деловой стиль",
-    img1: buisnes1,
-    img2: buisnes2,
+    title: "Кэжуал (casual)",
+    img1:casual1,
+    img2: casual2,
   },
   {
     id: 3,
-    title: "Деловой стиль",
-    img1: buisnes1,
-    img2: buisnes2,
+    title: "Спортивный стиль",
+    img1: sport1,
+    img2: sport2,
   },
   {
     id: 4,
-    title: "Деловой стиль",
-    img1: buisnes1,
-    img2: buisnes2,
+    title: "Гламур",
+    img1: glamour1,
+    img2: glamour2,
   },
   {
     id: 5,
-    title: "Деловой стиль",
-    img1: buisnes1,
-    img2: buisnes2,
+    title: "Гранж",
+    img1: grange1,
+    img2: grange2,
   },
   {
     id: 6,
-    title: "Деловой стиль",
-    img1: buisnes1,
-    img2: buisnes2,
+    title: "Романтический стиль",
+    img1: romantic1,
+    img2: romantic2,
   },
   {
     id: 7,
-    title: "Деловой стиль",
-    img1: buisnes1,
-    img2: buisnes2,
+    title: "Минимализм",
+    img1: minimalism1,
+    img2: minimalism2,
   },
   {
     id: 8,
-    title: "Деловой стиль",
-    img1: buisnes1,
-    img2: buisnes2,
+    title: "Милитари",
+    img1: military1,
+    img2: military2,
   },
   {
     id: 9,
-    title: "Деловой стиль",
-    img1: buisnes1,
-    img2: buisnes2,
+    title: "Эклектика",
+    img1: eclectick1,
+    img2: eclectick2,
   },
 ];
 

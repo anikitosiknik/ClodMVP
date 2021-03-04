@@ -1,0 +1,49 @@
+
+@media (min-width: 500px) {
+
+    .lookPage {
+        grid-template-columns: repeat(3, 1fr); 
+    }
+
+}
+
+
+@media (min-width: 800px) {
+    .lookPage {
+        grid-template-columns: repeat(4, 1fr); 
+        justify-content: space-around;
+        gap: 40px;
+        align-content: flex-start;
+    }
+
+    .lookCategory {
+        height: fit-content;
+    }
+
+
+    .categoryPage {
+        grid-template-columns: repeat(5, 1fr);
+    }
+}
+
+@media (min-width: 1000px) { 
+
+    .lookPage {
+        grid-template-columns: repeat(5, 1fr); 
+    }
+
+    .categoryPage {
+        grid-template-columns: repeat(6, 1fr); 
+    }
+}
+
+@media (min-width: 1500px) { 
+
+    .categoryPage {
+        grid-template-columns: repeat(7, 1fr); 
+    }
+
+    .lookPage {
+        grid-template-columns: repeat(7, 1fr); 
+    }
+}
