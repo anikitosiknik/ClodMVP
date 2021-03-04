@@ -12,6 +12,10 @@ import likeIcon from "../../imgs/likeIcon.svg";
 import basketIcon from "../../imgs/basketIcon.svg";
 import plusIcon from "../../imgs/plus.svg";
 import "./AdminPage.css";
+import "../LookPage/LookModal.css"
+import "../LookPage/LookPage.css"
+import "../LookPage/DesktopLookPage.css"
+import "../LookPage/DesktopLookModal.css"
 
 import {
   fetchDeleteLooks,
@@ -108,6 +112,7 @@ const initialState: userState = {
 };
 
 export type UpdateLook = {
+  mail: string;
   img: string;
   id: string;
   clothUpd: { img: string; id: string }[];
@@ -140,6 +145,7 @@ export function LookModal({
   }, []);
 
   const [updatedLook, updatedLookChange] = useState<UpdateLook>({
+    mail: look.createdBy,
     id: look.id,
     img: "",
     clothUpd: [],
@@ -148,7 +154,6 @@ export function LookModal({
   });
 
   const updateCreateCloth = (look: CreatedClothType) => {
-    console.log(updatedLook);
     updatedLookChange({
       ...updatedLook,
       clothCreate: [...updatedLook.clothCreate, look],
@@ -248,8 +253,7 @@ export function LookModal({
             <div> countrye: {user.country}</div>
             <div> city: {user.city}</div>
           </div>
-        </div>
-        <div className="lookModalHeader">
+          <div className="lookModalHeader">
           <input
             type="file"
             id="uploadLookPicture"
@@ -263,6 +267,8 @@ export function LookModal({
             />
           </label>
         </div>
+        </div>
+       
         <div className="lookModalClothContainer">
           {look.clothIds
             .filter((id) => {

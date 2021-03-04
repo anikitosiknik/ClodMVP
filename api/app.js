@@ -191,7 +191,10 @@ app.post('/api/reg', function (req, res) {
         });
         return;
     }
-    let stmt = generateInsertSQLCommand('users', { name, mail, password, authKey })
+    const regDate = new Date();
+    const expireDate = new Date();
+    expireDate.setDate(expireDate.getDate() + 3);
+    let stmt = generateInsertSQLCommand('users', { name, mail, password: getHashedPassword(password), authKey, subs: JSON.stringify([regDate, expireDate]) })
 
     connection.query(stmt, (err, results, fields) => {
         if (err) {
@@ -273,7 +276,14 @@ app.post('/api/login', function (req, res) {
 });
 
 
-app.get('/api/autoLogin', authMiddleware, function (req, res) {
+app.get('/api/autoLogin', function (req, res) {
+    if (!req.cookies || !req.cookies.authKey) {
+        res.status(401)
+        return res.send({
+            message: 'not auth'
+        })
+    }
+
     let stmt = `SELECT * FROM users WHERE  authKey = '${req.cookies.authKey}'`;
     connection.query(stmt, (err, results, fields) => {
         if (err) {
@@ -298,7 +308,7 @@ app.get('/api/autoLogin', authMiddleware, function (req, res) {
             isAdmin,
             choosedImages,
             userPicture } = results[0];
-        res.send({
+        res.send(prepareUser({
             name,
             mail,
             chest,
@@ -316,7 +326,7 @@ app.get('/api/autoLogin', authMiddleware, function (req, res) {
             isAdmin: !!isAdmin,
             isInfoSetted: !!isInfoSetted,
             logined: true,
-        })
+        }))
     });
 
 })
@@ -734,33 +744,54 @@ app.post('/api/updateLookAdmin', authMiddleware, function (req, res) {
             else res.send(err)
             return console.error(err.message);
         }
+
         if (results[0] && results[0].isAdmin) {
 
 
-            const { clothDelete, clothUpd, clothCreate, id, img } = req.body;
-            let stmt = `UPDATE look SET  img = '${img}', ready = 1 WHERE  id = '${id}';`
-            clothDelete.forEach(clothId => {
-                stmt = stmt + ` DELETE FROM look_has_cloth WHERE cloth_id = '${clothId}' AND  look_id = '${id}';`
-            })
-            clothUpd.forEach(clothUpdObj => {
-                stmt = stmt + ` UPDATE cloth SET img = '${clothUpdObj.img}' WHERE id = '${clothUpdObj.id}';`
-            })
-            clothCreate.forEach(cloth => {
-                const clothId = generateAuthToken()
-                stmt = stmt + `${generateInsertSQLCommand('cloth', { id: clothId, img, color, type, createdBy, link })};  ${generateInsertSQLCommand('look_has_cloth', { look_id: id, cloth_id: clothId })};`;
-            })
-            connection.query(stmt, (err, results, fields) => {
-                if (err) {
-                    if (err.code === "ER_DUP_ENTRY") {
-                        res.status(409)
-                        res.send({
-                            error: 'error please contact admin'
-                        });
-                    }
-                    else res.send(err)
-                    return console.error(err.message);
+
+            const code = genereateMailToken();
+            let transporter = nodemailer.createTransport({
+                service: 'gmail',
+                auth: {
+                    user: 'clodapp.info@gmail.com',
+                    pass: 'rkjl1020'
                 }
-                res.send(results)
+            })
+            const a = transporter.sendMail({
+                from: 'anikitosiknik@gmail.com',
+                to: mail,
+                subject: 'Напоминалка',
+                text: `Один из ваших образов готов.`,
+
+            }).then(() => {
+                const { clothDelete, clothUpd, clothCreate, id, img } = req.body;
+                let stmt = `UPDATE look SET  img = '${img}', ready = 1 WHERE  id = '${id}';`
+                clothDelete.forEach(clothId => {
+                    stmt = stmt + ` DELETE FROM look_has_cloth WHERE cloth_id = '${clothId}' AND  look_id = '${id}';`
+                })
+                clothUpd.forEach(clothUpdObj => {
+                    stmt = stmt + ` UPDATE cloth SET img = '${clothUpdObj.img}' WHERE id = '${clothUpdObj.id}';`
+                })
+                clothCreate.forEach(cloth => {
+                    const clothId = generateAuthToken()
+                    stmt = stmt + `${generateInsertSQLCommand('cloth', { id: clothId, img, color, type, createdBy, link })};  ${generateInsertSQLCommand('look_has_cloth', { look_id: id, cloth_id: clothId })};`;
+                })
+                connection.query(stmt, (err, results, fields) => {
+                    if (err) {
+                        if (err.code === "ER_DUP_ENTRY") {
+                            res.status(409)
+                            res.send({
+                                error: 'error please contact admin'
+                            });
+                        }
+                        else res.send(err)
+                        return console.error(err.message);
+                    }
+                    res.send(results)
+                })
+
+            }, err => {
+                res.send(err);
             })
         }
         else res.send({
@@ -832,10 +863,74 @@ const genereateMailToken = () => {
 }
 
 function authMiddleware(req, res, next) {
-    if (!req.cookies) {
+    if (!req.cookies || !req.cookies.authKey) {
         res.status(401)
         return res.send({
-            error: 'not auth'
+            message: 'not auth'
         })
-    } return next()
+    }
+    let stmt = `SELECT subs, isAdmin FROM users WHERE authKey = '${req.cookies.authKey}'`;
+
+    connection.query(stmt, (err, results, fields) => {
+        if (err) {
+            res.send(err)
+            return console.error(err.message);
+        }
+
+        if (results.length && results[0]) {
+            const user = results[0];
+            if (!!user.isAdmin) return next();
+
+            const subs = JSON.parse(user.subs)
+            const expDate = new Date(subs.pop());
+            const now = new Date()
+            if (expDate > now) {
+                next()
+            }
+            else {
+                res.status(402);
+                res.send({
+                    error: 'subs expired'
+                })
+            }
+        }
+        else {
+            res.status(401);
+            res.send({
+                error: 'no results:('
+            })
+        }
+
+    })
+}
+
+
+function prepareUser (user) {
+    const preparedUser = {};
+    const initialState = {
+        logined: false,
+        name: "",
+        mail: "",
+        chest: 0,
+        waist: 0,
+        hips: 0,
+        height: 0,
+        age: 0,
+        skin: "",
+        hair: "",
+        eyes: "",
+        country: "",
+        city: "",
+        // style: '',
+        needChanges: false,
+        isInfoSetted: false,
+        userPicture: "",
+        isMailCodeReady: false,
+        choosedImages: ''
+      };
+      
+      for (const key in user) {
+        preparedUser[key] = user[key] || initialState[key];
+      }
+      return preparedUser
 }

@@ -1,5 +1,5 @@
 import { createdLook, lookList, lookState } from "../redux/types";
-import { getHref } from "./enviroment";
+import { getHref, handleErrors } from "./enviroment";
 
 export function createLookRequest(cloth: createdLook) {
     const baseUrl = getHref();
@@ -24,7 +24,7 @@ export function getLookRequest() {
         headers: {
             'Content-Type': 'application/json'
         },
-    })
+    }).then(handleErrors)
 }
 
 export function getLookIdsRequest(lookIds: string[]) {

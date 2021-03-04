@@ -1,5 +1,5 @@
 import { ClothStateType } from "../redux/types";
-import { getHref } from "./enviroment";
+import { getHref, handleErrors } from "./enviroment";
 
 export function createClothRequest(cloth: Cloth) {
     const baseUrl = getHref();
@@ -24,7 +24,7 @@ export function getClothsRequest() {
         headers: {
             'Content-Type': 'application/json'
         },
-    })
+    }).then(handleErrors)
 }
 
 export function deleteClothRequest(ids: string[]) {

@@ -1,4 +1,4 @@
-import { getHref } from "./enviroment"
+import { getHref, handleErrors } from "./enviroment"
 
 export function registerUserRequest(name: string, mail: string, password: string) {
     const baseUrl = getHref();
@@ -82,7 +82,7 @@ export function loginUserRequest(mail: string, password: string) {
         headers: {
             'Content-Type': 'application/json'
         },
-    })
+    }).then(handleErrors)
 }
 
 export function autoLoginRequest() {
@@ -90,7 +90,7 @@ export function autoLoginRequest() {
     
     return fetch(`${baseUrl}/autoLogin`, {
         method: 'get'
-    })
+    }).then(handleErrors)
 }
 export function logOutRequest() {
     const baseUrl = getHref();
@@ -99,3 +99,5 @@ export function logOutRequest() {
         method: 'get'
     })
 }
+
+

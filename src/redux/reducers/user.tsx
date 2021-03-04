@@ -51,7 +51,7 @@ export default function (
   }
 }
 
-export const setUser = (payload: userState) => ({ type: SET_USER, payload });
+export const setUser = (payload: Partial<userState>) => ({ type: SET_USER, payload });
 export const setMailCodeStatus = (payload: boolean) => ({
   type: SET_MAILCODE_STATUS,
   payload: { isMailCodeReady: payload },

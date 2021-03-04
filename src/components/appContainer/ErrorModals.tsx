@@ -13,9 +13,13 @@ function ErrorModals() {
       <Modal closeEvent={() => dispatch(setUser({ ...user, error: "" }))}>
         {user.error === "wrongCode" ? (
           <WrongCodeModal />
-        ) : user.error === "password or mail not found" ? (
+        ) : user.error === "Unauthorized" ? (
           <WrongLogin />
-        ) : user.error === "Duplicate Mail" ? <DuplicateMail/> : null}
+        ) : user.error === "Duplicate Mail" ? (
+          <DuplicateMail />
+        ) : user.error === "Payment Required" ? (
+          <SubsExpired />
+        ) : null}
       </Modal>
     );
 }
@@ -31,17 +35,26 @@ function WrongCodeModal() {
 }
 
 function WrongLogin() {
-    return (
-      <div>
-        <h2>Неправильный логин или пароль</h2>
-      </div>
-    );
-  }
+  return (
+    <div>
+      <h2>Неправильный логин или пароль</h2>
+    </div>
+  );
+}
 
-  function DuplicateMail() {
-    return (
-      <div>
-        <h2>Данная почта уже занята</h2>
-      </div>
-    );
-  }
+function DuplicateMail() {
+  return (
+    <div>
+      <h2>Данная почта уже занята</h2>
+    </div>
+  );
+}
+
+function SubsExpired() {
+  return (
+    <div>
+      <h2>У вас закончилась подписка</h2>
+      <button className="btn">Обновить подписку</button>
+    </div>
+  );
+}
