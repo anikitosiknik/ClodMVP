@@ -42,12 +42,18 @@ export function* watchCheckMailCode() {
 }
 
 export function* loginUserAsync({ payload }: { type: string, forceReload: any, payload: { mail: string, password: string } }) {
-    const { mail, password } = payload;
-    const data = yield call(() => loginUserRequest(mail, password));
-    const json = yield call(() => new Promise(res => res(data.json())))
-    yield put(setUser(json));
-    yield put(fetchGetCloths())
-    yield put(fetchGetLooks())
+    try {
+        const { mail, password } = payload;
+        const data = yield call(() => loginUserRequest(mail, password));
+        const json = yield call(() => new Promise(res => res(data.json())))
+        yield put(setUser(json));
+        yield put(fetchGetCloths())
+        yield put(fetchGetLooks())
+    }
+    catch (error) {
+        const er: Error = error;
+        yield put(setUser({error: er.message}))
+    }
 }
 
 export function* watchLoginUser() {
@@ -55,11 +61,17 @@ export function* watchLoginUser() {
 }
 
 export function* autoLoginUserAsync() {
-    const data = yield call(() => autoLoginRequest());
-    const json = yield call(() => new Promise(res => res(data.json())))
-    yield put(setUser(json));
-    yield put(fetchGetCloths())
-    yield put(fetchGetLooks())
+    try {
+        const data = yield call(() => autoLoginRequest());
+        const json = yield call(() => new Promise(res => res(data.json())))
+        yield put(setUser(json));
+        yield put(fetchGetCloths())
+        yield put(fetchGetLooks())
+    }
+    catch (error) {
+        console.log('autoLogin Failed')
+    }
+ 
 }
 
 export function* watchAutoLoginUser() {

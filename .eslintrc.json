@@ -20,6 +20,7 @@
     "rules": {
     },
     "globals": {
-        "JSX": true
+        "JSX": true,
+        "Partial": true
     }
 }

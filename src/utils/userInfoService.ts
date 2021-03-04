@@ -1,5 +1,5 @@
 import { userState } from "../redux/types";
-import { getHref } from "./enviroment";
+import { getHref, handleErrors } from "./enviroment";
 
 export function setUserInfoRequest(user: userState) {
     const baseUrl = getHref();
@@ -11,7 +11,7 @@ export function setUserInfoRequest(user: userState) {
         headers: {
             'Content-Type': 'application/json'
         },
-    })
+    }).then(handleErrors)
 }
 
 export function setUserPictureRequest(userPicture: string) {
@@ -25,5 +25,5 @@ export function setUserPictureRequest(userPicture: string) {
         headers: {
             'Content-Type': 'application/json'
         },
-    })
+    }).then(handleErrors)
 }
