@@ -1,0 +1,10 @@
+@media (min-width: 700px) {
+    .userForm {
+        align-self: center;
+    }
+
+    .styleImgsContainer {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+    }
+}

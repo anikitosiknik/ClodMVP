@@ -2,7 +2,6 @@
     display: flex;
     flex-direction: column;
     max-height: 90vh;
-    overflow-y: scroll;
     gap: 15px;
 }
 
@@ -22,19 +21,30 @@
     transition: all 0.5s;
 }
 
+.lookModalHeader {
+    align-self: center;
+}
+
 .lookModalHeader img {
-    width: 50%;
+    width: 160px;
+    border: 3px solid #C4C4C4;
+    border-radius: 15px;
     align-self: center;
     object-fit: cover;
 }
 
 .lookModalClothContainer {
-    display: flex;
-    flex-direction: column;
+    display: grid;
+    grid-auto-flow: row;
+    grid-template-rows: repeat(3, 1fr);
     max-height: 90vh;
     overflow-y: scroll;
     gap: 15px;
     padding: 15px;
+}
+
+.lookModalClothContainer::-webkit-scrollbar {
+    display: none;
 }
 
 .lookModalCloth {
@@ -60,7 +70,12 @@
 
 .lookModalImg {
     object-fit: cover;
-    width: 100%;
+    width: 50%;
+    align-self: center;
+
+    border-radius: 20px;
+    filter: drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.25));
+    
 }
 .lookModalColor {
     width: 20px;

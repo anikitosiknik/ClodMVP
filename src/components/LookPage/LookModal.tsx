@@ -9,6 +9,7 @@ import basketIcon from "../../imgs/basketIcon.svg";
 import plusIcon from "../../imgs/plus.svg";
 
 import "./LookModal.css";
+import "./DesktopLookModal.css"
 import {
   fetchDeleteLooks,
   fetchToggleLikeLook,
