@@ -1,10 +1,9 @@
 import { createdLook, lookList, lookState } from "../redux/types";
-import { getHref, handleErrors } from "./enviroment";
+import { sampleFetch } from "./requestService";
 
 export function createLookRequest(cloth: createdLook) {
-    const baseUrl = getHref();
 
-    return fetch(`${baseUrl}/createLook`, {
+    return sampleFetch(`/createLook`, {
         method: 'post',
         body: JSON.stringify(cloth),
         mode: 'cors',
@@ -16,21 +15,19 @@ export function createLookRequest(cloth: createdLook) {
 
 
 export function getLookRequest() {
-    const baseUrl = getHref();
 
-    return fetch(`${baseUrl}/looks`, {
+    return sampleFetch(`/looks`, {
         method: 'get',
         mode: 'cors',
         headers: {
             'Content-Type': 'application/json'
         },
-    }).then(handleErrors)
+    })
 }
 
 export function getLookIdsRequest(lookIds: string[]) {
-    const baseUrl = getHref();
 
-    return fetch(`${baseUrl}/looksIds`, {
+    return sampleFetch(`/looksIds`, {
         method: 'post',
         mode: 'cors',
         body: JSON.stringify(lookIds),
@@ -41,9 +38,8 @@ export function getLookIdsRequest(lookIds: string[]) {
 }
 
 export function deleteLooskRequest(lookId: string[]) {
-    const baseUrl = getHref();
 
-    return fetch(`${baseUrl}/looks`, {
+    return sampleFetch(`/looks`, {
         method: 'delete',
         mode: 'cors',
         body: JSON.stringify(lookId),
@@ -54,9 +50,8 @@ export function deleteLooskRequest(lookId: string[]) {
 }
 
 export function toggleLikeLookRequest(lookId: string) {
-    const baseUrl = getHref();
 
-    return fetch(`${baseUrl}/looksLike`, {
+    return sampleFetch(`/looksLike`, {
         method: 'put',
         mode: 'cors',
         body: JSON.stringify({

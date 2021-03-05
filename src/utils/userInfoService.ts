@@ -1,22 +1,20 @@
 import { userState } from "../redux/types";
-import { getHref, handleErrors } from "./enviroment";
+import { sampleFetch } from "./requestService";
 
 export function setUserInfoRequest(user: userState) {
-    const baseUrl = getHref();
 
-    return fetch(`${baseUrl}/setUserInfo`, {
+    return sampleFetch(`/setUserInfo`, {
         method: 'post',
         body: JSON.stringify(user),
         mode: 'cors',
         headers: {
             'Content-Type': 'application/json'
-        },
-    }).then(handleErrors)
+        }
+    })
 }
 
 export function setUserPictureRequest(userPicture: string) {
-    const baseUrl = getHref();
-    return fetch(`${baseUrl}/setUserPicture`, {
+    return sampleFetch(`/setUserPicture`, {
         method: 'post',
         body: JSON.stringify({
             userPicture
@@ -25,5 +23,5 @@ export function setUserPictureRequest(userPicture: string) {
         headers: {
             'Content-Type': 'application/json'
         },
-    }).then(handleErrors)
+    })
 }
