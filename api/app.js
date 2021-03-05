@@ -7,10 +7,14 @@ var cookieParser = require('cookie-parser');
 var crypto = require('crypto');
 var mysql = require('mysql');
 
+const key = fs.readFileSync('./apiserver.key');
+const cert = fs.readFileSync('./apiserver.crt');
+const passwordDB = fs.readFileSync('../keys/passwordDB.txt')
+const passwordMail = fs.readFileSync('../keys/passwordMail.txt')
 
 mysql_host = 'localhost'
 mysql_user = 'clodsite_anikitosiknik'
-mysql_password = '08061999!zxcV'
+mysql_password = passwordDB
 mysql_database = 'clodsite_app'
 
 var connection = mysql.createConnection({
@@ -29,8 +33,7 @@ connection.connect((error) => {
     else console.log('connected')
 })
 
-const key = fs.readFileSync('./apiserver.key');
-const cert = fs.readFileSync('./apiserver.crt');
+
 
 
 
@@ -44,11 +47,6 @@ app.get('/', (req, res) => {
 });
 
 
-const generateInsertSQLCommand = (table, params) => {
-    const values = Object.values(params).map((value) => typeof value === "string" ? `'${value}'` : `${value}`)
-
-    return `INSERT INTO ${table} (${Object.keys(params).join(', ')}) VALUES (${values.join(', ')})`;
-}
 
 
 app.post('/api/setmailcode', function (req, res) {
@@ -58,7 +56,7 @@ app.post('/api/setmailcode', function (req, res) {
         service: 'gmail',
         auth: {
             user: 'clodapp.info@gmail.com',
-            pass: 'rkjl1020'
+            pass: passwordMail
         }
     })
     const a = transporter.sendMail({
@@ -754,7 +752,7 @@ app.post('/api/updateLookAdmin', authMiddleware, function (req, res) {
                 service: 'gmail',
                 auth: {
                     user: 'clodapp.info@gmail.com',
-                    pass: 'rkjl1020'
+                    pass: passwordMail
                 }
             })
             const a = transporter.sendMail({
@@ -921,7 +919,6 @@ function prepareUser (user) {
         eyes: "",
         country: "",
         city: "",
-        // style: '',
         needChanges: false,
         isInfoSetted: false,
         userPicture: "",
@@ -933,4 +930,11 @@ function prepareUser (user) {
         preparedUser[key] = user[key] || initialState[key];
       }
       return preparedUser
+}
+
+
+function generateInsertSQLCommand  (table, params)  {
+    const values = Object.values(params).map((value) => typeof value === "string" ? `'${value}'` : `${value}`)
+
+    return `INSERT INTO ${table} (${Object.keys(params).join(', ')}) VALUES (${values.join(', ')})`;
 }

@@ -96,7 +96,6 @@ export function* logOutUserAsync() {
         eyes: "",
         country: "",
         city: "",
-        // style: '',
         needChanges: false,
         isInfoSetted: false,
         userPicture: "",
