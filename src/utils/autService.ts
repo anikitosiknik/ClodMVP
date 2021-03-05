@@ -1,9 +1,8 @@
-import { getHref, handleErrors } from "./enviroment"
+import { sampleFetch } from "./requestService"
 
 export function registerUserRequest(name: string, mail: string, password: string) {
-    const baseUrl = getHref();
 
-    return fetch(`${baseUrl}/reg`, {
+    return sampleFetch(`/reg`, {
         method: 'post',
         body: JSON.stringify({
             name,
@@ -19,9 +18,8 @@ export function registerUserRequest(name: string, mail: string, password: string
 }
 
 export function changePasswordRequest(payload:  {mail: string, password: string, code: string} ) {
-    const baseUrl = getHref();
 
-    return fetch(`${baseUrl}/reg`, {
+    return sampleFetch(`/reg`, {
         method: 'post',
         body: JSON.stringify(payload),
         mode: 'cors',
@@ -32,9 +30,8 @@ export function changePasswordRequest(payload:  {mail: string, password: string,
     
 }
 export function setMailCodeRequest(name: string, mail: string, password: string) {
-    const baseUrl = getHref();
 
-    return fetch(`${baseUrl}/setmailcode`, {
+    return sampleFetch(`/setmailcode`, {
         method: 'post',
         body: JSON.stringify({
             name,
@@ -50,9 +47,8 @@ export function setMailCodeRequest(name: string, mail: string, password: string)
 }
 
 export  function checkMailCodeRequest(name: string ,mail: string, password: string, code: string) {
-    const baseUrl = getHref();
 
-    return fetch(`${baseUrl}/checkmailcode`, {
+    return sampleFetch(`/checkmailcode`, {
         method: 'post',
         body: JSON.stringify({
             name,
@@ -70,9 +66,8 @@ export  function checkMailCodeRequest(name: string ,mail: string, password: stri
 
 
 export function loginUserRequest(mail: string, password: string) {
-    const baseUrl = getHref();
 
-    return fetch(`${baseUrl}/login`, {
+    return sampleFetch(`/login`, {
         method: 'post',
         body: JSON.stringify({
             mail,
@@ -82,20 +77,18 @@ export function loginUserRequest(mail: string, password: string) {
         headers: {
             'Content-Type': 'application/json'
         },
-    }).then(handleErrors)
+    })
 }
 
 export function autoLoginRequest() {
-    const baseUrl = getHref();
     
-    return fetch(`${baseUrl}/autoLogin`, {
+    return sampleFetch(`/autoLogin`, {
         method: 'get'
-    }).then(handleErrors)
+    })
 }
 export function logOutRequest() {
-    const baseUrl = getHref();
     
-    return fetch(`${baseUrl}/logOut`, {
+    return fetch(`/logOut`, {
         method: 'get'
     })
 }

@@ -1,10 +1,9 @@
 import { UpdateLook } from "../redux/types";
-import { getHref } from "./enviroment";
+import { sampleFetch } from "./requestService";
 
 export function getLookAdminRequest() {
-    const baseUrl = getHref();
 
-    return fetch(`${baseUrl}/looksAdmin`, {
+    return sampleFetch(`/looksAdmin`, {
         method: 'get',
         mode: 'cors',
         headers: {
@@ -14,9 +13,7 @@ export function getLookAdminRequest() {
 }
 
 export function updateLookAdminRequest(payload: UpdateLook) {
-    const baseUrl = getHref();
-
-    return fetch(`${baseUrl}/updateLookAdmin`, {
+    return sampleFetch(`/updateLookAdmin`, {
         method: 'post',
         mode: 'cors',
         body: JSON.stringify(payload),
@@ -27,9 +24,8 @@ export function updateLookAdminRequest(payload: UpdateLook) {
 }
 
 export function getUserAdminRequest(mail: string) {
-    const baseUrl = getHref();
 
-    return fetch(`${baseUrl}/user?mail=${mail}`,{
+    return sampleFetch(`/user?mail=${mail}`,{
         mode: 'cors',
         headers: {
             'Content-Type': 'application/json'

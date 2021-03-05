@@ -1,10 +1,9 @@
 import { ClothStateType } from "../redux/types";
-import { getHref, handleErrors } from "./enviroment";
+import { sampleFetch } from "./requestService";
 
 export function createClothRequest(cloth: Cloth) {
-    const baseUrl = getHref();
 
-    return fetch(`${baseUrl}/createCloth`, {
+    return sampleFetch(`/createCloth`, {
         method: 'post',
         body: JSON.stringify(cloth),
         mode: 'cors',
@@ -16,21 +15,19 @@ export function createClothRequest(cloth: Cloth) {
 
 
 export function getClothsRequest() {
-    const baseUrl = getHref();
 
-    return fetch(`${baseUrl}/cloths`, {
+    return sampleFetch(`/cloths`, {
         method: 'get',
         mode: 'cors',
         headers: {
             'Content-Type': 'application/json'
         },
-    }).then(handleErrors)
+    })
 }
 
 export function deleteClothRequest(ids: string[]) {
-    const baseUrl = getHref();
 
-    return fetch(`${baseUrl}/cloths`, {
+    return sampleFetch(`/cloths`, {
         method: 'delete',
         body: JSON.stringify(ids),
         mode: 'cors',
@@ -41,8 +38,7 @@ export function deleteClothRequest(ids: string[]) {
 }
 
 export function getClothsByIdRequest(ids: string[]) {
-    const baseUrl = getHref();
-    return fetch(`${baseUrl}/clothsById`, {
+    return sampleFetch(`/clothsById`, {
         method: 'post',
         body: JSON.stringify(ids),
         mode: 'cors',
@@ -66,8 +62,6 @@ export type ClothType = CreatedClothType & {
 }
 
 export class Cloth {
-   
-
     static listToObject(cloths: ClothType[]) {
         const clothsObject: ClothStateType = {};
         cloths.forEach((cloth: ClothType) => {

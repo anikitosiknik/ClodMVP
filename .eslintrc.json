@@ -21,6 +21,8 @@
     },
     "globals": {
         "JSX": true,
-        "Partial": true
+        "Partial": true,
+        "RequestInfo": true,
+        "RequestInit": true
     }
 }
