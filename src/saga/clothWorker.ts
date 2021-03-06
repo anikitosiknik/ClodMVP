@@ -5,8 +5,13 @@ import { setUser } from "../redux/reducers/user";
 import { getClothsByIdRequest, createClothRequest, getClothsRequest, deleteClothRequest, Cloth, ClothType } from "../utils/clothsService";
 
 export function* createClothAsync({ payload } : { type: string, forceReload: any, payload: Cloth}) {
-     yield call(()=>createClothRequest(payload));
-     yield put(fetchGetCloths());
+    try {
+        yield call(()=>createClothRequest(payload));
+        yield put(fetchGetCloths());
+    }
+    catch  {
+        yield put(setUser({error: 'maxCloth'}))
+    }
     }
 
 export function* watchCreateCloth() {

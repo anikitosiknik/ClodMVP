@@ -7,8 +7,14 @@ import { deleteLooskRequest, createLookRequest, getLookIdsRequest, getLookReques
 
 
 export function* createLookAsync({ payload }: { type: string, forceReload: any, payload: createdLook }) {
-    yield call(() => createLookRequest(payload));
-    yield put(fetchGetLooks());
+    try {
+        yield call(() => createLookRequest(payload));
+        yield put(setUser({error: 'clothCreated'}))
+        yield put(fetchGetLooks());
+    }
+    catch {
+        yield put(setUser({error: 'maxLook'}))
+    }
 }
 
 export function* watchCreateLook() {

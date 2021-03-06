@@ -129,11 +129,9 @@ ClothList.propTypes = {
 };
 
 function LookButtons({ choosedCloth }: { choosedCloth: ClothType[] }) {
-  const [isCreateModalOpened, changeCreateModalOpened] = useState(false);
   const dispatch = useDispatch();
 
   const createLookHandler = (type: lookType) => {
-    changeCreateModalOpened(true);
     dispatch(
       fetchCreateLook({
         ready: false,
@@ -142,18 +140,7 @@ function LookButtons({ choosedCloth }: { choosedCloth: ClothType[] }) {
       })
     );
   };
-  return isCreateModalOpened ? (
-    <Modal closeEvent={() => changeCreateModalOpened(false)}>
-      <div className="createModal">
-        <h2 className="createModalHeader">Мы приняли вашу заявку</h2>
-        <h3 className="createModalText">
-          {" "}
-          Clod как можно быстрее подберёт вам лучшие образы
-        </h3>
-        <p className="createModalWarning">Это займет не более 12 часов</p>
-      </div>
-    </Modal>
-  ) : (
+  return  (
     <div className="lookButtons">
       <button className="btn soon">Вручную</button>
       <button className="btn" onClick={() => createLookHandler("clod")}>
