@@ -37,11 +37,11 @@ function UserIcon() {
         isPopupShown={isPopupShown}
         togglePopupShown={togglePopupShown}
       />
-      <img
+      <div
         className="userIcon"
-        src={userPicture || userIcon}
+        style={{backgroundImage: `url("${userPicture || userIcon}")`}}
         onClick={() => togglePopupShown(!isPopupShown)}
-      ></img>
+      ></div>
     </React.Fragment>
   );
 }
@@ -73,8 +73,7 @@ function UserPopup({
       onClick={togglePopup}
     >
       <div className={`userPopup ${isPopupShown ? "shown" : ""}`}>
-        <div className="userPopup-iconContainer">
-          <img src={user.userPicture || userIcon} className="userPopup-icon" />
+        <div className="userPopup-iconContainer" style={{backgroundImage: `url("${user.userPicture || userIcon}")`}}>
           <div className="userPopup-plus">
             <input
               type="file"

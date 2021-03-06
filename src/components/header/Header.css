@@ -17,6 +17,9 @@
     border-radius: 50%;
     filter: drop-shadow(2px 4px 4px rgba(0, 0, 0, 0.25));
     justify-self: self-end;
+    
+    background-position: 50%;
+    background-size: cover;
 }
 
 
@@ -68,16 +71,16 @@
 .userPopup-iconContainer {
     align-self: flex-end;
     position: relative;
-}
 
-.userPopup-icon {
     width: 80px;
     height: 80px;
     border-radius: 50%;
     filter: drop-shadow(2px 4px 4px rgba(0, 0, 0, 0.25));
     border: 1px solid black;
-
+    background-position: 50%;
+    background-size: cover;
 }
+
 
 .userPopup-plus {
     position: absolute;
