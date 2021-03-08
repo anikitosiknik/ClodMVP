@@ -1,4 +1,5 @@
 import {
+  FETCH_CHANGE_CATEGORY_LOOK,
   FETCH_CREATE_LOOK,
   FETCH_DELETE_LOOKS,
   FETCH_GET_LOOKS,
@@ -36,3 +37,4 @@ export const fetchGetLooks = () => ({ type: FETCH_GET_LOOKS });
 export const fetchGetLookIds = (payload: lookList) => ({ type: FETCH_GET_LOOK_IDS, payload})
 export const fetchDeleteLooks = (payload: string[]) => ({type: FETCH_DELETE_LOOKS, payload})
 export const fetchToggleLikeLook = (payload: string) => ({type: FETCH_TOGGLE_LIKE_LOOK, payload})
+export const fetchChangeCategoryLook = (payload: {id: string, category: string}) => ({type: FETCH_CHANGE_CATEGORY_LOOK, payload})

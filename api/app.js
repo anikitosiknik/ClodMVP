@@ -592,6 +592,21 @@ app.post('/api/createLook', authMiddleware, function (req, res) {
 
 })
 
+
+app.put('/api/changeType', authMiddleware, function (req, res) {
+    const {id, category} = req.body;
+    let stmt = `UPDATE look SET  category = '${category}'  WHERE  id = '${id}';`
+
+    connection.query(stmt, (err, results, field) => {
+        if (err) {
+            res.status(400)
+            return res.send(err)
+        }
+        res.status(200);
+        res.send({message: 'ok'})
+    })
+})
+
 app.get('/api/looks', authMiddleware, function (req, res) {
 
 
@@ -761,6 +776,7 @@ app.post('/api/updateLookAdmin', authMiddleware, function (req, res) {
 
     let stmt = `SELECT isAdmin FROM users WHERE authKey = '${req.cookies.authKey}'`
     connection.query(stmt, (err, results, fields) => {
+        const { clothDelete, clothUpd, clothCreate, id, img, mail } = req.body;
         if (err) {
             if (err.code === "ER_DUP_ENTRY") {
                 res.status(409)
@@ -791,7 +807,7 @@ app.post('/api/updateLookAdmin', authMiddleware, function (req, res) {
                 text: `Один из ваших образов готов.`,
 
             }).then(() => {
-                const { clothDelete, clothUpd, clothCreate, id, img } = req.body;
+               
                 let stmt = `UPDATE look SET  img = '${img}', ready = 1 WHERE  id = '${id}';`
                 clothDelete.forEach(clothId => {
                     stmt = stmt + ` DELETE FROM look_has_cloth WHERE cloth_id = '${clothId}' AND  look_id = '${id}';`

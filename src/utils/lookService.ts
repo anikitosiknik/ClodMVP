@@ -63,6 +63,17 @@ export function toggleLikeLookRequest(lookId: string) {
     })
 }
 
+export function changeCategoryLookRequest(payload: {id: string, category: string}) {
+    return sampleFetch('/changeType', {
+        method: 'put',
+        mode: 'cors',
+        body: JSON.stringify(payload),
+        headers: {
+            'Content-Type': 'application/json'
+        },
+    })
+}
+
 
 export function looksObjectToList(looks: lookState): lookList {
     const lookList: lookList = [];

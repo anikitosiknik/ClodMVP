@@ -29,7 +29,6 @@ export function* watchGetLookIdsAdmin () {
 
 }
 
-
 export function* updateLookAdminAsync ({ payload } : {type: string, forceReload: any, payload: UpdateLook}) {
     yield call(() => updateLookAdminRequest(payload))
     yield put(fetchGetLooksAdmin())

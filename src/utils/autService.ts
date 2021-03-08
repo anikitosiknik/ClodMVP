@@ -88,7 +88,7 @@ export function autoLoginRequest() {
 }
 export function logOutRequest() {
     
-    return fetch(`/logOut`, {
+    return sampleFetch(`/logOut`, {
         method: 'get'
     })
 }

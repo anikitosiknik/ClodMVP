@@ -9,17 +9,18 @@ import basketIcon from "../../imgs/basketIcon.svg";
 import plusIcon from "../../imgs/plus.svg";
 
 import "./LookModal.css";
-import "./DesktopLookModal.css"
+import "./DesktopLookModal.css";
 import {
+  fetchChangeCategoryLook,
   fetchDeleteLooks,
   fetchToggleLikeLook,
 } from "../../redux/reducers/look";
-import { CLOTH_TYPES } from "../../utils/const";
+import { CLOTH_TYPES, LOOKS_CATEGORIES_FOR_CHOOSE } from "../../utils/const";
 
-const clothTypeObject: {[key: string]: string} = {};
-CLOTH_TYPES.forEach(type=> {
-  clothTypeObject[type.value] = type.title
-})
+const clothTypeObject: { [key: string]: string } = {};
+CLOTH_TYPES.forEach((type) => {
+  clothTypeObject[type.value] = type.title;
+});
 
 export function LookModal({
   closeEvent,
@@ -39,6 +40,28 @@ export function LookModal({
       <div className="lookModal">
         <div className="lookModalControls">
           <img src={backIcon} alt="" onClick={() => closeEvent()} />
+          {look.ready ? (
+            <select
+            defaultValue={look.category}
+              onChange={(e) => {
+                dispatch(
+                  fetchChangeCategoryLook({ id: look.id, category: e.target.value })
+                );
+                closeEvent()
+              }
+                
+              }
+            >
+              {[{ title: "Все", type: "" }, ...LOOKS_CATEGORIES_FOR_CHOOSE].map(
+                (cloth) => (
+                  <option key={cloth.title} value={cloth.type} >
+                    {cloth.title}
+                  </option>
+                )
+              )}
+            </select>
+          ) : null}
+
           <img
             src={likeIcon}
             onClick={() => {
@@ -70,16 +93,21 @@ export function LookModal({
                 <div key={id} className="lookModalCloth">
                   <img className="lookModalImg" src={look.img}></img>
                   <div className="lookModalClothInfo">
-                    <p className="lookModalType">{clothTypeObject[look.type]}</p>
+                    <p className="lookModalType">
+                      {clothTypeObject[look.type]}
+                    </p>
                     <div
                       className="lookModalColor"
                       style={{ backgroundColor: look.color }}
                     ></div>
-                    <a href={look.link}
+                    <a
+                      href={look.link}
                       className={`btn lookModalButton ${
                         look.link ? "show" : "hide"
                       }`}
-                    >Купить</a>
+                    >
+                      Купить
+                    </a>
                   </div>
                 </div>
               );

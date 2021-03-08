@@ -129,12 +129,18 @@ export const CLOTH_TYPES = [
     {title: 'Аксессуары', value: 'accessories'},
 ]
 
+export const LOOKS_CATEGORIES_FOR_CHOOSE:  { title: string, type: lookCategories}[] = [
+  {title: 'Вечерние', type: 'date'},
+  {title: 'Повседневние', type: 'casual'},
+  {title: 'Спортивные', type: 'sport'},
+  {title: 'Пляжные', type: 'beach'},
+]
+
 export const LOOKS_CATEGORIES: { title: string, type: lookCategories}[] = [
     {title: 'Все', type: 'all'},
     {title: 'Избранное', type: 'favorite'},
-    {title: 'Вечерние', type: 'date'},
-    {title: 'Повседневние', type: 'casual'},
-    {title: 'Спортивные', type: 'sport'},
-    {title: 'Пляжные', type: 'beach'},
+    ...LOOKS_CATEGORIES_FOR_CHOOSE,
     {title: 'В обработке', type: 'notready'},
 ]
+
+

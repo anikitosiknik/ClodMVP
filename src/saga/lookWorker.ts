@@ -1,9 +1,9 @@
 import { all, call, put, takeLatest } from "redux-saga/effects";
-import { FETCH_TOGGLE_LIKE_LOOK, FETCH_CREATE_LOOK, FETCH_DELETE_LOOKS, FETCH_GET_LOOKS, FETCH_GET_LOOK_IDS } from "../redux/actionTypes";
+import { FETCH_TOGGLE_LIKE_LOOK, FETCH_CREATE_LOOK, FETCH_DELETE_LOOKS, FETCH_GET_LOOKS, FETCH_GET_LOOK_IDS, FETCH_CHANGE_CATEGORY_LOOK } from "../redux/actionTypes";
 import { fetchGetLookIds, fetchGetLooks, updateLooks } from "../redux/reducers/look";
 import { setUser } from "../redux/reducers/user";
 import { createdLook, lookList, lookState, Look, clothInLookIds } from "../redux/types";
-import { deleteLooskRequest, createLookRequest, getLookIdsRequest, getLookRequest, toggleLikeLookRequest } from "../utils/lookService";
+import { deleteLooskRequest, createLookRequest, getLookIdsRequest, getLookRequest, toggleLikeLookRequest, changeCategoryLookRequest } from "../utils/lookService";
 
 
 export function* createLookAsync({ payload }: { type: string, forceReload: any, payload: createdLook }) {
@@ -68,6 +68,14 @@ export function* watchToggleLikeLook() {
 
 }
 
+export function* changeCategoryLookAsync({ payload }: { type: string, forceReload: any, payload: {id: string, category: string} }) {
+    yield call(() => changeCategoryLookRequest(payload))
+    yield put(fetchGetLooks())
+}
+
+export function* watchChangeCategoryLook() {
+    yield takeLatest(FETCH_CHANGE_CATEGORY_LOOK, changeCategoryLookAsync)
+}
 
 export default function* () {
     yield all([
@@ -75,7 +83,8 @@ export default function* () {
         watchCreateLook(),
         watchGetLookIds(),
         watchDeleteLook(),
-        watchToggleLikeLook()
+        watchToggleLikeLook(),
+        watchChangeCategoryLook()
     ])
 }
 
