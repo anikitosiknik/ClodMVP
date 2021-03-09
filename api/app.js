@@ -803,8 +803,11 @@ app.post('/api/updateLookAdmin', authMiddleware, function (req, res) {
             const a = transporter.sendMail({
                 from: 'anikitosiknik@gmail.com',
                 to: mail,
-                subject: 'Напоминалка',
-                text: `Один из ваших образов готов.`,
+                subject: 'Оповещение',
+                text: `Здравствуйте! Ваш персональный образ готов, зайдите в веб-приложение clod.site, чтобы увидеть созданную для Вас комбинацию.
+
+                С уважением,
+                Clod`,
 
             }).then(() => {
                
