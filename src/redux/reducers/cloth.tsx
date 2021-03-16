@@ -1,5 +1,6 @@
 import { CreatedClothType } from "../../utils/clothsService";
 import {
+  DELETE_CLOTHS,
   FETCH_CREATE_CLOTH,
   FETCH_DELETE_CLOTH,
   FETCH_GET_CLOTHS,
@@ -19,6 +20,14 @@ export default function (
     case UPDATE_CLOTHS: {
       return { ...action.payload };
     }
+    case DELETE_CLOTHS: {
+      const ids: string[] = action.payload;
+      const stateCopy = {...state};
+      ids.forEach(id=> {
+        delete stateCopy[id]
+      })
+      return stateCopy
+    }
     case TOGGLE_CHOOSED_CLOTH: {
       return {
         ...state,
@@ -37,6 +46,12 @@ export const updateCloths = (payload: ClothStateType) => ({
   type: UPDATE_CLOTHS,
   payload,
 });
+
+export const deleteCloths = (payload: string[]) => ({
+  type: DELETE_CLOTHS,
+  payload
+})
+
 export const toggleChoosedCloth = (id: string) => ({
   type: TOGGLE_CHOOSED_CLOTH,
   payload: id,
