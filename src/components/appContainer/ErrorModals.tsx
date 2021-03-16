@@ -60,7 +60,7 @@ function SubsExpired() {
   return (
     <div>
       <h2>У вас закончилась подписка</h2>
-      <button className="btn">Обновить подписку</button>
+      <a className="btn" href={'https://checkout.bepaid.by/v2/confirm_order/prd_80f5ad55842f6bbf/15111'} >Обновить подписку</a>
     </div>
   );
 }

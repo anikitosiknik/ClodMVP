@@ -34,15 +34,15 @@ function UserForm() {
   const user = useSelector((state: RootState) => state.user);
   const [isImagePage, changeImagePage] = useState(false);
   const [choosedImages, changeChoosedImages] = useState<number[]>(
-    user.choosedImages.split(",").map((el) => Number(el))
+    user.choosedImages ? user.choosedImages.split(",").map((el) => Number(el)) : [0,0,0]
   );
 
   const numbersInput = [
-    NumberInput("Обхват груди", "см", "chest", user.chest.toString()),
-    NumberInput("Обхват талии", "см", "waist", user.waist.toString()),
-    NumberInput("Обхват бедер", "см", "hips", user.hips.toString()),
-    NumberInput("Рост", "см", "height", user.height.toString()),
-    NumberInput("Возраст", "лет", "age", user.age.toString()),
+    NumberInput("Обхват груди", "см", "chest", user.chest ? user.chest.toString() : ''),
+    NumberInput("Обхват талии", "см", "waist", user.waist ? user.waist.toString() : ''),
+    NumberInput("Обхват бедер", "см", "hips", user.hips? user.hips.toString() : ''),
+    NumberInput("Рост", "см", "height", user.height? user.height.toString() : ''),
+    NumberInput("Возраст", "лет", "age", user.age? user.age.toString(): ''),
   ];
   const colorInputs = [
     ColorInput("Цвет волос", HAIR_COLORS, "hair", user.hair),

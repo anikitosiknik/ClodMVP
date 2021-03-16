@@ -91,7 +91,7 @@ function UserPopup({
         </div>
         <div className="userPopup-buttons">
           <button className="btn" onClick={()=>disptach(setUser({...user, needChanges: true}))}>Параметры тела</button>
-          <button className="btn">Подписка</button>
+          <a className="btn" href={'https://checkout.bepaid.by/v2/confirm_order/prd_80f5ad55842f6bbf/15111'}>Подписка</a>
           <button className="btn" onClick={()=>disptach(fetchLogOut())}>Выйти</button>
         </div>
       </div>

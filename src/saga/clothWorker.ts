@@ -9,8 +9,14 @@ export function* createClothAsync({ payload } : { type: string, forceReload: any
         yield call(()=>createClothRequest(payload));
         yield put(fetchGetCloths());
     }
-    catch  {
-        yield put(setUser({error: 'maxCloth'}))
+    catch (error) {
+        const er: Error = error;
+        if (er.message === "Payment Required") {
+            yield put(setUser({error: 'Payment Required'}))
+        } 
+        else {
+            yield put(setUser({error: 'maxCloth'}))
+        }
     }
     }
 

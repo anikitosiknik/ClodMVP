@@ -329,7 +329,7 @@ app.get('/api/autoLogin', function (req, res) {
 
 })
 
-app.get('/api/logOut', authMiddleware, function (req, res) {
+app.get('/api/logOut', function (req, res) {
     let stmt = `UPDATE users SET authKey = NULL WHERE  authKey = '${req.cookies.authKey}'`;
     connection.query(stmt, (err, results, fields) => {
         res.cookie('authKey', '', { maxAge: 0, httpOnly: true, })
@@ -550,7 +550,7 @@ app.post('/api/createLook', authMiddleware, function (req, res) {
 
     let stmt = `SELECT id FROM look WHERE createdBy = (SELECT mail FROM users WHERE authKey = '${req.cookies.authKey}')  AND  ready = 0`;
     connection.query(stmt, (err, results, field) => {
-        if(results.length > 15) {
+        if(results.length > 5) {
             res.status(403);
             return res.send({
                 error: 'too many looks for you'
@@ -819,8 +819,9 @@ app.post('/api/updateLookAdmin', authMiddleware, function (req, res) {
                     stmt = stmt + ` UPDATE cloth SET img = '${clothUpdObj.img}' WHERE id = '${clothUpdObj.id}';`
                 })
                 clothCreate.forEach(cloth => {
+                    const {img ,color, link, type } = cloth;
                     const clothId = generateAuthToken()
-                    stmt = stmt + `${generateInsertSQLCommand('cloth', { id: clothId, img, color, type, createdBy, link })};  ${generateInsertSQLCommand('look_has_cloth', { look_id: id, cloth_id: clothId })};`;
+                    stmt = stmt + `${generateInsertSQLCommand('cloth', { id: clothId, img, color, type, createdBy: 'admin', link })};  ${generateInsertSQLCommand('look_has_cloth', { look_id: id, cloth_id: clothId })};`;
                 })
                 connection.query(stmt, (err, results, fields) => {
                     if (err) {

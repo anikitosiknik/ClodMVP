@@ -10,7 +10,10 @@ function getHref() {
 
  function handleErrors(response: Response) {
     if (!response.ok) {
-        throw Error(response.statusText);
+        if (response.status === 402) {
+            throw Error('Payment Required');
+        }
+        else throw Error(response.statusText);
     }
     return response;
 }
