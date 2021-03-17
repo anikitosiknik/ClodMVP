@@ -94,7 +94,7 @@ export class ClothStateParser {
     value: string = '';
     reader: any;
 
-    constructor(stream: any, ) {
+    constructor(stream: any,) {
         this.reader = stream.getReader();
         this.stream = new ReadableStream({
             start: (controller) => {
@@ -125,29 +125,30 @@ export class ClothStateParser {
     addChunk(chunk: string): void {
         this.value += chunk;
         var regExp = /\[(.*?)\]/;
-        const jsonArray = regExp.exec(this.value);
-        if (jsonArray && jsonArray[0]) {
+        let jsonArray = regExp.exec(this.value);
+        while (jsonArray && jsonArray[0]) {
             this.value = this.value.replace(jsonArray[0], '');
             this.processCloth(jsonArray[0])
+            jsonArray = regExp.exec(this.value);
         }
     }
 
-    
+
     processCloth(jsonData: string) {
         const data: any[] = JSON.parse(jsonData);
-        switch (typeof data[0] ) {
+        switch (typeof data[0]) {
             case 'object':
-                store.dispatch({type: UPDATE_CLOTHS, payload: Cloth.listToObject(data) })
+                store.dispatch({ type: UPDATE_CLOTHS, payload: Cloth.listToObject(data) })
                 break;
-        
-                case 'string':
-                    store.dispatch({type: UPDATE_CLOTH_IMG, payload: {id: data[0], img: data[1]} })
-                    break;
-            
+
+            case 'string':
+                store.dispatch({ type: UPDATE_CLOTH_IMG, payload: { id: data[0], img: data[1] } })
+                break;
+
             default:
                 break;
         }
-        
+
 
     }
 
