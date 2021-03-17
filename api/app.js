@@ -483,17 +483,14 @@ app.get('/api/cloths', authMiddleware, function (req, res) {
             return console.error(err.message);
         }
         const stream = new Stream.Readable()
-        const answer = [];
 
         stream._read = () => {
         }
 
         const data = results.map(el=> ({id: el.id, color: el.color, type: el.type, createdBy: el.createdBy }))
         stream.push(JSON.stringify(data));
-        answer.push(JSON.stringify(data));
         results.forEach(e => {
             stream.push(JSON.stringify([e.id, e.img]));
-            answer.push(JSON.stringify([e.id, e.img]));
         })
         res.status(201)
         stream.pipe(res);
