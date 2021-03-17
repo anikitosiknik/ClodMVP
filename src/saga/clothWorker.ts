@@ -2,7 +2,7 @@ import { all, call, put, takeLatest } from "redux-saga/effects";
 import { FETCH_CREATE_CLOTH, FETCH_GET_CLOTHS, FETCH_DELETE_CLOTH, FETCH_GET_CLOTHS_BY_ID } from "../redux/actionTypes";
 import { fetchGetCloths, updateCloths, deleteCloths } from "../redux/reducers/cloth";
 import { setUser } from "../redux/reducers/user";
-import { getClothsByIdRequest, createClothRequest, getClothsRequest, deleteClothRequest, Cloth, ClothType } from "../utils/clothsService";
+import { getClothsByIdRequest, createClothRequest, getClothsRequest, deleteClothRequest, Cloth, ClothType, ClothStateParser } from "../utils/clothsService";
 
 export function* createClothAsync({ payload }: { type: string, forceReload: any, payload: Cloth }) {
     try {
@@ -27,8 +27,7 @@ export function* watchCreateCloth() {
 export function* getClothsAsync() {
     try {
         const data = yield call(() => getClothsRequest());
-        const json: ClothType[] = yield call(() => new Promise(res => res(data.json())))
-        yield put(updateCloths(Cloth.listToObject(json)))
+        new ClothStateParser(data);
     }
     catch (error) {
         const er: Error = error;

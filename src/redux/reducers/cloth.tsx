@@ -7,6 +7,7 @@ import {
   FETCH_GET_CLOTHS_BY_ID,
   TOGGLE_CHOOSED_CLOTH,
   UPDATE_CLOTHS,
+  UPDATE_CLOTH_IMG,
 } from "../actionTypes";
 import { ClothStateType,  } from "../types";
 
@@ -19,6 +20,12 @@ export default function (
   switch (action.type) {
     case UPDATE_CLOTHS: {
       return { ...action.payload };
+    }
+    case UPDATE_CLOTH_IMG: {
+      const cloth: {img: string, id: string} = action.payload;
+      const stateCopy = {...state} 
+      stateCopy[cloth.id].img = cloth.img;
+      return stateCopy;
     }
     case DELETE_CLOTHS: {
       const ids: string[] = action.payload;
@@ -46,6 +53,11 @@ export const updateCloths = (payload: ClothStateType) => ({
   type: UPDATE_CLOTHS,
   payload,
 });
+
+export const updateClothImg = (payload: { id: string, img: string}) => ({
+  type: UPDATE_CLOTH_IMG,
+  payload
+})
 
 export const deleteCloths = (payload: string[]) => ({
   type: DELETE_CLOTHS,

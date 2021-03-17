@@ -18,6 +18,7 @@ import {
 import { fetchCreateLook } from "../../redux/reducers/look";
 import Modal from "../Modal/Modal";
 import { Cloth, ClothType, CreatedClothType } from "../../utils/clothsService";
+import Roller from "../Roller/Roller";
 
 function ClothPage() {
   const [isClothCreating, changeClothCreating] = useState(false);
@@ -94,11 +95,17 @@ function ClothList({ clothList }: { clothList: ClothType[] }) {
   const columnsList = useColumnList();
 
   return (
-    <div className="clothList" style={{gridTemplateColumns: `repeat(${columnsList.length}, 1fr)`}}>
+    <div
+      className="clothList"
+      style={{ gridTemplateColumns: `repeat(${columnsList.length}, 1fr)` }}
+    >
       {columnsList.map((row) => (
-        <div key={row} className="clothListColumn" >
+        <div key={row} className="clothListColumn">
           {clothList
-            .filter((el, index) => (index + row - clothList.length + 1 ) % columnsList.length === 0)
+            .filter(
+              (el, index) =>
+                (index + row - clothList.length + 1) % columnsList.length === 0
+            )
             .map((cloth: ClothType) => {
               return (
                 <div
@@ -110,11 +117,17 @@ function ClothList({ clothList }: { clothList: ClothType[] }) {
                     alt=""
                     className={`clothChoosed ${cloth.choosed ? "choosed" : ""}`}
                   />
-                  <img
-                    className={"clothImage"}
-                    onClick={() => dispatch(toggleChoosedCloth(cloth.id || ""))}
-                    src={cloth.img}
-                  />
+                  {!cloth.img ? (
+                    <Roller />
+                  ) : (
+                    <img
+                      className={"clothImage"}
+                      onClick={() =>
+                        dispatch(toggleChoosedCloth(cloth.id || ""))
+                      }
+                      src={cloth.img}
+                    />
+                  )}
                 </div>
               );
             })}
@@ -140,7 +153,7 @@ function LookButtons({ choosedCloth }: { choosedCloth: ClothType[] }) {
       })
     );
   };
-  return  (
+  return (
     <div className="lookButtons">
       <button className="btn soon">Вручную</button>
       <button className="btn" onClick={() => createLookHandler("clod")}>
@@ -203,7 +216,7 @@ const useColumnList = () => {
   useEffect(() => {
     function handleResize() {
       const width = window.innerWidth;
-      changeColumnCount(Math.round(width/140));
+      changeColumnCount(Math.round(width / 140));
     }
 
     window.addEventListener("resize", handleResize);
@@ -211,7 +224,7 @@ const useColumnList = () => {
     handleResize();
 
     return () => window.removeEventListener("resize", handleResize);
-  }, []); 
+  }, []);
 
-  return Array.from(Array(columnCount).keys())
+  return Array.from(Array(columnCount).keys());
 };
