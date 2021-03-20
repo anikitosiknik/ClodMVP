@@ -76,6 +76,9 @@ function CategoryPage({ page }: { page: { title: string; looks: lookList } }) {
             className="categoryPageLook"
             key={look.id}
           >
+            <p>{look.createdBy}</p>
+            <p>{look.createdTime}</p>
+            <p>{look.type}</p>
             <img src={look.img || plus}></img>
           </div>
         ))}

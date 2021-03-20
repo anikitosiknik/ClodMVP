@@ -26,7 +26,6 @@ function ClothPage() {
   const [filterCloth, changeFilter] = useState("");
   const dispatch = useDispatch();
 
-
   const createCloth = (cloth: CreatedClothType) => {
     dispatch(fetchCreateCloth(cloth));
     changeClothCreating(false);
@@ -42,6 +41,24 @@ function ClothPage() {
       return cloth.choosed;
     });
   };
+
+  const getInfoElement = () => (
+    <>
+      {getClothsList().length < 2 ? (
+        <>
+          Добавьте фотографии <br /> Вашей одежды
+        </>
+      ) : getChoosedClothList().length > 1 ? (
+        <>
+          Создайте <br /> образ
+        </>
+      ) : (
+        <>
+          Выбирите фотографии <br /> для создания образа
+        </>
+      )}
+    </>
+  );
 
   return (
     <>
@@ -65,13 +82,15 @@ function ClothPage() {
         createCloth={() => changeClothCreating(true)}
         changeFilter={changeFilter}
         filterCloth={filterCloth}
+        infoElement={getInfoElement()}
       />
       {getChoosedClothList().length > 1 ? (
         <LookButtons choosedCloth={getChoosedClothList()} />
       ) : (
         <></>
       )}
-      {Object.keys(cloths) ? (
+
+      {Object.keys(cloths).length ? (
         <ClothList clothList={getClothsList()} />
       ) : (
         <div
@@ -79,9 +98,6 @@ function ClothPage() {
           onClick={() => changeClothCreating(true)}
         >
           <img src={plusIcon} alt="" />
-          <p className="addClothText">
-            Добавьте фотографии <br /> Вашей одежды
-          </p>
         </div>
       )}
     </>
@@ -102,10 +118,19 @@ function ClothList({ clothList }: { clothList: ClothType[] }) {
       {columnsList.map((row) => (
         <div key={row} className="clothListColumn">
           {clothList
+            .sort((clothOne, clothTwo) =>
+              new Date(clothOne.createdTime || "") >
+              new Date(clothTwo.createdTime || "")
+                ? -1
+                : 1
+            )
+
             .filter(
               (el, index) =>
-                (index + row - clothList.length + 1) % columnsList.length === 0
+                (index + row - clothList.length + 1) % columnsList.length ===
+                  0 && el.createdBy !== "admin"
             )
+            .reverse()
             .map((cloth: ClothType) => {
               return (
                 <div
@@ -157,10 +182,10 @@ function LookButtons({ choosedCloth }: { choosedCloth: ClothType[] }) {
     <div className="lookButtons">
       <button className="btn soon">Вручную</button>
       <button className="btn" onClick={() => createLookHandler("clod")}>
-        clod
+        составить
       </button>
       <button className="btn" onClick={() => createLookHandler("clod+")}>
-        clod+
+        дополнить
       </button>
     </div>
   );
@@ -176,26 +201,29 @@ function ClothBusket({ choosedCloths }: { choosedCloths: ClothType[] }) {
   const deleteClothHandler = () =>
     dispatch(fetchDeleteCloth(choosedCloths.map((cloth) => cloth.id || "")));
   return isDeleteModalOpened ? (
-    <Modal closeEvent={() => changeDeleteModalOpened(false)}>
-      <div className="deleteModal">
-        <h2 className="deleteModalHeader">
-          Вы действительно хотите удалить выбранные вещи?
-        </h2>
-        <button
-          className="deleteModalNo btn"
-          onClick={() => changeDeleteModalOpened(false)}
-        >
-          Нет
-        </button>
-        <button
-          className="deleteModalYes btn"
-          onClick={() => deleteClothHandler()}
-        >
-          Да
-        </button>
-        <p className="deleteModalWarning">Одежда удалится безвозвратно</p>
-      </div>
-    </Modal>
+    <>
+      <Modal closeEvent={() => changeDeleteModalOpened(false)}>
+        <div className="deleteModal">
+          <h2 className="deleteModalHeader">
+            Вы действительно хотите удалить выбранные вещи?
+          </h2>
+          <button
+            className="deleteModalNo btn"
+            onClick={() => changeDeleteModalOpened(false)}
+          >
+            Нет
+          </button>
+          <button
+            className="deleteModalYes btn"
+            onClick={() => deleteClothHandler()}
+          >
+            Да
+          </button>
+          <p className="deleteModalWarning">Одежда удалится безвозвратно</p>
+        </div>
+      </Modal>
+      <div className="emptyIcon"></div>
+    </>
   ) : (
     <div
       className="basketContainer"

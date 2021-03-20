@@ -426,20 +426,21 @@ app.post('/api/createCloth', authMiddleware, function (req, res) {
     let stmt = `SELECT id FROM cloth WHERE createdBy = '${createdBy}'`;
 
     connection.query(stmt, (err, results, fields) => {
-        if(results.length >= 15) {
-             res.status(403);
-             return res.send({
-                 error: 'too many cloth for you'
-             })
+        if (results.length >= 100) {
+            res.status(403);
+            return res.send({
+                error: 'too many cloth for you'
+            })
         }
         let stmt = generateInsertSQLCommand('cloth', {
             id: clothId,
             img,
             color,
             type,
-            createdBy
+            createdBy,
+            createdTime: new Date().toString()
         })
-    
+
         connection.query(stmt, (err, results, fields) => {
             if (err) {
                 if (err.code === "ER_DUP_ENTRY") {
@@ -448,8 +449,8 @@ app.post('/api/createCloth', authMiddleware, function (req, res) {
                         error: 'Duplicate Mail'
                     });
                 }
-    
-    
+
+
                 else res.send(err)
                 return console.error(err.message);
             }
@@ -461,7 +462,7 @@ app.post('/api/createCloth', authMiddleware, function (req, res) {
     })
 
 
-   
+
 })
 
 app.get('/api/cloths', authMiddleware, function (req, res) {
@@ -486,8 +487,8 @@ app.get('/api/cloths', authMiddleware, function (req, res) {
 
         stream._read = () => {
         }
-
-        const data = results.map(el=> ({id: el.id, color: el.color, type: el.type, createdBy: el.createdBy }))
+        req.setTimeout(5000);
+        const data = results.map(el => ({ id: el.id, color: el.color, type: el.type, createdBy: el.createdBy, createdTime: el.createdTime }))
         stream.push(JSON.stringify(data));
         results.forEach(e => {
             stream.push(JSON.stringify([e.id, e.img]));
@@ -561,7 +562,7 @@ app.post('/api/createLook', authMiddleware, function (req, res) {
 
     let stmt = `SELECT id FROM look WHERE createdBy = (SELECT mail FROM users WHERE authKey = '${req.cookies.authKey}')  AND  ready = 0`;
     connection.query(stmt, (err, results, field) => {
-        if(results.length > 5) {
+        if (results.length > 5) {
             res.status(403);
             return res.send({
                 error: 'too many looks for you'
@@ -569,32 +570,31 @@ app.post('/api/createLook', authMiddleware, function (req, res) {
         }
 
 
-    let stmt = `INSERT INTO look (id, type, createdBy) VALUES ('${lookId}', '${type}', (SELECT mail FROM users WHERE authKey = '${req.cookies.authKey}'));`
+        let stmt = `INSERT INTO look (id, type, createdBy, createdTime) VALUES ('${lookId}', '${type}', (SELECT mail FROM users WHERE authKey = '${req.cookies.authKey}'), '${new Date().toString()}');`
 
-    clothIds.forEach(clothId => {
-
-        stmt = stmt + `${generateInsertSQLCommand('look_has_cloth', { look_id: lookId, cloth_id: clothId })};`
-    })
-
-
-    connection.query(stmt, (err, results, fields) => {
-        if (err) {
-            if (err.code === "ER_DUP_ENTRY") {
-                res.status(409)
-                res.send({
-                    error: 'Duplicate Mail'
-                });
-            }
-
-
-            else res.send(err)
-            return console.error(err.message);
-        }
-        res.status(201)
-        res.send({
-            message: 'created succsfully'
+        clothIds.forEach(clothId => {
+            stmt = stmt + `${generateInsertSQLCommand('look_has_cloth', { look_id: lookId, cloth_id: clothId })};`
         })
-    });
+
+
+        connection.query(stmt, (err, results, fields) => {
+            if (err) {
+                if (err.code === "ER_DUP_ENTRY") {
+                    res.status(409)
+                    res.send({
+                        error: 'Duplicate Mail'
+                    });
+                }
+
+
+                else res.send(err)
+                return console.error(err.message);
+            }
+            res.status(201)
+            res.send({
+                message: 'created succsfully'
+            })
+        });
 
     })
 
@@ -605,7 +605,7 @@ app.post('/api/createLook', authMiddleware, function (req, res) {
 
 
 app.put('/api/changeType', authMiddleware, function (req, res) {
-    const {id, category} = req.body;
+    const { id, category } = req.body;
     let stmt = `UPDATE look SET  category = '${category}'  WHERE  id = '${id}';`
 
     connection.query(stmt, (err, results, field) => {
@@ -614,7 +614,7 @@ app.put('/api/changeType', authMiddleware, function (req, res) {
             return res.send(err)
         }
         res.status(200);
-        res.send({message: 'ok'})
+        res.send({ message: 'ok' })
     })
 })
 
@@ -637,7 +637,7 @@ app.get('/api/looks', authMiddleware, function (req, res) {
             return console.error(err.message);
         }
         res.status(201)
-        res.send(results.map(look => ({ ...look, favorite: !!look.favorite, ready: !!look.ready })))
+        res.send(results.map(look => ({ ...look, favorite: !!look.favorite, ready: !!look.ready, createdTime: look.createdTime  })))
     });
 })
 
@@ -821,7 +821,7 @@ app.post('/api/updateLookAdmin', authMiddleware, function (req, res) {
                 Clod`,
 
             }).then(() => {
-               
+
                 let stmt = `UPDATE look SET  img = '${img}', ready = 1 WHERE  id = '${id}';`
                 clothDelete.forEach(clothId => {
                     stmt = stmt + ` DELETE FROM look_has_cloth WHERE cloth_id = '${clothId}' AND  look_id = '${id}';`
@@ -830,7 +830,7 @@ app.post('/api/updateLookAdmin', authMiddleware, function (req, res) {
                     stmt = stmt + ` UPDATE cloth SET img = '${clothUpdObj.img}' WHERE id = '${clothUpdObj.id}';`
                 })
                 clothCreate.forEach(cloth => {
-                    const {img ,color, link, type } = cloth;
+                    const { img, color, link, type } = cloth;
                     const clothId = generateAuthToken()
                     stmt = stmt + `${generateInsertSQLCommand('cloth', { id: clothId, img, color, type, createdBy: 'admin', link })};  ${generateInsertSQLCommand('look_has_cloth', { look_id: id, cloth_id: clothId })};`;
                 })
@@ -963,7 +963,7 @@ function authMiddleware(req, res, next) {
 }
 
 
-function prepareUser (user) {
+function prepareUser(user) {
     const preparedUser = {};
     const initialState = {
         logined: false,
@@ -984,16 +984,16 @@ function prepareUser (user) {
         userPicture: "",
         isMailCodeReady: false,
         choosedImages: ''
-      };
-      
-      for (const key in user) {
+    };
+
+    for (const key in user) {
         preparedUser[key] = user[key] || initialState[key];
-      }
-      return preparedUser
+    }
+    return preparedUser
 }
 
 
-function generateInsertSQLCommand  (table, params)  {
+function generateInsertSQLCommand(table, params) {
     const values = Object.values(params).map((value) => typeof value === "string" ? `'${value}'` : `${value}`)
 
     return `INSERT INTO ${table} (${Object.keys(params).join(', ')}) VALUES (${values.join(', ')})`;

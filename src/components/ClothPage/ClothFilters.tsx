@@ -1,6 +1,5 @@
-import React, { useState } from "react";
+import React, { ReactElement, useState } from "react";
 import "./ClothPage.css";
-import PropTypes, { InferProps } from "prop-types";
 import filterIcon from "../../imgs/filterIcon.svg";
 import filterIconChoosed from "../../imgs/filterIconChoosed.svg";
 import { CLOTH_TYPES } from "../../utils/const";
@@ -9,7 +8,13 @@ function ClothFilters({
   createCloth,
   changeFilter,
   filterCloth,
-}: InferProps<typeof ClothFilters.propTypes>) {
+  infoElement,
+}: {
+  createCloth: () => void;
+  changeFilter: React.Dispatch<React.SetStateAction<string>>;
+  filterCloth: string;
+  infoElement: ReactElement
+}) {
   const [isFilterShowed, changeFilterShowed] = useState(false);
 
   return (
@@ -22,7 +27,7 @@ function ClothFilters({
       {!isFilterShowed ? (
         <>
           <p className="addClothText">
-            Добавьте фотографии <br /> Вашей одежды
+            {infoElement}
           </p>
           <div className="clothFiltresPlus" onClick={createCloth}>
             +
@@ -50,11 +55,5 @@ function ClothFilters({
     </div>
   );
 }
-
-ClothFilters.propTypes = {
-  createCloth: PropTypes.func.isRequired,
-  changeFilter: PropTypes.func.isRequired,
-  filterCloth: PropTypes.string.isRequired,
-};
 
 export default ClothFilters;

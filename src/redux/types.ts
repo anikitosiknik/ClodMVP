@@ -67,6 +67,7 @@ export type Look = createdLook & {
   id: string,
   favorite: boolean,
   img: string,
+  createdTime?: string,
 }
 
 

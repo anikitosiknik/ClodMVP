@@ -87,9 +87,9 @@ function ClothCreated() {
       <h2 className="createModalHeader">Мы приняли вашу заявку</h2>
       <h3 className="createModalText">
         {" "}
-        Clod как можно быстрее подберёт вам лучшие образы
+        Образ будет готов в течение 12 часов, так как сейчас искусственный интеллект находится в режиме обучения и модерируется профессиональным стилистом.
       </h3>
-      <p className="createModalWarning">Это займет не более 12 часов</p>
+      <p className="createModalWarning">Уведомление придёт вам на почту</p>
     </div>
   );
 }

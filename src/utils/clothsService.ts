@@ -57,6 +57,7 @@ export interface CreatedClothType {
     color: string;
     type: string;
     link?: string;
+    createdTime?: string;
 }
 
 export type ClothType = CreatedClothType & {
@@ -89,34 +90,21 @@ export class Cloth {
 }
 
 export class ClothStateParser {
-    stream: any;
+    stream: ReadableStream;
 
     value: string = '';
-    reader: any;
+    reader: ReadableStreamDefaultReader<Uint8Array>;
 
-    constructor(stream: any,) {
+    constructor(stream: ReadableStream<Uint8Array>) {
         this.reader = stream.getReader();
         this.stream = new ReadableStream({
-            start: (controller) => {
-                // The following function handles each data chunk
+            start: () => {
                 const push = () => {
-                    // "done" is a Boolean and value a "Uint8Array"
-                    this.reader.read().then(({ done, value }: { done: any, value: any }) => {
-                        // If there is no more data to read
-                        if (done) {
-                            console.log('done', done);
-                            controller.close();
-                            return;
-                        }
-                        // Get the data and send it to the browser via the controller
-                        controller.enqueue(value);
-                        // Check chunks by logging to the console
-                        // console.log(done, value);
-                        this.addChunk(new TextDecoder().decode(value))
+                    this.reader.read().then((value) => {
+                        this.addChunk(new TextDecoder().decode(value.value))
                         push();
                     })
                 }
-
                 push();
             }
         });
@@ -135,22 +123,17 @@ export class ClothStateParser {
 
 
     processCloth(jsonData: string) {
-        const data: any[] = JSON.parse(jsonData);
+        const data: ClothType[] = JSON.parse(jsonData);
         switch (typeof data[0]) {
             case 'object':
                 store.dispatch({ type: UPDATE_CLOTHS, payload: Cloth.listToObject(data) })
                 break;
-
             case 'string':
                 store.dispatch({ type: UPDATE_CLOTH_IMG, payload: { id: data[0], img: data[1] } })
                 break;
-
             default:
                 break;
         }
-
-
     }
-
 }
 

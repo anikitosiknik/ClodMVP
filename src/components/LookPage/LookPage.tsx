@@ -117,7 +117,10 @@ function LookCategories({
     >
       <div className="lookCategoryImgContainer">
         {looks.slice(0, 4).map((look) => (
-          <div className={`lookCategoryCloth ${look.img ? 'cover' : ''}`} key={look.id}>
+          <div
+            className={`lookCategoryCloth ${look.img ? "cover" : ""}`}
+            key={look.id}
+          >
             <img src={look.img || dots} />
           </div>
         ))}
@@ -138,7 +141,7 @@ const emptyLook = (): Look => ({
   type: "clod",
 });
 
- function CategoryPage({ page }: { page: categoryPage }) {
+function CategoryPage({ page }: { page: categoryPage }) {
   const [lookModal, changeLookModal] = useState<Look>(emptyLook());
   return (
     <>
@@ -150,15 +153,22 @@ const emptyLook = (): Look => ({
       ) : null}
       <h2>{page.title}</h2>
       <div className="categoryPage">
-        {page.looks.map((look) => (
-          <div
-            onClick={() => changeLookModal(look)}
-            className="categoryPageLook"
-            key={look.id}
-          >
-            <img src={look.img || dots}></img>
-          </div>
-        ))}
+        {page.looks
+          .sort((lookOne, lookTwo) =>
+            new Date(lookOne.createdTime || "") >
+            new Date(lookTwo.createdTime || "")
+              ? 1
+              : -1
+          )
+          .map((look) => (
+            <div
+              onClick={() => changeLookModal(look)}
+              className="categoryPageLook"
+              key={look.id}
+            >
+              <img src={look.img || dots}></img>
+            </div>
+          ))}
       </div>
     </>
   );

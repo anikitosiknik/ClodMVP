@@ -1,4 +1,8 @@
 
+.addClothButton {
+    flex: 1
+}
+
 .addClothText {
     color: #A5BCB4;
     font-size: 16px;

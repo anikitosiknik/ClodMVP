@@ -1,5 +1,6 @@
 import { CreatedClothType } from "../../utils/clothsService";
 import {
+  ADD_CLOTHS,
   DELETE_CLOTHS,
   FETCH_CREATE_CLOTH,
   FETCH_DELETE_CLOTH,
@@ -21,12 +22,16 @@ export default function (
     case UPDATE_CLOTHS: {
       return { ...action.payload };
     }
+    case ADD_CLOTHS: {
+      return {...state, ...action.payload}
+    }
     case UPDATE_CLOTH_IMG: {
       const cloth: {img: string, id: string} = action.payload;
       const stateCopy = {...state} 
       stateCopy[cloth.id].img = cloth.img;
       return stateCopy;
     }
+
     case DELETE_CLOTHS: {
       const ids: string[] = action.payload;
       const stateCopy = {...state};
@@ -51,6 +56,11 @@ export default function (
 
 export const updateCloths = (payload: ClothStateType) => ({
   type: UPDATE_CLOTHS,
+  payload,
+});
+
+export const addCloths = (payload: ClothStateType) => ({
+  type: ADD_CLOTHS,
   payload,
 });
 
