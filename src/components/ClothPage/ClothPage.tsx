@@ -5,7 +5,7 @@ import "./DesktopClothPage.css";
 import plusIcon from "../../imgs/plus.svg";
 import ChoosedIcon from "../../imgs/choosedIcon.svg";
 import BasketIcon from "../../imgs/basketIcon.svg";
-import { lookType, RootState } from "../../redux/types";
+import { ClothStateType, lookType, RootState } from "../../redux/types";
 import { useDispatch, useSelector } from "react-redux";
 import PropTypes from "prop-types";
 import { CreateClothModal } from "./CreateCloth";
@@ -19,9 +19,13 @@ import { fetchCreateLook } from "../../redux/reducers/look";
 import Modal from "../Modal/Modal";
 import { Cloth, ClothType, CreatedClothType } from "../../utils/clothsService";
 import Roller from "../Roller/Roller";
+import LazyContainer from "../LazyContainer/LazyContainer";
+
+const PhotoGuide = React.lazy(() => import("./../PhotoGuide/PhotoGuide"));
 
 function ClothPage() {
   const [isClothCreating, changeClothCreating] = useState(false);
+  const [isClothGuideShowed, changeClothGuideShowed] = useState(false);
   const cloths = useSelector((state: RootState) => state.cloth);
   const [filterCloth, changeFilter] = useState("");
   const dispatch = useDispatch();
@@ -60,6 +64,11 @@ function ClothPage() {
     </>
   );
 
+  const guideRead = () => {
+    changeClothGuideShowed(false);
+    changeClothCreating(true);
+  };
+
   return (
     <>
       <Header
@@ -69,6 +78,13 @@ function ClothPage() {
           ) : null
         }
       />
+      {isClothGuideShowed ? (
+        <Modal closeEvent={guideRead}>
+          <LazyContainer>
+            <PhotoGuide closeEvent={guideRead} />
+          </LazyContainer>
+        </Modal>
+      ) : null}
       {isClothCreating ? (
         <CreateClothModal
           closeEvent={() => {
@@ -91,11 +107,11 @@ function ClothPage() {
       )}
 
       {Object.keys(cloths).length ? (
-        <ClothList clothList={getClothsList()} />
+        <ClothList clothList={getClothsList().map(cloth=>cloth.id || '')} cloths={cloths} />
       ) : (
         <div
           className="addClothButton"
-          onClick={() => changeClothCreating(true)}
+          onClick={() => changeClothGuideShowed(true)}
         >
           <img src={plusIcon} alt="" />
         </div>
@@ -106,7 +122,7 @@ function ClothPage() {
 
 export default ClothPage;
 
-function ClothList({ clothList }: { clothList: ClothType[] }) {
+function ClothList({ clothList, cloths }: { clothList: string[], cloths: ClothStateType }) {
   const dispatch = useDispatch();
   const columnsList = useColumnList();
 
@@ -118,39 +134,39 @@ function ClothList({ clothList }: { clothList: ClothType[] }) {
       {columnsList.map((row) => (
         <div key={row} className="clothListColumn">
           {clothList
-            .sort((clothOne, clothTwo) =>
-              new Date(clothOne.createdTime || "") >
-              new Date(clothTwo.createdTime || "")
+            .sort((idOne, idTwo) =>
+              new Date(cloths[idOne].createdTime || "") >
+              new Date(cloths[idTwo].createdTime || "")
                 ? -1
                 : 1
             )
 
             .filter(
-              (el, index) =>
+              (id, index) =>
                 (index + row - clothList.length + 1) % columnsList.length ===
-                  0 && el.createdBy !== "admin"
+                  0 && cloths[id].createdBy !== "admin"
             )
             .reverse()
-            .map((cloth: ClothType) => {
+            .map((id: string) => {
               return (
                 <div
-                  key={cloth.id}
-                  className={`clothItem ${cloth.choosed ? "choosed" : ""}`}
+                  key={id}
+                  className={`clothItem ${cloths[id].choosed ? "choosed" : ""}`}
                 >
                   <img
                     src={ChoosedIcon}
                     alt=""
-                    className={`clothChoosed ${cloth.choosed ? "choosed" : ""}`}
+                    className={`clothChoosed ${cloths[id].choosed ? "choosed" : ""}`}
                   />
-                  {!cloth.img ? (
+                  {!cloths[id].img ? (
                     <Roller />
                   ) : (
                     <img
                       className={"clothImage"}
                       onClick={() =>
-                        dispatch(toggleChoosedCloth(cloth.id || ""))
+                        dispatch(toggleChoosedCloth(id))
                       }
-                      src={cloth.img}
+                      src={cloths[id].img}
                     />
                   )}
                 </div>

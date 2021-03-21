@@ -11,11 +11,10 @@ import plusIcon from "../../imgs/plus.svg";
 import "./LookModal.css";
 import "./DesktopLookModal.css";
 import {
-  fetchChangeCategoryLook,
   fetchDeleteLooks,
   fetchToggleLikeLook,
 } from "../../redux/reducers/look";
-import { CLOTH_TYPES, LOOKS_CATEGORIES_FOR_CHOOSE } from "../../utils/const";
+import { CLOTH_TYPES } from "../../utils/const";
 
 const clothTypeObject: { [key: string]: string } = {};
 CLOTH_TYPES.forEach((type) => {
@@ -40,7 +39,7 @@ export function LookModal({
       <div className="lookModal">
         <div className="lookModalControls">
           <img src={backIcon} alt="" onClick={() => closeEvent()} />
-          {look.ready ? (
+          {/* {look.ready ? (
             <select
             defaultValue={look.category}
               onChange={(e) => {
@@ -60,7 +59,7 @@ export function LookModal({
                 )
               )}
             </select>
-          ) : null}
+          ) : null} */}
 
           <img
             src={likeIcon}

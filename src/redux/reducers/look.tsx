@@ -6,6 +6,7 @@ import {
   FETCH_GET_LOOK_IDS,
   FETCH_TOGGLE_LIKE_LOOK,
   UPDATE_LOOKS,
+  TOGGLE_LIKE_LOOK
 } from "../actionTypes";
 import { createdLook, lookList, lookState } from "../types";
 
@@ -19,6 +20,11 @@ export default function (
     case UPDATE_LOOKS: {
       return { ...action.payload };
     }
+    case TOGGLE_LIKE_LOOK: {
+      const stateCopy = {...state};
+      stateCopy[action.payload].favorite = !stateCopy[action.payload].favorite
+      return stateCopy
+    }
     default:
       return state;
   }
@@ -29,11 +35,17 @@ export const updateLooks = (payload: lookState) => ({
   payload,
 });
 
+export const toggleLikeLook = (payload: string) => ({
+  type: TOGGLE_LIKE_LOOK,
+  payload,
+})
+
 export const fetchCreateLook = (payload: createdLook) => ({
   type: FETCH_CREATE_LOOK,
   payload,
 });
 export const fetchGetLooks = () => ({ type: FETCH_GET_LOOKS });
+
 export const fetchGetLookIds = (payload: lookList) => ({ type: FETCH_GET_LOOK_IDS, payload})
 export const fetchDeleteLooks = (payload: string[]) => ({type: FETCH_DELETE_LOOKS, payload})
 export const fetchToggleLikeLook = (payload: string) => ({type: FETCH_TOGGLE_LIKE_LOOK, payload})

@@ -1,9 +1,9 @@
-import React, { Suspense, useState } from "react";
+import React, { useState } from "react";
 import { useSelector } from "react-redux";
 import { RootState } from "../../redux/types";
 import Footer from "../footer/Footer";
 import { Pages } from "../../redux/types";
-import Roller from "../Roller/Roller";
+import LazyContainer from "../LazyContainer/LazyContainer";
 const UserForm = React.lazy(() => import("../userForm/UserForm"));
 const ClothPage = React.lazy(() => import("../ClothPage/ClothPage"));
 const LookPage = React.lazy(() => import("../LookPage/LookPage"));
@@ -17,16 +17,18 @@ function AppContainer() {
   return (
     <>
       {user.needChanges || !user.isInfoSetted ? (
-        <Suspense fallback={<Roller />}>
-          <UserForm></UserForm>
-        </Suspense>
+        <LazyContainer>
+          <UserForm />
+        </LazyContainer>
       ) : (
         <>
-          <Suspense fallback={<Roller />}>
-            {currentPage === "clothPage" ? <ClothPage /> : null}
-            {currentPage === "lookPage" ? <LookPage /> : null}
-            {currentPage === "admin" ? <AdminPage /> : null}
-          </Suspense>
+          <LazyContainer>
+            <>
+              {currentPage === "clothPage" ? <ClothPage /> : null}
+              {currentPage === "lookPage" ? <LookPage /> : null}
+              {currentPage === "admin" ? <AdminPage /> : null}
+            </>
+          </LazyContainer>
           <Footer navigate={changeCurrentPage} currentPage={currentPage} />
         </>
       )}

@@ -1,0 +1,61 @@
+.photoGuide h1 {
+    font-family: Roboto;
+    font-style: normal;
+    font-weight: bold;
+    font-size: 16px;
+    line-height: 22px;
+    /* or 137% */
+
+    display: flex;
+    align-items: center;
+    text-align: center;
+
+    color: #699C8B
+}
+
+.photoGuide .secondPage h1 {
+    color: #D86D6D
+}
+
+.photoGuide ol {
+    display: flex;
+    flex-direction: column;
+    gap: 10px
+}
+
+.photoGuide li {
+    font-family: Roboto;
+    font-style: normal;
+    font-weight: 500;
+    font-size: 14px;
+    align-items: center;
+
+    color: #515151;
+}
+
+.imgContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.photoGuide .imgContainer {
+    font-family: Roboto;
+    font-style: normal;
+    font-weight: 500;
+    font-size: 12px;
+    line-height: 22px;
+    /* identical to box height, or 183% */
+
+    display: flex;
+    align-items: center;
+
+    color: #A1A1A1
+}
+
+.photoGuide .arrow {
+    transform: rotate(180deg);
+    position: relative;
+    left: 90%;
+}
+

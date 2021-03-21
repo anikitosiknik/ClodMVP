@@ -139,7 +139,7 @@ export const LOOKS_CATEGORIES_FOR_CHOOSE:  { title: string, type: lookCategories
 export const LOOKS_CATEGORIES: { title: string, type: lookCategories}[] = [
     {title: 'Все', type: 'all'},
     {title: 'Избранное', type: 'favorite'},
-    ...LOOKS_CATEGORIES_FOR_CHOOSE,
+    // ...LOOKS_CATEGORIES_FOR_CHOOSE,
     {title: 'В обработке', type: 'notready'},
 ]
 

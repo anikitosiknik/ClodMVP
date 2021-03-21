@@ -5,8 +5,10 @@
     padding: 10px 6px;
     /* justify-content: space-around; */
     overflow-y: scroll;
-    flex: 1;
+    /* flex: 1; */
     margin: 10px 0px;
+    align-self: center;
+
 }
 
 .lookPage::-webkit-scrollbar {
@@ -19,7 +21,7 @@
     border-radius: 20px;
     display: grid;
     align-items: center;
-    padding: 15px 0;
+    padding: 15px 20px;
     justify-content: center;
 }
 
@@ -53,7 +55,7 @@
 }
 
 .lookCategory h2 {
-    margin: 0;
+    margin: 5px 0;
     font-size: 14px;
     color: #515151;
     align-self: flex-end;

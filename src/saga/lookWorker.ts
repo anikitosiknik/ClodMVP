@@ -1,6 +1,6 @@
 import { all, call, put, takeLatest } from "redux-saga/effects";
 import { FETCH_TOGGLE_LIKE_LOOK, FETCH_CREATE_LOOK, FETCH_DELETE_LOOKS, FETCH_GET_LOOKS, FETCH_GET_LOOK_IDS, FETCH_CHANGE_CATEGORY_LOOK } from "../redux/actionTypes";
-import { fetchGetLookIds, fetchGetLooks, updateLooks } from "../redux/reducers/look";
+import { fetchGetLookIds, fetchGetLooks, toggleLikeLook, updateLooks } from "../redux/reducers/look";
 import { setUser } from "../redux/reducers/user";
 import { createdLook, lookList, lookState, Look, clothInLookIds } from "../redux/types";
 import { deleteLooskRequest, createLookRequest, getLookIdsRequest, getLookRequest, toggleLikeLookRequest, changeCategoryLookRequest } from "../utils/lookService";
@@ -58,9 +58,9 @@ export function* watchDeleteLook() {
 }
 
 export function* toggleLikeLookAsync({ payload }: { type: string, forceReload: any, payload: string }) {
-    const data = yield call(() => toggleLikeLookRequest(payload))
-    const json: lookList = yield call(() => new Promise(res => res(data.json())))
-    yield put(fetchGetLookIds(json));
+     yield call(() => toggleLikeLookRequest(payload))
+     yield put(toggleLikeLook(payload));
+
 }
 
 export function* watchToggleLikeLook() {

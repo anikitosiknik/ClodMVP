@@ -41,3 +41,16 @@
     font-size: 18px;
     color: #515151;
 }
+
+ 
+.loginPage a {
+    align-self: flex-end;
+
+    font-size: 18px;
+    font-weight: 500;
+    line-height: 22px;
+    margin: 0px;
+    font-size: 18px;
+    text-decoration: none;
+    color: #515151;
+}
