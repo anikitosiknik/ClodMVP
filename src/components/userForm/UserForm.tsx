@@ -101,7 +101,7 @@ function UserForm() {
 
   return (
     <React.Fragment>
-      <Header logoOnly />
+      <Header logoOnly additionalElement={null} />
       {!isImagePage ? (
         <div className="userForm">
           <h2>Введите свои данные</h2>

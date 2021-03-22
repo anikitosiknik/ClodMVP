@@ -5,13 +5,19 @@ import {
     fetchChangePassword,
   fetchSetMailCode,
 } from "../../redux/reducers/user";
-import PropTypes, { InferProps } from "prop-types";
+
 import { RootState } from "../../redux/types";
 import Modal from "../Modal/Modal";
 
-function ForgotPassword({
+export default function ForgotPassword({
   validate,
-}: InferProps<typeof ForgotPassword.propTypes>) {
+}: {
+  validate: (
+    value: string,
+    classList: DOMTokenList | undefined,
+    validateFunc?: (value: string) => boolean
+  ) => void;
+}) {
   const userMailRef: React.RefObject<HTMLInputElement> = useRef(null);
   const userPasswordRef: React.RefObject<HTMLInputElement> = useRef(null);
   const repeatPasswordRef: React.RefObject<HTMLInputElement> = useRef(null);
@@ -136,9 +142,3 @@ function ForgotPassword({
     </div>
   );
 }
-
-ForgotPassword.propTypes = {
-  validate: PropTypes.func.isRequired,
-};
-
-export default ForgotPassword;

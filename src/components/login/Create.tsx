@@ -9,12 +9,19 @@ import {
   fetchCheckMailCode,
   fetchSetMailCode,
 } from "../../redux/reducers/user";
-import PropTypes, { InferProps } from "prop-types";
 import { RootState } from "../../redux/types";
 import Modal from "../Modal/Modal";
 import { InputErrorWrapper } from "../InputErrorWrapper/InputErrorWrapper";
 
-function Create({ validate }: InferProps<typeof Create.propTypes>) {
+export default function Create({
+  validate,
+}: {
+  validate: (
+    value: string,
+    classList: DOMTokenList | undefined,
+    validateFunc?: (value: string) => boolean
+  ) => void;
+}) {
   const userNameRef: React.RefObject<HTMLInputElement> = useRef(null);
   const userMailRef: React.RefObject<HTMLInputElement> = useRef(null);
   const userPasswordRef: React.RefObject<HTMLInputElement> = useRef(null);
@@ -98,7 +105,10 @@ function Create({ validate }: InferProps<typeof Create.propTypes>) {
   return (
     <div className="form">
       <h2>Создайте аккаунт</h2>
-      <InputErrorWrapper isErrorShowed={!isNameValid && isSubmitted} errorMessage={"В имени могут быть только буквы и цфры"}>
+      <InputErrorWrapper
+        isErrorShowed={!isNameValid && isSubmitted}
+        errorMessage={"В имени могут быть только буквы и цфры"}
+      >
         <input
           className="inp"
           ref={userNameRef}
@@ -177,21 +187,18 @@ function Create({ validate }: InferProps<typeof Create.propTypes>) {
 
       {isMailCodeReady ? <MailCodeModal register={register} /> : null}
 
-      <button className="btn" onClick={() => {
-        changeSubmitted(true);
-        sendCode()
-      }}>
+      <button
+        className="btn"
+        onClick={() => {
+          changeSubmitted(true);
+          sendCode();
+        }}
+      >
         Создать аккаунт
       </button>
     </div>
   );
 }
-
-Create.propTypes = {
-  validate: PropTypes.func.isRequired,
-};
-
-export default Create;
 
 function MailCodeModal({ register }: { register: Function }) {
   const codeRef: React.RefObject<HTMLInputElement> = useRef(null);

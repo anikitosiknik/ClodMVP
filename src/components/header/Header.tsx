@@ -1,17 +1,23 @@
 import React, { useState } from "react";
-import PropTypes, { InferProps } from "prop-types";
 import logo from "../../imgs/logo.svg";
 import userIcon from "../../imgs/user.svg";
 import "./Header.css";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../redux/types";
 import { getImgFromFile } from "../../utils/fileService";
-import { fetchLogOut, fetchSetUserPicture, setUser } from "../../redux/reducers/user";
+import {
+  fetchLogOut,
+  fetchSetUserPicture,
+  setUser,
+} from "../../redux/reducers/user";
 
-function Header({
+export default function Header({
   logoOnly,
   additionalElement,
-}: InferProps<typeof Header.propTypes>) {
+}: {
+  logoOnly?: boolean;
+  additionalElement: JSX.Element | null;
+}) {
   return (
     <div className="header">
       {additionalElement || <div className="emptyIcon" />}
@@ -21,16 +27,9 @@ function Header({
   );
 }
 
-Header.propTypes = {
-  logoOnly: PropTypes.bool,
-  additionalElement: PropTypes.element,
-};
-
-export default Header;
-
 function UserIcon() {
   const [isPopupShown, togglePopupShown] = useState(false);
-    const userPicture = useSelector((state: RootState) => state.user.userPicture)
+  const userPicture = useSelector((state: RootState) => state.user.userPicture);
   return (
     <React.Fragment>
       <UserPopup
@@ -39,7 +38,7 @@ function UserIcon() {
       />
       <div
         className="userIcon"
-        style={{backgroundImage: `url("${userPicture || userIcon}")`}}
+        style={{ backgroundImage: `url("${userPicture || userIcon}")` }}
         onClick={() => togglePopupShown(!isPopupShown)}
       ></div>
     </React.Fragment>
@@ -49,7 +48,10 @@ function UserIcon() {
 function UserPopup({
   isPopupShown,
   togglePopupShown,
-}: InferProps<typeof UserPopup.propTypes>) {
+}: {
+  isPopupShown: boolean;
+  togglePopupShown: (status: boolean) => void;
+}) {
   const user = useSelector((state: RootState) => state.user);
   const togglePopup = (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
     isPopupShown && event.target === event.currentTarget
@@ -60,11 +62,10 @@ function UserPopup({
   const uploadPicture = (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = event.target.files;
     if (!files || !files[0]) return;
-    const file = files[0]
-    getImgFromFile(file).then( img => {
-        disptach(fetchSetUserPicture(img));
-    })
-    
+    const file = files[0];
+    getImgFromFile(file).then((img) => {
+      disptach(fetchSetUserPicture(img));
+    });
   };
 
   return (
@@ -73,7 +74,10 @@ function UserPopup({
       onClick={togglePopup}
     >
       <div className={`userPopup ${isPopupShown ? "shown" : ""}`}>
-        <div className="userPopup-iconContainer" style={{backgroundImage: `url("${user.userPicture || userIcon}")`}}>
+        <div
+          className="userPopup-iconContainer"
+          style={{ backgroundImage: `url("${user.userPicture || userIcon}")` }}
+        >
           <div className="userPopup-plus">
             <input
               type="file"
@@ -90,16 +94,25 @@ function UserPopup({
           <p>{user.mail}</p>
         </div>
         <div className="userPopup-buttons">
-          <button className="btn" onClick={()=>disptach(setUser({...user, needChanges: true}))}>Параметры тела</button>
-          <a className="btn" href={'https://checkout.bepaid.by/v2/confirm_order/prd_80f5ad55842f6bbf/15111'}>Подписка</a>
-          <button className="btn" onClick={()=>disptach(fetchLogOut())}>Выйти</button>
+          <button
+            className="btn"
+            onClick={() => disptach(setUser({ ...user, needChanges: true }))}
+          >
+            Параметры тела
+          </button>
+          <a
+            className="btn"
+            href={
+              "https://checkout.bepaid.by/v2/confirm_order/prd_80f5ad55842f6bbf/15111"
+            }
+          >
+            Подписка
+          </a>
+          <button className="btn" onClick={() => disptach(fetchLogOut())}>
+            Выйти
+          </button>
         </div>
       </div>
     </div>
   );
 }
-
-UserPopup.propTypes = {
-  isPopupShown: PropTypes.bool.isRequired,
-  togglePopupShown: PropTypes.func.isRequired,
-};
