@@ -460,9 +460,6 @@ app.post('/api/createCloth', authMiddleware, function (req, res) {
             })
         });
     })
-
-
-
 })
 
 app.get('/api/cloths', authMiddleware, function (req, res) {
@@ -637,7 +634,7 @@ app.get('/api/looks', authMiddleware, function (req, res) {
             return console.error(err.message);
         }
         res.status(201)
-        res.send(results.map(look => ({ ...look, favorite: !!look.favorite, ready: !!look.ready, createdTime: look.createdTime  })))
+        res.send(results.map(look => ({ ...look, favorite: !!look.favorite, ready: !!look.ready, createdTime: look.createdTime })))
     });
 })
 
@@ -815,11 +812,7 @@ app.post('/api/updateLookAdmin', authMiddleware, function (req, res) {
                 from: 'anikitosiknik@gmail.com',
                 to: mail,
                 subject: 'Оповещение',
-                text: `Здравствуйте! Ваш персональный образ готов, зайдите в веб-приложение clod.site, чтобы увидеть созданную для Вас комбинацию.
-
-                С уважением,
-                Clod`,
-
+                html: `<p>Здравствуйте! Ваш персональный образ готов, зайдите в веб-приложение <a href="https://clod.site/">clod.site</a>, чтобы увидеть созданную для Вас комбинацию. <br>С уважением, <br> Clod</p> `
             }).then(() => {
 
                 let stmt = `UPDATE look SET  img = '${img}', ready = 1 WHERE  id = '${id}';`

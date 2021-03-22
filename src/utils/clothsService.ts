@@ -94,14 +94,20 @@ export class ClothStateParser {
 
     value: string = '';
     reader: ReadableStreamDefaultReader<Uint8Array>;
+    regExp = /\[(.*?)\]/;
 
     constructor(stream: ReadableStream<Uint8Array>) {
         this.reader = stream.getReader();
         this.stream = new ReadableStream({
-            start: () => {
+            start: (controller) => {
                 const push = () => {
-                    this.reader.read().then((value) => {
-                        this.addChunk(new TextDecoder().decode(value.value))
+                    this.reader.read().then(({ value, done }) => {
+                        if (done) {
+                            console.log('done', done);
+                            controller.close();
+                            return;
+                        }
+                        this.addChunk(new TextDecoder().decode(value))
                         push();
                     })
                 }
@@ -112,13 +118,20 @@ export class ClothStateParser {
 
     addChunk(chunk: string): void {
         this.value += chunk;
-        var regExp = /\[(.*?)\]/;
-        let jsonArray = regExp.exec(this.value);
-        while (jsonArray && jsonArray[0]) {
-            this.value = this.value.replace(jsonArray[0], '');
-            this.processCloth(jsonArray[0])
-            jsonArray = regExp.exec(this.value);
-        }
+        let jsonArray = this.regExp.exec(this.value);
+
+        this.preProcessCloth(jsonArray);
+    }
+
+    preProcessCloth(reg: RegExpExecArray | null) {
+        setTimeout(() => {
+            if (reg && reg[0]) {
+                this.value = this.value.replace(reg[0], '');
+                this.processCloth(reg[0])
+                reg = this.regExp.exec(this.value);
+                this.preProcessCloth(reg)
+            }
+        }, 0)
     }
 
 

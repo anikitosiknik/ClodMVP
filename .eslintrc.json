@@ -25,6 +25,7 @@
         "Partial": true,
         "RequestInfo": true,
         "RequestInit": true,
-        "ReadableStreamDefaultReader": true
+        "ReadableStreamDefaultReader": true,
+        "RegExpExecArray": true
     }
 }
