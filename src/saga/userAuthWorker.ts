@@ -9,10 +9,16 @@ import { registerUserRequest, loginUserRequest, autoLoginRequest, logOutRequest,
 
 
 export function* registerUserAsync({ payload }: { type: string, forceReload: any, payload: { name: string, mail: string, password: string } }) {
-    const { name, mail, password } = payload;
-    const data = yield call(() => registerUserRequest(name, mail, password));
-    const json = yield call(() => new Promise(res => res(data.json())))
-    yield put(setUser(json));
+    try {
+        const { name, mail, password } = payload;
+        const data = yield call(() => registerUserRequest(name, mail, password));
+        const json = yield call(() => new Promise(res => res(data.json())))
+        yield put(setUser(json));
+    }
+    catch (error) {
+        const er: Error = error;
+        yield put(setUser({ error: er.message || "Duplicate Mail" }))
+    }
 }
 
 export function* watchRegisterUser() {
@@ -52,7 +58,7 @@ export function* loginUserAsync({ payload }: { type: string, forceReload: any, p
     }
     catch (error) {
         const er: Error = error;
-        yield put(setUser({error: er.message}))
+        yield put(setUser({ error: er.message }))
     }
 }
 
@@ -71,7 +77,7 @@ export function* autoLoginUserAsync() {
     catch (error) {
         console.log('autoLogin Failed')
     }
- 
+
 }
 
 export function* watchAutoLoginUser() {

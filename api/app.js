@@ -462,9 +462,10 @@ app.post('/api/createCloth', authMiddleware, function (req, res) {
     })
 })
 
-app.get('/api/cloths', authMiddleware, function (req, res) {
+app.post('/api/cloths', authMiddleware, function (req, res) {
 
 
+    const {exclude} = req.body;
     let stmt = `SELECT * FROM cloth WHERE createdBy = (SELECT mail FROM users WHERE authKey = '${req.cookies.authKey}')`;
 
     connection.query(stmt, (err, results, fields) => {
@@ -488,6 +489,7 @@ app.get('/api/cloths', authMiddleware, function (req, res) {
         const data = results.map(el => ({ id: el.id, color: el.color, type: el.type, createdBy: el.createdBy, createdTime: el.createdTime }))
         stream.push(JSON.stringify(data));
         results.forEach(e => {
+            if(exclude.includes(e.id)) return;
             stream.push(JSON.stringify([e.id, e.img]));
         })
         res.status(201)

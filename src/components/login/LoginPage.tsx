@@ -69,13 +69,6 @@ function LoginPage() {
             >
               Войти
             </button>
-            <p
-              onClick={() => {
-                changeStatus("forgot");
-              }}
-            >
-              забыли пароль?
-            </p>
           </div>
           <a href="/info.html">О нас</a>
         </>
@@ -85,7 +78,7 @@ function LoginPage() {
         </LazyContainer>
       ) : pageStatus !== "forgot" ? (
         <LazyContainer>
-          <Login validate={validate}></Login>
+          <Login validate={validate} forgotPass={()=>changeStatus("forgot")}></Login>
         </LazyContainer>
       ) : (
         <LazyContainer>

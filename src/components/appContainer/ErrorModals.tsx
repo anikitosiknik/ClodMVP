@@ -15,7 +15,7 @@ function ErrorModals() {
           <WrongCodeModal />
         ) : user.error === "Unauthorized" ? (
           <WrongLogin />
-        ) : user.error === "Duplicate Mail" ? (
+        ) : user.error === "Duplicate Mail" ||  user.error === "Conflict"  ? (
           <DuplicateMail />
         ) : user.error === "Payment Required" ? (
           <SubsExpired />

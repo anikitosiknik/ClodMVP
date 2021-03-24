@@ -90,8 +90,7 @@ function UserPopup({
           </div>
         </div>
         <div className="userPopup-infoContainer">
-          <h2>{user.name}</h2>
-          <p>{user.mail}</p>
+          <h2>{user.mail}</h2>
         </div>
         <div className="userPopup-buttons">
           <button

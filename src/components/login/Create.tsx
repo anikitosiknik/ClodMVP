@@ -1,10 +1,6 @@
 import React, { useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import {
-  emailValidation,
-  nicklValidation,
-  passwordValidation,
-} from "../../utils/validation";
+import { emailValidation, passwordValidation } from "../../utils/validation";
 import {
   fetchCheckMailCode,
   fetchSetMailCode,
@@ -12,6 +8,7 @@ import {
 import { RootState } from "../../redux/types";
 import Modal from "../Modal/Modal";
 import { InputErrorWrapper } from "../InputErrorWrapper/InputErrorWrapper";
+import Roller from "../Roller/Roller";
 
 export default function Create({
   validate,
@@ -29,7 +26,6 @@ export default function Create({
 
   const [isSubmitted, changeSubmitted] = useState(false);
 
-  const [isNameValid, changeNameValid] = useState(true);
   const [isMailValid, changeMailValid] = useState(true);
   const [isPassValid, changePassVaild] = useState(true);
   const [isSecondPassValid, changeSecondPassValid] = useState(true);
@@ -37,14 +33,10 @@ export default function Create({
   const isMailCodeReady = useSelector(
     (state: RootState) => state.user.isMailCodeReady
   );
+  const [isMailCodeWaiting, changeMailCodeWaiting] = useState(false);
   const dispatch = useDispatch();
 
-  const inputRefs = [
-    userNameRef,
-    userMailRef,
-    userPasswordRef,
-    repeatPasswordRef,
-  ];
+  const inputRefs = [userMailRef, userPasswordRef, repeatPasswordRef];
 
   const secondPasswordValidation = (
     secondPassword: string | null | undefined
@@ -68,6 +60,7 @@ export default function Create({
       }).length !== inputRefs.length
     )
       return;
+    changeMailCodeWaiting(true);
     dispatch(
       fetchSetMailCode({
         name: userNameRef.current?.value || "",
@@ -80,7 +73,7 @@ export default function Create({
   const register = (code: string) => {
     dispatch(
       fetchCheckMailCode({
-        name: userNameRef.current?.value || "",
+        name: userMailRef.current?.value || "",
         mail: userMailRef.current?.value || "",
         password: userPasswordRef.current?.value || "",
         code: code,
@@ -105,25 +98,6 @@ export default function Create({
   return (
     <div className="form">
       <h2>Создайте аккаунт</h2>
-      <InputErrorWrapper
-        isErrorShowed={!isNameValid && isSubmitted}
-        errorMessage={"В имени могут быть только буквы и цфры"}
-      >
-        <input
-          className="inp"
-          ref={userNameRef}
-          type="text"
-          placeholder="Укажите имя пользователя"
-          onChange={(event) => {
-            validate(
-              event.target.value,
-              userNameRef.current?.classList,
-              nicklValidation
-            );
-            changeNameValid(!isInputInvalid(userNameRef));
-          }}
-        />
-      </InputErrorWrapper>
       <InputErrorWrapper
         isErrorShowed={!isMailValid && isSubmitted}
         errorMessage={"Почта не соответствует формату"}
@@ -184,7 +158,11 @@ export default function Create({
           }}
         />
       </InputErrorWrapper>
-
+      {isMailCodeWaiting ? (
+        <Modal closeEvent={() => null}>
+          <Roller />
+        </Modal>
+      ) : null}
       {isMailCodeReady ? <MailCodeModal register={register} /> : null}
 
       <button

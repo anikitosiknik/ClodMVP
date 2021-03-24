@@ -5,12 +5,14 @@ import { fetchLogin } from "../../redux/reducers/user";
 
 export default function Login({
   validate,
+  forgotPass,
 }: {
   validate: (
     value: string,
     classList: DOMTokenList | undefined,
     validateFunc?: (value: string) => boolean
   ) => void;
+  forgotPass: () => void;
 }) {
   const mailRef: React.RefObject<HTMLInputElement> = useRef(null);
   const passRef: React.RefObject<HTMLInputElement> = useRef(null);
@@ -71,6 +73,14 @@ export default function Login({
       <button className="btn" onClick={() => register()}>
         Войти
       </button>
+
+      <p
+        onClick={() => {
+          forgotPass();
+        }}
+      >
+        забыли пароль?
+      </p>
     </div>
   );
 }

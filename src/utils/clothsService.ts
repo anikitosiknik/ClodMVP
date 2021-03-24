@@ -2,6 +2,7 @@ import { UPDATE_CLOTHS, UPDATE_CLOTH_IMG } from "../redux/actionTypes";
 import { ClothStateType } from "../redux/types";
 import { sampleFetch } from "./requestService";
 import store from "../redux/store";
+import { SessionStore } from "./sessionStorage";
 
 export function createClothRequest(cloth: Cloth) {
 
@@ -19,13 +20,16 @@ export function createClothRequest(cloth: Cloth) {
 export function getClothsRequest() {
 
     return sampleFetch(`/cloths`, {
-        method: 'get',
+        method: 'post',
         mode: 'cors',
+        body: JSON.stringify({
+            exclude: SessionStore.getDictIds(SessionStore.clothImgs),
+        }),
         headers: {
             'Content-Type': 'application/json'
         },
     })
-        .then(a => a.body)
+        .then(res => res.body)
 }
 
 export function deleteClothRequest(ids: string[]) {
@@ -103,7 +107,7 @@ export class ClothStateParser {
                 const push = () => {
                     this.reader.read().then(({ value, done }) => {
                         if (done) {
-                            console.log('done', done);
+                            console.log(SessionStore.getDict(SessionStore.clothImgs))
                             controller.close();
                             return;
                         }
@@ -112,7 +116,8 @@ export class ClothStateParser {
                     })
                 }
                 push();
-            }
+            },
+
         });
     }
 
@@ -136,17 +141,30 @@ export class ClothStateParser {
 
 
     processCloth(jsonData: string) {
-        const data: ClothType[] = JSON.parse(jsonData);
+        const data: any[] = JSON.parse(jsonData);
         switch (typeof data[0]) {
-            case 'object':
+            case 'object': {
                 store.dispatch({ type: UPDATE_CLOTHS, payload: Cloth.listToObject(data) })
+                const storedIds = SessionStore.getDictIds(SessionStore.clothImgs);
+                const storedImgsDict = SessionStore.getDict(SessionStore.clothImgs);
+                const storedImgs = storedIds.map(el => ({id: el, img: storedImgsDict[el]}));
+                console.log(storedImgs)
+                this.updClothImgs(storedImgs)
                 break;
-            case 'string':
-                store.dispatch({ type: UPDATE_CLOTH_IMG, payload: { id: data[0], img: data[1] } })
+            }
+            case 'string': {
+                const img: { id: string, img: string } = { id: data[0], img: data[1] };
+                this.updClothImgs([img])
+                SessionStore.setDict(SessionStore.clothImgs, { id: img.id, value: img.img })
                 break;
+            }
             default:
                 break;
         }
+    }
+
+    updClothImgs(imgs: { id: string, img: string }[]) {
+        imgs.forEach(el => store.dispatch({ type: UPDATE_CLOTH_IMG, payload: el }))
     }
 }
 
