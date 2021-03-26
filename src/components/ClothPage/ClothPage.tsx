@@ -58,7 +58,7 @@ function ClothPage() {
         </>
       ) : (
         <>
-          Выбирете фотографии <br /> для создания образа
+          Выберите фотографии <br /> для создания образа
         </>
       )}
     </>
@@ -152,6 +152,9 @@ function ClothList({ clothList, cloths }: { clothList: string[], cloths: ClothSt
                 <div
                   key={id}
                   className={`clothItem ${cloths[id].choosed ? "choosed" : ""}`}
+                  onClick={() =>
+                    dispatch(toggleChoosedCloth(id))
+                  }
                 >
                   <img
                     src={ChoosedIcon}
@@ -163,9 +166,7 @@ function ClothList({ clothList, cloths }: { clothList: string[], cloths: ClothSt
                   ) : (
                     <img
                       className={"clothImage"}
-                      onClick={() =>
-                        dispatch(toggleChoosedCloth(id))
-                      }
+
                       src={cloths[id].img}
                     />
                   )}

@@ -153,7 +153,7 @@ app.post('/api/reg', function (req, res) {
                         else res.send(err)
                         return console.error(err.message);
                     }
-                    res.cookie('authKey', authKey, { maxAge: 25000000, httpOnly: true, sameSite: "Lax" })
+                    res.cookie('authKey', authKey, { maxAge: 250000000, httpOnly: true, sameSite: "Lax" })
                     const { name, mail, isInfoSetted, chest,
                         waist,
                         hips,
@@ -208,7 +208,7 @@ app.post('/api/reg', function (req, res) {
             else res.send(err)
             return console.error(err.message);
         }
-        res.cookie('authKey', authKey, { maxAge: 25000000, httpOnly: true, sameSite: "Lax" })
+        res.cookie('authKey', authKey, { maxAge: 250000000, httpOnly: true, sameSite: "Lax" })
 
         res.status(201)
         res.send({
@@ -238,7 +238,7 @@ app.post('/api/login', function (req, res) {
             return;
         }
         res.status(200)
-        res.cookie('authKey', authToken, { maxAge: 25000000, httpOnly: true, })
+        res.cookie('authKey', authToken, { maxAge: 250000000, httpOnly: true, })
         const { name, mail, isInfoSetted, chest,
             waist,
             hips,

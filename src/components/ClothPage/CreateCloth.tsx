@@ -27,8 +27,8 @@ function CreateCloth({
         type: typeRef.current.value,
         createdBy: user.mail,
       };
-
-      createHandler(generatedCloth);
+      
+      return clothPicture ? createHandler(generatedCloth) : null;
     }
   };
 

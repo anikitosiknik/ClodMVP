@@ -1,21 +1,21 @@
 
 
-export class SessionStore {
+export class LocalStorage {
     static clothsKey = 'clothIdsKey';
     static clothImgs = 'clothImgs';
 
     static setArray(key: string, arr: any[]) {
-        sessionStorage.setItem(key, JSON.stringify(arr))
+        localStorage.setItem(key, JSON.stringify(arr))
     }
 
     static getArray(key: string) {
-        return JSON.parse(sessionStorage.getItem(key) || "[]")
+        return JSON.parse(localStorage.getItem(key) || "[]")
     }
 
     static setDict(key: string, elem: {id: string, value: any}) {
         const dict = this.getDict(key);
         dict[elem.id] = elem.value;
-        sessionStorage.setItem(key, JSON.stringify(dict));
+        localStorage.setItem(key, JSON.stringify(dict));
     }
 
     static getDictIds(key: string) {
@@ -23,6 +23,6 @@ export class SessionStore {
     }
 
     static getDict(key: string) {
-        return JSON.parse(sessionStorage.getItem(key) || "{}")
+        return JSON.parse(localStorage.getItem(key) || "{}")
     }
 }

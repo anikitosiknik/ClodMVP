@@ -2,7 +2,7 @@ import { UPDATE_CLOTHS, UPDATE_CLOTH_IMG } from "../redux/actionTypes";
 import { ClothStateType } from "../redux/types";
 import { sampleFetch } from "./requestService";
 import store from "../redux/store";
-import { SessionStore } from "./sessionStorage";
+import { LocalStorage } from "./localStorage";
 
 export function createClothRequest(cloth: Cloth) {
 
@@ -23,7 +23,7 @@ export function getClothsRequest() {
         method: 'post',
         mode: 'cors',
         body: JSON.stringify({
-            exclude: SessionStore.getDictIds(SessionStore.clothImgs),
+            exclude: LocalStorage.getDictIds(LocalStorage.clothImgs),
         }),
         headers: {
             'Content-Type': 'application/json'
@@ -107,7 +107,6 @@ export class ClothStateParser {
                 const push = () => {
                     this.reader.read().then(({ value, done }) => {
                         if (done) {
-                            console.log(SessionStore.getDict(SessionStore.clothImgs))
                             controller.close();
                             return;
                         }
@@ -145,8 +144,8 @@ export class ClothStateParser {
         switch (typeof data[0]) {
             case 'object': {
                 store.dispatch({ type: UPDATE_CLOTHS, payload: Cloth.listToObject(data) })
-                const storedIds = SessionStore.getDictIds(SessionStore.clothImgs);
-                const storedImgsDict = SessionStore.getDict(SessionStore.clothImgs);
+                const storedIds = LocalStorage.getDictIds(LocalStorage.clothImgs);
+                const storedImgsDict = LocalStorage.getDict(LocalStorage.clothImgs);
                 const storedImgs = storedIds.map(el => ({id: el, img: storedImgsDict[el]}));
                 console.log(storedImgs)
                 this.updClothImgs(storedImgs)
@@ -155,7 +154,7 @@ export class ClothStateParser {
             case 'string': {
                 const img: { id: string, img: string } = { id: data[0], img: data[1] };
                 this.updClothImgs([img])
-                SessionStore.setDict(SessionStore.clothImgs, { id: img.id, value: img.img })
+                LocalStorage.setDict(LocalStorage.clothImgs, { id: img.id, value: img.img })
                 break;
             }
             default:
