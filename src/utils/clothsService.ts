@@ -1,7 +1,5 @@
-import { UPDATE_CLOTHS, UPDATE_CLOTH_IMG } from "../redux/actionTypes";
 import { ClothStateType } from "../redux/types";
 import { sampleFetch } from "./requestService";
-import store from "../redux/store";
 import { LocalStorage } from "./localStorage";
 
 export function createClothRequest(cloth: Cloth) {
@@ -29,7 +27,6 @@ export function getClothsRequest() {
             'Content-Type': 'application/json'
         },
     })
-        .then(res => res.body)
 }
 
 export function deleteClothRequest(ids: string[]) {
@@ -92,78 +89,3 @@ export class Cloth {
 
 
 }
-
-export class ClothStateParser {
-    stream: ReadableStream;
-
-    value: string = '';
-    reader: ReadableStreamDefaultReader<Uint8Array>;
-    regExp = /\[(.*?)\]/;
-
-    constructor(stream: ReadableStream<Uint8Array>) {
-        this.reader = stream.getReader();
-        this.stream = new ReadableStream({
-            start: (controller) => {
-                const push = () => {
-                    this.reader.read().then(({ value, done }) => {
-                        if (done) {
-                            controller.close();
-                            return;
-                        }
-                        this.addChunk(new TextDecoder().decode(value))
-                        push();
-                    })
-                }
-                push();
-            },
-
-        });
-    }
-
-    addChunk(chunk: string): void {
-        this.value += chunk;
-        let jsonArray = this.regExp.exec(this.value);
-
-        this.preProcessCloth(jsonArray);
-    }
-
-    preProcessCloth(reg: RegExpExecArray | null) {
-        setTimeout(() => {
-            if (reg && reg[0]) {
-                this.value = this.value.replace(reg[0], '');
-                this.processCloth(reg[0])
-                reg = this.regExp.exec(this.value);
-                this.preProcessCloth(reg)
-            }
-        }, 0)
-    }
-
-
-    processCloth(jsonData: string) {
-        const data: any[] = JSON.parse(jsonData);
-        switch (typeof data[0]) {
-            case 'object': {
-                store.dispatch({ type: UPDATE_CLOTHS, payload: Cloth.listToObject(data) })
-                const storedIds = LocalStorage.getDictIds(LocalStorage.clothImgs);
-                const storedImgsDict = LocalStorage.getDict(LocalStorage.clothImgs);
-                const storedImgs = storedIds.map(el => ({id: el, img: storedImgsDict[el]}));
-                console.log(storedImgs)
-                this.updClothImgs(storedImgs)
-                break;
-            }
-            case 'string': {
-                const img: { id: string, img: string } = { id: data[0], img: data[1] };
-                this.updClothImgs([img])
-                LocalStorage.setDict(LocalStorage.clothImgs, { id: img.id, value: img.img })
-                break;
-            }
-            default:
-                break;
-        }
-    }
-
-    updClothImgs(imgs: { id: string, img: string }[]) {
-        imgs.forEach(el => store.dispatch({ type: UPDATE_CLOTH_IMG, payload: el }))
-    }
-}
-

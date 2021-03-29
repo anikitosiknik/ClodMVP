@@ -465,7 +465,7 @@ app.post('/api/createCloth', authMiddleware, function (req, res) {
 app.post('/api/cloths', authMiddleware, function (req, res) {
 
 
-    const {exclude} = req.body;
+
     let stmt = `SELECT * FROM cloth WHERE createdBy = (SELECT mail FROM users WHERE authKey = '${req.cookies.authKey}')`;
 
     connection.query(stmt, (err, results, fields) => {
@@ -481,19 +481,9 @@ app.post('/api/cloths', authMiddleware, function (req, res) {
             else res.send(err)
             return console.error(err.message);
         }
-        const stream = new Stream.Readable()
 
-        stream._read = () => {
-        }
-        req.setTimeout(5000);
         const data = results.map(el => ({ id: el.id, color: el.color, type: el.type, createdBy: el.createdBy, createdTime: el.createdTime }))
-        stream.push(JSON.stringify(data));
-        results.forEach(e => {
-            if(exclude.includes(e.id)) return;
-            stream.push(JSON.stringify([e.id, e.img]));
-        })
-        res.status(201)
-        stream.pipe(res);
+        res.send(data);
     });
 })
 
@@ -555,7 +545,7 @@ app.post('/api/clothsById', authMiddleware, function (req, res) {
 
 
 
-app.post('/api/createLook', authMiddleware, function (req, res) {
+app.post('/api/createLook', ClothauthMiddleware, function (req, res) {
     const lookId = generateAuthToken();
     const { type, clothIds } = req.body;
 
@@ -589,16 +579,24 @@ app.post('/api/createLook', authMiddleware, function (req, res) {
                 else res.send(err)
                 return console.error(err.message);
             }
-            res.status(201)
-            res.send({
-                message: 'created succsfully'
+
+
+            let stmt = `SELECT trialLooksCount FROM users WHERE authKey = '${req.cookies.authKey}'`;
+            connection.query(stmt, (err, results, fields) => {
+                let stmt = `UPDATE users SET trialLooksCount = ${results[0].trialLooksCount + 1}  WHERE authKey = '${req.cookies.authKey}';`
+                connection.query(stmt, (err, results, fields) => {
+                    res.status(201)
+                    res.send({
+                        message: 'created succsfully'
+                    })
+                })
+
             })
+
+
         });
 
     })
-
-
-
 
 })
 
@@ -890,6 +888,27 @@ app.get('/api/user', authMiddleware, function (req, res) {
 
 
 
+app.get('/api/imgs/:id', authMiddleware, function (req, res) {
+    let stmt = `SELECT img FROM cloth WHERE id = '${req.params.id}'`
+    connection.query(stmt, (err, results, fields) => {
+        if (results[0]) {
+
+            var contentTypeRegexp = /data:([a-zA-Z0-9]+\/[a-zA-Z0-9-.+]+).*,.*/;
+            var contentType = contentTypeRegexp.exec(results[0].img)[1];
+            var base64Data = results[0].img.replace(/^data:image\/(png|jpeg|jpg);base64,/, '');
+            var img = Buffer.from(base64Data, 'base64');
+            res.writeHead(200, {
+                'Content-Type': contentType,
+                'Content-Length': img.length,
+                'Cache-control': 'public'
+            });
+            return res.end(img);
+        }
+        res.send();
+    })
+})
+
+
 const server = https.createServer({ key: key, cert: cert }, app);
 
 
@@ -946,6 +965,7 @@ function authMiddleware(req, res, next) {
                     error: 'subs expired'
                 })
             }
+
         }
         else {
             res.status(401);
@@ -956,6 +976,64 @@ function authMiddleware(req, res, next) {
 
     })
 }
+
+function ClothauthMiddleware(req, res, next) {
+    if (!req.cookies || !req.cookies.authKey) {
+        res.status(401)
+        return res.send({
+            message: 'not auth'
+        })
+    }
+    let stmt = `SELECT subs, isAdmin, trialLooksCount, paid FROM users WHERE authKey = '${req.cookies.authKey}'`;
+
+    connection.query(stmt, (err, results, fields) => {
+        if (err) {
+            res.send(err)
+            return console.error(err.message);
+        }
+
+        if (results.length && results[0]) {
+            const user = results[0];
+            if (!!user.isAdmin) return next();
+
+                const subs = JSON.parse(user.subs)
+                const expDate = new Date(subs.pop());
+                const now = new Date()
+                if (expDate > now) {
+                    if (user.paid) {
+                        next()
+                    }
+                    else {
+                        if (user.trialLooksCount < 3) {
+                            next()
+                        }
+                        else {
+                            res.status(402);
+                            res.send({
+                                error: 'subs expired'
+                            })
+                        }
+                    }
+                }
+                else {
+                    res.status(402);
+                    res.send({
+                        error: 'subs expired'
+                    })
+                }
+
+
+        }
+        else {
+            res.status(401);
+            res.send({
+                error: 'no results:('
+            })
+        }
+
+    })
+}
+
 
 
 function prepareUser(user) {

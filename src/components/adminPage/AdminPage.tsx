@@ -12,10 +12,10 @@ import likeIcon from "../../imgs/likeIcon.svg";
 import basketIcon from "../../imgs/basketIcon.svg";
 import plusIcon from "../../imgs/plus.svg";
 import "./AdminPage.css";
-import "../LookPage/LookModal.css"
-import "../LookPage/LookPage.css"
-import "../LookPage/DesktopLookPage.css"
-import "../LookPage/DesktopLookModal.css"
+import "../LookPage/LookModal.css";
+import "../LookPage/LookPage.css";
+import "../LookPage/DesktopLookPage.css";
+import "../LookPage/DesktopLookModal.css";
 
 import {
   fetchDeleteLooks,
@@ -25,7 +25,7 @@ import { CLOTH_TYPES, EYES_COLORS, HAIR_COLORS } from "../../utils/const";
 
 import plus from "../../imgs/plus.svg";
 import { fetchGetClothsById } from "../../redux/reducers/cloth";
-import { getImgFromFile } from "../../utils/fileService";
+import { getStringFromImg } from "../../utils/fileService";
 import { getUserAdminRequest } from "../../utils/adminService";
 import { ClothType, CreatedClothType } from "../../utils/clothsService";
 import CreateCloth from "../ClothPage/CreateCloth";
@@ -167,7 +167,7 @@ export function LookModal({
     const files = event.target.files;
     if (!files || !files[0]) return;
     const file = files[0];
-    getImgFromFile(file).then((img) => {
+    getStringFromImg(file).then((img) => {
       updatedLookChange({ ...updatedLook, img });
     });
   };
@@ -179,7 +179,7 @@ export function LookModal({
     const files = event.target.files;
     if (!files || !files[0]) return;
     const file = files[0];
-    getImgFromFile(file).then((img) => {
+    getStringFromImg(file).then((img) => {
       updatedLookChange({
         ...updatedLook,
         clothUpd: [...updatedLook.clothUpd, { img, id }],
@@ -257,21 +257,21 @@ export function LookModal({
             <div> city: {user.city}</div>
           </div>
           <div className="lookModalHeader">
-          <input
-            type="file"
-            id="uploadLookPicture"
-            onChange={(event) => uplodaLookPicture(event)}
-          />
-          <label htmlFor="uploadLookPicture">
-            <img
-              src={updatedLook.img || plusIcon}
-              alt=""
-              className="lookModalHeaderImage"
+            <input
+              type="file"
+              id="uploadLookPicture"
+              onChange={(event) => uplodaLookPicture(event)}
             />
-          </label>
+            <label htmlFor="uploadLookPicture">
+              <img
+                src={updatedLook.img || plusIcon}
+                alt=""
+                className="lookModalHeaderImage"
+              />
+            </label>
+          </div>
         </div>
-        </div>
-       
+
         <div className="lookModalClothContainer">
           {look.clothIds
             .filter((id) => {
@@ -292,10 +292,11 @@ export function LookModal({
                   <label htmlFor={`updateClothPicture${id}`}>
                     <img
                       className="lookModalImgAdmin"
+                 
                       src={
                         updatedLook.clothUpd.find((cloth) => {
                           return cloth.id === id;
-                        })?.img || look.img
+                        })?.img || `/api/imgs/${id}`
                       }
                     ></img>
                   </label>

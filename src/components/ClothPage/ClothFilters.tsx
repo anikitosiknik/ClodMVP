@@ -13,7 +13,7 @@ function ClothFilters({
   createCloth: () => void;
   changeFilter: React.Dispatch<React.SetStateAction<string>>;
   filterCloth: string;
-  infoElement: ReactElement
+  infoElement: ReactElement;
 }) {
   const [isFilterShowed, changeFilterShowed] = useState(false);
 
@@ -26,31 +26,29 @@ function ClothFilters({
       />
       {!isFilterShowed ? (
         <>
-          <p className="addClothText">
-            {infoElement}
-          </p>
+          <p className="addClothText">{infoElement}</p>
           <div className="clothFiltresPlus" onClick={createCloth}>
             +
           </div>
         </>
       ) : (
-        <div className="inputContainer filteresList">
-          {CLOTH_TYPES.map((type) => {
-            return (
-              <div
-                className={`filteresItem ${
-                  filterCloth === type.value ? "choosed" : ""
-                }`}
-                onClick={() =>
-                  changeFilter(filterCloth === type.value ? "" : type.value)
-                }
-                key={type.value}
-              >
-                {type.title}
-              </div>
-            );
-          })}
-        </div>
+        <select
+        onChange={(e) => {
+          changeFilter(e.currentTarget.value)
+        }}
+        defaultValue={filterCloth}
+        >
+          {CLOTH_TYPES.map((cloth) => (
+            <option
+              key={cloth.title}
+              value={cloth.value}
+              disabled={cloth.disabled}
+            >
+              {cloth.title}
+              
+            </option>
+          ))}
+        </select>
       )}
     </div>
   );

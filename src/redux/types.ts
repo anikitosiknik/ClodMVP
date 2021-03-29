@@ -45,7 +45,6 @@ export type userStringKeys = "skin" | "hair" | "eyes" |  "country" | "city"
 export type ClothStateType = { [key: string] : ClothType}
 
 export type UpdateLook = {
-  img: string;
   id: string;
   clothUpd: { img: string; id: string }[];
   clothDelete: string[];

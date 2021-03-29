@@ -3,7 +3,7 @@ import { CLOTH_TYPES, HAIR_COLORS } from "../../utils/const";
 import ColorInput from "../colorInput/ColorInput";
 import "./CreateCloth.css";
 import plus from "../../imgs/plus.svg";
-import { getImgFromFile } from "../../utils/fileService";
+import { getStringFromImg } from "../../utils/fileService";
 import { RootState } from "../../redux/types";
 import { useSelector } from "react-redux";
 import Modal from "../Modal/Modal";
@@ -36,7 +36,7 @@ function CreateCloth({
     const files = event.target.files;
     if (!files || !files[0]) return;
     const file = files[0];
-    getImgFromFile(file).then((img) => {
+    getStringFromImg(file).then((img) => {
       changeClothPicture(img);
     });
   };
@@ -48,7 +48,7 @@ function CreateCloth({
       <input type="file" id="uploadClothPicture" onChange={uploadPicture} />
       <select ref={typeRef}>
         {CLOTH_TYPES.map((cloth) => (
-          <option key={cloth.title} value={cloth.value}>
+          <option key={cloth.title} value={cloth.value} disabled={cloth.disabled}>
             {cloth.title}
           </option>
         ))}

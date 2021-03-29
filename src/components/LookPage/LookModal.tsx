@@ -90,7 +90,8 @@ export function LookModal({
               const look = cloths[id];
               return (
                 <div key={id} className="lookModalCloth">
-                  <img className="lookModalImg" src={look.img}></img>
+                  
+                  <img className="lookModalImg" src={`/api/imgs/${id}`}></img>
                   <div className="lookModalClothInfo">
                     <p className="lookModalType">
                       {clothTypeObject[look.type]}

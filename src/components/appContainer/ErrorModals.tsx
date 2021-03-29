@@ -21,7 +21,7 @@ function ErrorModals() {
           <SubsExpired />
         ) : user.error === "maxCloth" ? (
           <MaxCloth />
-        ) : user.error === "maxLook" ? (
+        ) : user.error === "maxLook" || user.error === "too many looks for you" ? (
           <MaxLook />
         ) : user.error === "clothCreated" ? (
           <ClothCreated />

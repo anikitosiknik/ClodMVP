@@ -36,11 +36,16 @@ export function* watchSetMailCodeAsync() {
 }
 
 export function* checkMailCodeAsync({ payload }: { type: string, forceReload: any, payload: { name: string, mail: string, password: string, code: string } }) {
-    const { name, mail, password, code } = payload;
-    const data: Response = yield call(() => checkMailCodeRequest(name, mail, password, code))
-    const json = yield call(() => new Promise(res => res(data.json())))
-    yield put(setUser(json));
-    if (data.status === 200) yield put(fetchRegister({ name, mail, password }))
+    try {
+        const { name, mail, password, code } = payload;
+        const data: Response = yield call(() => checkMailCodeRequest(name, mail, password, code))
+        const json = yield call(() => new Promise(res => res(data.json())))
+        yield put(setUser(json));
+        if (data.status === 200) yield put(fetchRegister({ name, mail, password }))
+    }
+    catch {
+        console.log('error')
+    }
 }
 
 export function* watchCheckMailCode() {

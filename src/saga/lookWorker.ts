@@ -12,8 +12,10 @@ export function* createLookAsync({ payload }: { type: string, forceReload: any, 
         yield put(setUser({error: 'clothCreated'}))
         yield put(fetchGetLooks());
     }
-    catch {
-        yield put(setUser({error: 'maxLook'}))
+    catch (error) {
+        const er: Error = error;
+        
+        yield put(setUser({error: er.message}))
     }
 }
 

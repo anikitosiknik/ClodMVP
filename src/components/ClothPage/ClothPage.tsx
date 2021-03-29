@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { Suspense, useEffect, useState } from "react";
 import Header from "../header/Header";
 import "./ClothPage.css";
 import "./DesktopClothPage.css";
@@ -18,8 +18,8 @@ import {
 import { fetchCreateLook } from "../../redux/reducers/look";
 import Modal from "../Modal/Modal";
 import { Cloth, ClothType, CreatedClothType } from "../../utils/clothsService";
-import Roller from "../Roller/Roller";
 import LazyContainer from "../LazyContainer/LazyContainer";
+import Roller from "../Roller/Roller";
 
 const PhotoGuide = React.lazy(() => import("./../PhotoGuide/PhotoGuide"));
 
@@ -107,7 +107,10 @@ function ClothPage() {
       )}
 
       {Object.keys(cloths).length ? (
-        <ClothList clothList={getClothsList().map(cloth=>cloth.id || '')} cloths={cloths} />
+        <ClothList
+          clothList={getClothsList().map((cloth) => cloth.id || "")}
+          cloths={cloths}
+        />
       ) : (
         <div
           className="addClothButton"
@@ -122,7 +125,13 @@ function ClothPage() {
 
 export default ClothPage;
 
-function ClothList({ clothList, cloths }: { clothList: string[], cloths: ClothStateType }) {
+function ClothList({
+  clothList,
+  cloths,
+}: {
+  clothList: string[];
+  cloths: ClothStateType;
+}) {
   const dispatch = useDispatch();
   const columnsList = useColumnList();
 
@@ -152,24 +161,18 @@ function ClothList({ clothList, cloths }: { clothList: string[], cloths: ClothSt
                 <div
                   key={id}
                   className={`clothItem ${cloths[id].choosed ? "choosed" : ""}`}
-                  onClick={() =>
-                    dispatch(toggleChoosedCloth(id))
-                  }
+                  onClick={() => dispatch(toggleChoosedCloth(id))}
                 >
                   <img
                     src={ChoosedIcon}
                     alt=""
-                    className={`clothChoosed ${cloths[id].choosed ? "choosed" : ""}`}
+                    className={`clothChoosed ${
+                      cloths[id].choosed ? "choosed" : ""
+                    }`}
                   />
-                  {!cloths[id].img ? (
-                    <Roller />
-                  ) : (
-                    <img
-                      className={"clothImage"}
-
-                      src={cloths[id].img}
-                    />
-                  )}
+                  <Suspense fallback={<Roller/>}>
+                    <img className={"clothImage"} src={`/api/imgs/${id}`} />
+                  </Suspense>
                 </div>
               );
             })}

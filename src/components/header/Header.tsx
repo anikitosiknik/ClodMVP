@@ -4,7 +4,7 @@ import userIcon from "../../imgs/user.svg";
 import "./Header.css";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../redux/types";
-import { getImgFromFile } from "../../utils/fileService";
+import { getStringFromImg } from "../../utils/fileService";
 import {
   fetchLogOut,
   fetchSetUserPicture,
@@ -63,7 +63,7 @@ function UserPopup({
     const files = event.target.files;
     if (!files || !files[0]) return;
     const file = files[0];
-    getImgFromFile(file).then((img) => {
+    getStringFromImg(file).then((img) => {
       disptach(fetchSetUserPicture(img));
     });
   };
