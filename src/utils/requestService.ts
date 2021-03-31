@@ -11,11 +11,22 @@ function getHref() {
  function handleErrors(response: Response) {
     if (!response.ok) {
         if (response.status === 402) {
-            throw Error('Payment Required');
+            throw new UserException('Payment Required');
+        }
+        if (response.status === 401) {
+            throw new UserException('Unauthorized');
         }
         return response.json().then(e=>{
-            throw Error(e.error)
+            throw new UserException(e.error)
         })
     }
     return response;
+}
+
+
+class UserException {
+    message: string;
+    constructor(message: string) {
+        this.message = message
+    }
 }

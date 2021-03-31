@@ -11,12 +11,10 @@ export function* createClothAsync({ payload }: { type: string, forceReload: any,
     }
     catch (error) {
         const er: Error = error;
-        if (er.message === "Payment Required") {
-            yield put(setUser({ error: 'Payment Required' }))
-        }
-        else {
-            yield put(setUser({ error: 'maxCloth' }))
-        }
+        if(er.message === 'Unauthorized' ) {
+             yield put(setUser({logined: false}))
+        } else
+        yield put(setUser({ error: er.message}))
     }
 }
 

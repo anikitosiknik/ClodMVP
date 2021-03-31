@@ -19,7 +19,7 @@ function ErrorModals() {
           <DuplicateMail />
         ) : user.error === "Payment Required" ? (
           <SubsExpired />
-        ) : user.error === "maxCloth" ? (
+        ) : user.error === "maxCloth" || user.error === "too many cloth for you" ? (
           <MaxCloth />
         ) : user.error === "maxLook" || user.error === "too many looks for you" ? (
           <MaxLook />

@@ -970,7 +970,7 @@ function authMiddleware(req, res, next) {
         else {
             res.status(401);
             res.send({
-                error: 'no results:('
+                message: 'not auth'
             })
         }
 
