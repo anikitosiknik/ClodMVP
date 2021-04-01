@@ -3,15 +3,14 @@ import { FETCH_AUTOLOGIN_USER, FETCH_SET_MAILCODE, FETCH_LOGIN_USER, FETCH_LOGOU
 import { fetchGetCloths, updateCloths } from "../redux/reducers/cloth";
 import { fetchGetLooks } from "../redux/reducers/look";
 import { fetchAutoLogin, fetchRegister, setMailCodeStatus, setUser } from "../redux/reducers/user";
-import { registerUserRequest, loginUserRequest, autoLoginRequest, logOutRequest, setMailCodeRequest, checkMailCodeRequest, changePasswordRequest } from "../utils/autService";
+import AuthRequestService from "../utils/authRequestService";
 
 
 
 
 export function* registerUserAsync({ payload }: { type: string, forceReload: any, payload: { name: string, mail: string, password: string } }) {
     try {
-        const { name, mail, password } = payload;
-        const data = yield call(() => registerUserRequest(name, mail, password));
+        const data = yield call(() => AuthRequestService.registerUser(payload));
         const json = yield call(() => new Promise(res => res(data.json())))
         yield put(setUser(json));
     }
@@ -26,8 +25,7 @@ export function* watchRegisterUser() {
 }
 
 export function* setMailCodeAsync({ payload }: { type: string, forceReload: any, payload: { name: string, mail: string, password: string } }) {
-    const { name, mail, password } = payload;
-    const data: Response = yield call(() => setMailCodeRequest(name, mail, password))
+    const data: Response = yield call(() => AuthRequestService.setMailCode(payload))
     yield put(setMailCodeStatus(data.status === 200))
 }
 
@@ -37,11 +35,10 @@ export function* watchSetMailCodeAsync() {
 
 export function* checkMailCodeAsync({ payload }: { type: string, forceReload: any, payload: { name: string, mail: string, password: string, code: string } }) {
     try {
-        const { name, mail, password, code } = payload;
-        const data: Response = yield call(() => checkMailCodeRequest(name, mail, password, code))
+        const data: Response = yield call(() => AuthRequestService.checkMailCode(payload))
         const json = yield call(() => new Promise(res => res(data.json())))
         yield put(setUser(json));
-        if (data.status === 200) yield put(fetchRegister({ name, mail, password }))
+        if (data.status === 200) yield put(fetchRegister(payload))
     }
     catch {
         console.log('error')
@@ -54,8 +51,7 @@ export function* watchCheckMailCode() {
 
 export function* loginUserAsync({ payload }: { type: string, forceReload: any, payload: { mail: string, password: string } }) {
     try {
-        const { mail, password } = payload;
-        const data = yield call(() => loginUserRequest(mail, password));
+        const data = yield call(() => AuthRequestService.loginUser(payload));
         const json = yield call(() => new Promise(res => res(data.json())))
         yield put(setUser(json));
         yield put(fetchGetCloths())
@@ -73,7 +69,7 @@ export function* watchLoginUser() {
 
 export function* autoLoginUserAsync() {
     try {
-        const data = yield call(() => autoLoginRequest());
+        const data = yield call(() => AuthRequestService.autoLogin());
         const json = yield call(() => new Promise(res => res(data.json())))
         yield put(setUser(json));
         yield put(fetchGetCloths())
@@ -90,7 +86,7 @@ export function* watchAutoLoginUser() {
 }
 
 export function* logOutUserAsync() {
-    const data = yield call(() => logOutRequest());
+    const data = yield call(() => AuthRequestService.logOut());
     const json = yield call(() => new Promise(res => res(data.json())))
     yield put(updateCloths({}))
     yield put(setUser({
@@ -119,7 +115,7 @@ export function* watchLogOutUser() {
 }
 
 export function* changePasswordAsync({ payload }: { type: string, forceReload: any, payload: { mail: string, password: string, code: string } }) {
-    const data = yield call(() => changePasswordRequest(payload));
+    const data = yield call(() => AuthRequestService.changePassword(payload));
     const json = yield call(() => new Promise(res => res(data.json())))
     yield put(setUser(json));
     yield put(fetchAutoLogin());

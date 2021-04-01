@@ -1,22 +1,19 @@
 const express = require('express');
 const https = require('https');
 const fs = require('fs');
-const port = 3002;
-var bodyParser = require('body-parser');
 var cookieParser = require('cookie-parser');
 var crypto = require('crypto');
 var mysql = require('mysql');
-const Stream = require('stream');
 
 const key = fs.readFileSync('./apiserver.key');
 const cert = fs.readFileSync('./apiserver.crt');
 const passwordDB = fs.readFileSync('../keys/passwordDB.txt')
 const passwordMail = fs.readFileSync('../keys/passwordMail.txt')
 
-mysql_host = 'localhost'
-mysql_user = 'clodsite_anikitosiknik'
-mysql_password = passwordDB
-mysql_database = 'clodsite_app'
+const mysql_host = 'localhost'
+const mysql_user = 'clodsite_anikitosiknik'
+const mysql_password = passwordDB
+const mysql_database = 'clodsite_app'
 
 var connection = mysql.createConnection({
     host: mysql_host,
@@ -39,7 +36,7 @@ connection.connect((error) => {
 
 
 const nodemailer = require('nodemailer')
-app = express()
+const app = express()
 app.use(express.json({ limit: '100mb' }));
 app.use(cookieParser());
 
@@ -48,26 +45,97 @@ app.get('/', (req, res) => {
 });
 
 
+const apiRouter = express.Router();
+app.use('/api', apiRouter);
 
 
-app.post('/api/setmailcode', function (req, res) {
-    const mail = req.body.mail;
-    const code = genereateMailToken();
-    let transporter = nodemailer.createTransport({
-        service: 'gmail',
-        auth: {
-            user: 'clodapp.info@gmail.com',
-            pass: passwordMail
+
+{
+    //authRouter
+    const authRouter = express.Router();
+
+    authRouter.post('/registration', function (req, res) {
+        const authKey = generateAuthToken();
+        const { name, mail, password, code } = req.body;
+        if (code) {
+            let stmt = `SELECT mail FROM mail WHERE code = '${code}'`;
+            connection.query(stmt, (err, results, fields) => {
+                if (err) {
+                    if (err.code === "ER_DUP_ENTRY") {
+                        res.status(409)
+                        res.send({
+                            error: 'Duplicate Mail'
+                        });
+                    }
+
+
+                    else res.send(err)
+                    return console.error(err.message);
+                }
+                if (!results.length) {
+                    res.status(400)
+                    return res.send({
+                        isMailCodeReady: false,
+                        error: 'wrongCode'
+                    })
+                }
+                if (results[0].mail === mail) {
+                    let stmt = `UPDATE users SET authKey = '${authKey}' , password = '${getHashedPassword(password)}' WHERE mail = '${mail}'; SELECT * FROM users WHERE mail = '${req.body.mail}'`
+                    connection.query(stmt, (err, results, fields) => {
+                        if (err) {
+                            if (err.code === "ER_DUP_ENTRY") {
+                                res.status(409)
+                                res.send({
+                                    error: 'Duplicate Mail'
+                                });
+                            }
+
+
+                            else res.send(err)
+                            return console.error(err.message);
+                        }
+                        res.cookie('authKey', authKey, { maxAge: 250000000, httpOnly: true, sameSite: "Lax" })
+                        const { name, mail, isInfoSetted, chest,
+                            waist,
+                            hips,
+                            height,
+                            age,
+                            skin,
+                            hair,
+                            eyes,
+                            city,
+                            country,
+                            userPicture,
+                            choosedImages
+                        } = results[1][0];
+                        res.send({
+                            name,
+                            mail,
+                            chest,
+                            waist,
+                            hips,
+                            height,
+                            age,
+                            skin,
+                            hair,
+                            eyes,
+                            userPicture,
+                            choosedImages,
+                            city,
+                            country,
+                            logined: true,
+                            isInfoSetted: !!isInfoSetted
+                        })
+                    });
+                }
+            });
+            return;
         }
-    })
-    const a = transporter.sendMail({
-        from: 'anikitosiknik@gmail.com',
-        to: mail,
-        subject: 'Авторизация',
-        text: `Ваш код:  ${code}`,
+        const regDate = new Date();
+        const expireDate = new Date();
+        expireDate.setDate(expireDate.getDate() + 3);
+        let stmt = generateInsertSQLCommand('users', { name, mail, password: getHashedPassword(password), authKey, subs: JSON.stringify([regDate, expireDate]) })
 
-    }).then(() => {
-        let stmt = generateInsertSQLCommand('mail', { code, mail }) + ` ON DUPLICATE KEY UPDATE  code = '${code}';`
         connection.query(stmt, (err, results, fields) => {
             if (err) {
                 if (err.code === "ER_DUP_ENTRY") {
@@ -80,276 +148,213 @@ app.post('/api/setmailcode', function (req, res) {
 
                 else res.send(err)
                 return console.error(err.message);
+            }
+            res.cookie('authKey', authKey, { maxAge: 250000000, httpOnly: true, sameSite: "Lax" })
+
+            res.status(201)
+            res.send({
+                name: req.body.name,
+                mail: req.body.mail,
+                logined: true,
+            })
+        });
+    })
+
+
+    authRouter.post('/setmailcode', function (req, res) {
+        const mail = req.body.mail;
+        const code = genereateMailToken();
+        let transporter = nodemailer.createTransport({
+            service: 'gmail',
+            auth: {
+                user: 'clodapp.info@gmail.com',
+                pass: passwordMail
+            }
+        })
+        const a = transporter.sendMail({
+            from: 'anikitosiknik@gmail.com',
+            to: mail,
+            subject: 'Авторизация',
+            text: `Ваш код:  ${code}`,
+
+        }).then(() => {
+            let stmt = generateInsertSQLCommand('mail', { code, mail }) + ` ON DUPLICATE KEY UPDATE  code = '${code}';`
+            connection.query(stmt, (err, results, fields) => {
+                if (err) {
+                    if (err.code === "ER_DUP_ENTRY") {
+                        res.status(409)
+                        res.send({
+                            error: 'Duplicate Mail'
+                        });
+                    }
+
+
+                    else res.send(err)
+                    return console.error(err.message);
+                }
+
+                res.status(200)
+                res.send({
+                    message: 'code ready'
+                })
+            });
+
+        }, err => {
+            res.send(err);
+        })
+    })
+
+    authRouter.post('/checkmailcode', function (req, res) {
+        const { code, mail } = req.body
+        let stmt = `SELECT * FROM mail WHERE code = '${code}' AND mail = '${mail}'`
+        connection.query(stmt, (err, results) => {
+            if (err || !results.length) {
+                res.status(400)
+                return res.send({
+                    error: 'wrongCode',
+                    isMailCodeReady: false,
+                })
             }
 
             res.status(200)
             res.send({
-                message: 'code ready'
+                isMailCodeReady: false,
+            })
+        })
+    })
+
+    authRouter.post('/login', function (req, res) {
+        const authToken = generateAuthToken()
+        let stmt = `UPDATE users SET authKey = '${authToken}' WHERE mail = '${req.body.mail}' AND password = '${getHashedPassword(req.body.password)}'; SELECT * FROM users WHERE mail = '${req.body.mail}' AND password = '${getHashedPassword(req.body.password)}' `;
+
+        connection.query(stmt, (err, results) => {
+            if (err) {
+                return console.error(err.message);
+            }
+            if (!results[1].length) {
+                res.status(401)
+                res.send({
+                    error: 'password or mail not found',
+                    isMailCodeReady: false,
+                })
+                return;
+            }
+            res.status(200)
+            res.cookie('authKey', authToken, { maxAge: 250000000, httpOnly: true, })
+            const { name, mail, isInfoSetted, chest,
+                waist,
+                hips,
+                height,
+                age,
+                skin,
+                hair,
+                eyes,
+                city,
+                country,
+                isAdmin,
+                choosedImages,
+                userPicture } = results[1][0];
+            res.send({
+                name,
+                mail,
+                chest,
+                waist,
+                hips,
+                height,
+                age,
+                skin,
+                hair,
+                eyes,
+                city,
+                country,
+                choosedImages,
+                userPicture,
+                logined: true,
+                isAdmin: !!isAdmin,
+                isInfoSetted: !!isInfoSetted
             })
         });
+    });
 
-    }, err => {
-        res.send(err);
-    })
-})
-
-app.post('/api/checkmailcode', function (req, res) {
-    const { code, mail } = req.body
-    let stmt = `SELECT * FROM mail WHERE code = '${code}' AND mail = '${mail}'`
-    connection.query(stmt, (err, results, fields) => {
-        if (err || !results.length) {
-            res.status(400)
+    authRouter.get('/autoLogin', function (req, res) {
+        if (!req.cookies || !req.cookies.authKey) {
+            res.status(401)
             return res.send({
-                error: 'wrongCode',
-                isMailCodeReady: false,
+                message: 'not auth'
             })
         }
 
-        res.status(200)
-        res.send({
-            isMailCodeReady: false,
-        })
-    })
-})
-
-
-app.post('/api/reg', function (req, res) {
-    const authKey = generateAuthToken();
-    const { name, mail, password, code } = req.body;
-    if (code) {
-        let stmt = `SELECT mail FROM mail WHERE code = '${code}'`;
-        connection.query(stmt, (err, results, fields) => {
+        let stmt = `SELECT * FROM users WHERE  authKey = '${req.cookies.authKey}'`;
+        connection.query(stmt, (err, results) => {
             if (err) {
-                if (err.code === "ER_DUP_ENTRY") {
-                    res.status(409)
-                    res.send({
-                        error: 'Duplicate Mail'
-                    });
-                }
-
-
-                else res.send(err)
                 return console.error(err.message);
             }
             if (!results.length) {
-                res.status(400)
-                return res.send({
-                    isMailCodeReady: false,
-                    error: 'wrongCode'
-                })
+                res.status(401)
+                res.send({})
+                return;
             }
-            if (results[0].mail === mail) {
-                let stmt = `UPDATE users SET authKey = '${authKey}' , password = '${getHashedPassword(password)}' WHERE mail = '${mail}'; SELECT * FROM users WHERE mail = '${req.body.mail}'`
-                connection.query(stmt, (err, results, fields) => {
-                    if (err) {
-                        if (err.code === "ER_DUP_ENTRY") {
-                            res.status(409)
-                            res.send({
-                                error: 'Duplicate Mail'
-                            });
-                        }
-
-
-                        else res.send(err)
-                        return console.error(err.message);
-                    }
-                    res.cookie('authKey', authKey, { maxAge: 250000000, httpOnly: true, sameSite: "Lax" })
-                    const { name, mail, isInfoSetted, chest,
-                        waist,
-                        hips,
-                        height,
-                        age,
-                        skin,
-                        hair,
-                        eyes,
-                        city,
-                        country,
-                        userPicture,
-                        choosedImages
-                    } = results[1][0];
-                    res.send({
-                        name,
-                        mail,
-                        chest,
-                        waist,
-                        hips,
-                        height,
-                        age,
-                        skin,
-                        hair,
-                        eyes,
-                        userPicture,
-                        choosedImages,
-                        city,
-                        country,
-                        logined: true,
-                        isInfoSetted: !!isInfoSetted
-                    })
-                });
-            }
+            res.status(200)
+            const { name, mail, isInfoSetted, chest,
+                waist,
+                hips,
+                height,
+                age,
+                skin,
+                hair,
+                eyes,
+                city,
+                country,
+                isAdmin,
+                choosedImages,
+                userPicture } = results[0];
+            res.send(prepareUser({
+                name,
+                mail,
+                chest,
+                waist,
+                hips,
+                height,
+                age,
+                skin,
+                hair,
+                eyes,
+                city,
+                country,
+                userPicture,
+                choosedImages,
+                isAdmin: !!isAdmin,
+                isInfoSetted: !!isInfoSetted,
+                logined: true,
+            }))
         });
-        return;
-    }
-    const regDate = new Date();
-    const expireDate = new Date();
-    expireDate.setDate(expireDate.getDate() + 3);
-    let stmt = generateInsertSQLCommand('users', { name, mail, password: getHashedPassword(password), authKey, subs: JSON.stringify([regDate, expireDate]) })
 
-    connection.query(stmt, (err, results, fields) => {
-        if (err) {
-            if (err.code === "ER_DUP_ENTRY") {
-                res.status(409)
-                res.send({
-                    error: 'Duplicate Mail'
-                });
+    })
+
+    authRouter.get('/logOut', function (req, res) {
+        let stmt = `UPDATE users SET authKey = NULL WHERE  authKey = '${req.cookies.authKey}'`;
+        connection.query(stmt, (err, results) => {
+            res.cookie('authKey', '', { maxAge: 0, httpOnly: true, })
+            if (err) {
+                return console.error(err.message);
             }
-
-
-            else res.send(err)
-            return console.error(err.message);
-        }
-        res.cookie('authKey', authKey, { maxAge: 250000000, httpOnly: true, sameSite: "Lax" })
-
-        res.status(201)
-        res.send({
-            name: req.body.name,
-            mail: req.body.mail,
-            logined: true,
-        })
-    });
-});
-
-
-app.post('/api/login', function (req, res) {
-    const authToken = generateAuthToken()
-    // `UPDATE users SET authKey = '${authToken}' WHERE mail = '${req.body.mail}' AND password = '${getHashedPassword(req.body.password)}';
-    let stmt = `UPDATE users SET authKey = '${authToken}' WHERE mail = '${req.body.mail}' AND password = '${getHashedPassword(req.body.password)}'; SELECT * FROM users WHERE mail = '${req.body.mail}' AND password = '${getHashedPassword(req.body.password)}' `;
-
-    connection.query(stmt, (err, results, fields) => {
-        if (err) {
-            return console.error(err.message);
-        }
-        if (!results[1].length) {
-            res.status(401)
+            if (results.changedRows === 0) {
+                res.status(401)
+                res.send({
+                    error: 'autoLogin Failed'
+                })
+                return;
+            }
+            res.status(200)
             res.send({
-                error: 'password or mail not found',
-                isMailCodeReady: false,
+                logined: false
             })
-            return;
-        }
-        res.status(200)
-        res.cookie('authKey', authToken, { maxAge: 250000000, httpOnly: true, })
-        const { name, mail, isInfoSetted, chest,
-            waist,
-            hips,
-            height,
-            age,
-            skin,
-            hair,
-            eyes,
-            city,
-            country,
-            isAdmin,
-            choosedImages,
-            userPicture } = results[1][0];
-        res.send({
-            name,
-            mail,
-            chest,
-            waist,
-            hips,
-            height,
-            age,
-            skin,
-            hair,
-            eyes,
-            city,
-            country,
-            choosedImages,
-            userPicture,
-            logined: true,
-            isAdmin: !!isAdmin,
-            isInfoSetted: !!isInfoSetted
-        })
-    });
-});
-
-
-app.get('/api/autoLogin', function (req, res) {
-    if (!req.cookies || !req.cookies.authKey) {
-        res.status(401)
-        return res.send({
-            message: 'not auth'
-        })
-    }
-
-    let stmt = `SELECT * FROM users WHERE  authKey = '${req.cookies.authKey}'`;
-    connection.query(stmt, (err, results, fields) => {
-        if (err) {
-            return console.error(err.message);
-        }
-        if (!results.length) {
-            res.status(401)
-            res.send({})
-            return;
-        }
-        res.status(200)
-        const { name, mail, isInfoSetted, chest,
-            waist,
-            hips,
-            height,
-            age,
-            skin,
-            hair,
-            eyes,
-            city,
-            country,
-            isAdmin,
-            choosedImages,
-            userPicture } = results[0];
-        res.send(prepareUser({
-            name,
-            mail,
-            chest,
-            waist,
-            hips,
-            height,
-            age,
-            skin,
-            hair,
-            eyes,
-            city,
-            country,
-            userPicture,
-            choosedImages,
-            isAdmin: !!isAdmin,
-            isInfoSetted: !!isInfoSetted,
-            logined: true,
-        }))
+        });
     });
 
-})
+    apiRouter.use('/auth', authRouter)
+}
 
-app.get('/api/logOut', function (req, res) {
-    let stmt = `UPDATE users SET authKey = NULL WHERE  authKey = '${req.cookies.authKey}'`;
-    connection.query(stmt, (err, results, fields) => {
-        res.cookie('authKey', '', { maxAge: 0, httpOnly: true, })
-        if (err) {
-            return console.error(err.message);
-        }
-        if (results.changedRows === 0) {
-            res.status(401)
-            res.send({
-                error: 'autoLogin Failed'
-            })
-            return;
-        }
-        res.status(200)
-        res.send({
-            logined: false
-        })
-    });
-})
 
 app.post('/api/setUserInfo', authMiddleware, function (req, res) {
     const { chest, waist, hips, height, age, skin, hair, eyes, city, country, choosedImages } = req.body
@@ -393,7 +398,7 @@ app.post('/api/setUserInfo', authMiddleware, function (req, res) {
 app.post('/api/setUserPicture', authMiddleware, function (req, res) {
     let stmt = `UPDATE users SET userPicture = '${req.body.userPicture}' WHERE  authKey = '${req.cookies.authKey}'`;
 
-    connection.query(stmt, (err, results, fields) => {
+    connection.query(stmt, (err, results) => {
         if (err) {
             console.error(err.message);
             res.status(406)
@@ -996,31 +1001,31 @@ function ClothauthMiddleware(req, res, next) {
             const user = results[0];
             if (!!user.isAdmin) return next();
 
-                const subs = JSON.parse(user.subs)
-                const expDate = new Date(subs.pop());
-                const now = new Date()
-                if (expDate > now) {
-                    if (user.paid) {
+            const subs = JSON.parse(user.subs)
+            const expDate = new Date(subs.pop());
+            const now = new Date()
+            if (expDate > now) {
+                if (user.paid) {
+                    next()
+                }
+                else {
+                    if (user.trialLooksCount < 3) {
                         next()
                     }
                     else {
-                        if (user.trialLooksCount < 3) {
-                            next()
-                        }
-                        else {
-                            res.status(402);
-                            res.send({
-                                error: 'subs expired'
-                            })
-                        }
+                        res.status(402);
+                        res.send({
+                            error: 'subs expired'
+                        })
                     }
                 }
-                else {
-                    res.status(402);
-                    res.send({
-                        error: 'subs expired'
-                    })
-                }
+            }
+            else {
+                res.status(402);
+                res.send({
+                    error: 'subs expired'
+                })
+            }
 
 
         }
