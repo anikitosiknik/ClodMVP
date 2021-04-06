@@ -1,56 +1,42 @@
 import { ClothStateType } from "../redux/types";
 import { sampleFetch } from "./requestService";
-import { LocalStorage } from "./localStorage";
 
-export function createClothRequest(cloth: Cloth) {
+export default class ClothRequestService {
+    static create(cloth: Cloth) {
+        return this.clothsFetch('/create', {
+            method: 'post',
+            body: JSON.stringify(cloth),
+        })
+    }
 
-    return sampleFetch(`/createCloth`, {
-        method: 'post',
-        body: JSON.stringify(cloth),
-        mode: 'cors',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-    })
+    static get() {
+        return this.clothsFetch('', {
+        })
+    }
+
+    static delete(ids: string[]) {
+        return this.clothsFetch('', {
+            method: 'delete',
+            body: JSON.stringify(ids),
+        })
+    }
+
+    static getById(ids: string[]) {
+        return this.clothsFetch('/clothsById', {
+            method: 'post',
+            body: JSON.stringify(ids),
+        })
+    }
+
+    static clothsFetch(input: RequestInfo, init?: RequestInit | undefined): Promise<Response> {
+        return sampleFetch(`/cloths${input}`, {
+            headers: {
+                'Content-Type': 'application/json'
+            }, ...init
+        })
+    }
 }
 
-
-export function getClothsRequest() {
-
-    return sampleFetch(`/cloths`, {
-        method: 'post',
-        mode: 'cors',
-        body: JSON.stringify({
-            exclude: LocalStorage.getDictIds(LocalStorage.clothImgs),
-        }),
-        headers: {
-            'Content-Type': 'application/json'
-        },
-    })
-}
-
-export function deleteClothRequest(ids: string[]) {
-
-    return sampleFetch(`/cloths`, {
-        method: 'delete',
-        body: JSON.stringify(ids),
-        mode: 'cors',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-    })
-}
-
-export function getClothsByIdRequest(ids: string[]) {
-    return sampleFetch(`/clothsById`, {
-        method: 'post',
-        body: JSON.stringify(ids),
-        mode: 'cors',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-    })
-}
 
 export interface CreatedClothType {
     createdBy: string;

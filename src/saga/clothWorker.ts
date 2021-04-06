@@ -2,11 +2,11 @@ import { all, call, put, takeLatest } from "redux-saga/effects";
 import { FETCH_CREATE_CLOTH, FETCH_GET_CLOTHS, FETCH_DELETE_CLOTH, FETCH_GET_CLOTHS_BY_ID } from "../redux/actionTypes";
 import { fetchGetCloths, deleteCloths, addCloths, updateCloths } from "../redux/reducers/cloth";
 import { setUser } from "../redux/reducers/user";
-import { getClothsByIdRequest, createClothRequest, getClothsRequest, deleteClothRequest, Cloth, ClothType } from "../utils/clothsService";
+import ClothRequestService, {  Cloth, ClothType } from "../utils/clothsService";
 
 export function* createClothAsync({ payload }: { type: string, forceReload: any, payload: Cloth }) {
     try {
-        yield call(() => createClothRequest(payload));
+        yield call(() => ClothRequestService.create(payload));
         yield put(fetchGetCloths());
     }
     catch (error) {
@@ -24,7 +24,7 @@ export function* watchCreateCloth() {
 
 export function* getClothsAsync() {
     try {
-        const data = yield call(() => getClothsRequest());
+        const data = yield call(() => ClothRequestService.get());
         const json: ClothType[] = yield call(() => new Promise(res => res(data.json())))
         yield put(updateCloths(Cloth.listToObject(json)))
     }
@@ -40,7 +40,7 @@ export function* watchGetCloths() {
 }
 
 export function* deleteClothAsync({ payload }: { type: string, forceReload: any, payload: string[] }) {
-    yield call(() => deleteClothRequest(payload));
+    yield call(() => ClothRequestService.delete(payload));
     yield put(deleteCloths(payload));
 }
 
@@ -49,7 +49,7 @@ export function* watchDeleteCloth() {
 }
 
 export function* getClothsById({ payload }: { type: string, forceReload: any, payload: string[] }) {
-    const data = yield call(() => getClothsByIdRequest(payload))
+    const data = yield call(() => ClothRequestService.getById(payload))
     const json: ClothType[] = yield call(() => new Promise(res => res(data.json())))
     yield put(addCloths(Cloth.listToObject(json)))
 }

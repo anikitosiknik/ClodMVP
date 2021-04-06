@@ -361,7 +361,7 @@ app.use('/api', apiRouter);
     const infoRouter = express.Router();
 
 
-    infoRouter.post('/setUserInfo', authMiddleware, function(req, res) {
+    infoRouter.post('/setInfo', authMiddleware, function(req, res) {
         const { chest, waist, hips, height, age, skin, hair, eyes, city, country, choosedImages } = req.body
         let stmt = `UPDATE users SET choosedImages = '${choosedImages}', city = '${city}', country = '${country}', chest = ${chest} , waist = ${waist} , hips = ${hips} , height = ${height} , age = ${age}  , skin = '${skin}' , hair = '${hair}' , eyes = '${eyes}', isInfoSetted = 1  WHERE  authKey = '${req.cookies.authKey}'`;
 
@@ -400,7 +400,7 @@ app.use('/api', apiRouter);
         })
     })
 
-    infoRouter.post('/setUserInfo', authMiddleware, function(req, res) {
+    infoRouter.post('/setPicture', authMiddleware, function(req, res) {
         let stmt = `UPDATE users SET userPicture = '${req.body.userPicture}' WHERE  authKey = '${req.cookies.authKey}'`;
 
         connection.query(stmt, (err, results) => {
@@ -431,35 +431,59 @@ app.use('/api', apiRouter);
 }
 
 
+{
+    //clothsRouter
+    const clothsRouter = express.Router();
 
+    clothsRouter.post('/create', authMiddleware, function(req, res) {
 
+        const clothId = generateAuthToken()
+        const { img, color, type, createdBy } = req.body;
 
+        let stmt = `SELECT id FROM cloth WHERE createdBy = '${createdBy}'`;
 
-
-app.post('/api/createCloth', authMiddleware, function(req, res) {
-
-    const clothId = generateAuthToken()
-    const { img, color, type, createdBy } = req.body;
-
-    let stmt = `SELECT id FROM cloth WHERE createdBy = '${createdBy}'`;
-
-    connection.query(stmt, (err, results) => {
-        if (results.length >= 100) {
-            res.status(403);
-            return res.send({
-                error: 'too many cloth for you'
+        connection.query(stmt, (err, results) => {
+            if (results.length >= 100) {
+                res.status(403);
+                return res.send({
+                    error: 'too many cloth for you'
+                })
+            }
+            let stmt = generateInsertSQLCommand('cloth', {
+                id: clothId,
+                img,
+                color,
+                type,
+                createdBy,
+                createdTime: new Date().toString()
             })
-        }
-        let stmt = generateInsertSQLCommand('cloth', {
-            id: clothId,
-            img,
-            color,
-            type,
-            createdBy,
-            createdTime: new Date().toString()
-        })
 
-        connection.query(stmt, (err) => {
+            connection.query(stmt, (err) => {
+                if (err) {
+                    if (err.code === "ER_DUP_ENTRY") {
+                        res.status(409)
+                        res.send({
+                            error: 'Duplicate Mail'
+                        });
+                    } else res.send(err)
+                    return console.error(err.message);
+                }
+                res.status(201)
+                res.send({
+                    message: 'created succsfully'
+                })
+            });
+        })
+    })
+
+
+    clothsRouter.get('', authMiddleware, function(req, res) {
+
+
+
+        let stmt = `SELECT * FROM cloth WHERE createdBy = (SELECT mail FROM users WHERE authKey = '${req.cookies.authKey}')`;
+
+        connection.query(stmt, (err, results) => {
             if (err) {
                 if (err.code === "ER_DUP_ENTRY") {
                     res.status(409)
@@ -469,86 +493,78 @@ app.post('/api/createCloth', authMiddleware, function(req, res) {
                 } else res.send(err)
                 return console.error(err.message);
             }
+
+            const data = results.map(el => ({ id: el.id, color: el.color, type: el.type, createdBy: el.createdBy, createdTime: el.createdTime }))
+            res.send(data);
+        });
+    })
+
+
+
+    clothsRouter.delete('', authMiddleware, function(req, res) {
+        let stmt = '';
+
+
+        const ids = req.body;
+        ids.forEach((id) => {
+            stmt = stmt + `DELETE FROM look_has_cloth WHERE cloth_id = '${id}' ; `
+        })
+        stmt = stmt + `DELETE FROM cloth WHERE`;
+        ids.forEach((id, index) => {
+            stmt = stmt + ` ${index === 0 ? '' : 'OR'} id = '${id}'`
+        })
+
+        connection.query(stmt, (err, results) => {
+            if (err) {
+                if (err.code === "ER_DUP_ENTRY") {
+                    res.status(409)
+                    res.send({
+                        error: 'asd'
+                    });
+                } else res.send(err)
+                return console.error(err.message);
+            }
             res.status(201)
             res.send({
-                message: 'created succsfully'
+                message: `removed ${results.affectedRows}`
             })
         });
     })
-})
-
-app.post('/api/cloths', authMiddleware, function(req, res) {
 
 
+    clothsRouter.post('/clothsById', authMiddleware, function(req, res) {
 
-    let stmt = `SELECT * FROM cloth WHERE createdBy = (SELECT mail FROM users WHERE authKey = '${req.cookies.authKey}')`;
-
-    connection.query(stmt, (err, results) => {
-        if (err) {
-            if (err.code === "ER_DUP_ENTRY") {
-                res.status(409)
-                res.send({
-                    error: 'Duplicate Mail'
-                });
-            } else res.send(err)
-            return console.error(err.message);
-        }
-
-        const data = results.map(el => ({ id: el.id, color: el.color, type: el.type, createdBy: el.createdBy, createdTime: el.createdTime }))
-        res.send(data);
-    });
-})
-
-app.delete('/api/cloths', authMiddleware, function(req, res) {
-    let stmt = '';
-
-
-    const ids = req.body;
-    ids.forEach((id, index) => {
-        stmt = stmt + `DELETE FROM look_has_cloth WHERE cloth_id = '${id}' ; `
-    })
-    stmt = stmt + `DELETE FROM cloth WHERE`;
-    ids.forEach((id, index) => {
-        stmt = stmt + ` ${index === 0 ? '' : 'OR'} id = '${id}'`
-    })
-
-    connection.query(stmt, (err, results) => {
-        if (err) {
-            if (err.code === "ER_DUP_ENTRY") {
-                res.status(409)
-                res.send({
-                    error: 'asd'
-                });
-            } else res.send(err)
-            return console.error(err.message);
-        }
-        res.status(201)
-        res.send({
-            message: `removed ${results.affectedRows}`
+        let stmt = 'SELECT * FROM cloth WHERE '
+        req.body.forEach((id, index) => {
+            stmt = stmt + ` ${index === 0 ? '' : 'OR'} id = '${id}'`
         })
-    });
-})
-
-app.post('/api/clothsById', authMiddleware, function(req, res) {
-
-    let stmt = 'SELECT * FROM cloth WHERE '
-    req.body.forEach((id, index) => {
-        stmt = stmt + ` ${index === 0 ? '' : 'OR'} id = '${id}'`
+        connection.query(stmt, (err, results) => {
+            if (err) {
+                if (err.code === "ER_DUP_ENTRY") {
+                    res.status(409)
+                    res.send({
+                        error: 'asd'
+                    });
+                } else res.send(err)
+                return console.error(err.message);
+            }
+            res.status(201)
+            res.send(results)
+        });
     })
-    connection.query(stmt, (err, results) => {
-        if (err) {
-            if (err.code === "ER_DUP_ENTRY") {
-                res.status(409)
-                res.send({
-                    error: 'asd'
-                });
-            } else res.send(err)
-            return console.error(err.message);
-        }
-        res.status(201)
-        res.send(results)
-    });
-})
+
+    apiRouter.use('/cloths', clothsRouter);
+}
+
+
+
+
+
+
+
+
+
+
 
 
 
