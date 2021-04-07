@@ -1,4 +1,4 @@
-import { CreatedClothType } from "../../utils/clothsService";
+import { CreatedClothType } from "../../utils/clothRequestService";
 import {
   ADD_CLOTHS,
   DELETE_CLOTHS,

@@ -8,7 +8,7 @@ import {
   RootState,
 } from "../../redux/types";
 import { LOOKS_CATEGORIES } from "../../utils/const";
-import { looksObjectToList } from "../../utils/lookService";
+import { looksObjectToList } from "../../utils/looksRequestService";
 import Header from "../header/Header";
 import "./LookPage.css";
 import "./DesktopLookPage.css";

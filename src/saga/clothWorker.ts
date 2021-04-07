@@ -2,7 +2,7 @@ import { all, call, put, takeLatest } from "redux-saga/effects";
 import { FETCH_CREATE_CLOTH, FETCH_GET_CLOTHS, FETCH_DELETE_CLOTH, FETCH_GET_CLOTHS_BY_ID } from "../redux/actionTypes";
 import { fetchGetCloths, deleteCloths, addCloths, updateCloths } from "../redux/reducers/cloth";
 import { setUser } from "../redux/reducers/user";
-import ClothRequestService, {  Cloth, ClothType } from "../utils/clothsService";
+import ClothRequestService, {  Cloth, ClothType } from "../utils/clothRequestService";
 
 export function* createClothAsync({ payload }: { type: string, forceReload: any, payload: Cloth }) {
     try {

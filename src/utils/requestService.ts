@@ -1,12 +1,36 @@
+
+export default class RequestService {
+    static rootRoute = getHref();
+    static apiRoute = '';
+
+
+    static sampleFetch(input: string = '', init?: RequestInit | undefined): Promise<Response> {
+        return fetch(`${this.rootRoute}${this.apiRoute}${input}`, {
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            ...init
+        }).then(handleErrors);
+    }
+}
+
 export function sampleFetch(input: RequestInfo, init?: RequestInit | undefined): Promise<Response> {
     const baseUrl = getHref();
 
-    return fetch(`${baseUrl}${input}`, init).then(handleErrors);
+    return fetch(`${baseUrl}${input}`, {
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        ...init
+    }).then(handleErrors);
 }
 
 function getHref() {
     return  '/api';
 }
+
+
+
 
  function handleErrors(response: Response) {
     if (!response.ok) {

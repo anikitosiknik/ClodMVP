@@ -3,12 +3,12 @@ import { FETCH_TOGGLE_LIKE_LOOK, FETCH_CREATE_LOOK, FETCH_DELETE_LOOKS, FETCH_GE
 import { fetchGetLookIds, fetchGetLooks, toggleLikeLook, updateLooks } from "../redux/reducers/look";
 import { setUser } from "../redux/reducers/user";
 import { createdLook, lookList, lookState, Look, clothInLookIds } from "../redux/types";
-import { deleteLooskRequest, createLookRequest, getLookIdsRequest, getLookRequest, toggleLikeLookRequest, changeCategoryLookRequest } from "../utils/lookService";
+import LooksRequestService from "../utils/looksRequestService";
 
 
 export function* createLookAsync({ payload }: { type: string, forceReload: any, payload: createdLook }) {
     try {
-        yield call(() => createLookRequest(payload));
+        yield call(() => LooksRequestService.create(payload));
         yield put(setUser({error: 'clothCreated'}))
         yield put(fetchGetLooks());
     }
@@ -25,7 +25,7 @@ export function* watchCreateLook() {
 
 export function* getLooksAsync() {
     try {
-        const data = yield call(() => getLookRequest());
+        const data = yield call(() => LooksRequestService.get());
         const json: lookList = yield call(() => new Promise(res => res(data.json())))
         yield put(fetchGetLookIds(json));
     }
@@ -40,7 +40,7 @@ export function* watchGetLooks() {
 }
 
 export function* getLookIdsAsync({ payload }: { type: string, forceReload: any, payload: lookList }) {
-    const data = yield call(() => getLookIdsRequest(payload.map(look => look.id)))
+    const data = yield call(() => LooksRequestService.getByIds(payload.map(look => look.id)))
     const json: clothInLookIds = yield call(() => new Promise(res => res(data.json())))
     const lookList = payload.map((look, index) => ({ ...look, clothIds: json[index].map(clothInLook => clothInLook.cloth_id) }))
     yield put(updateLooks(lookListToObject(lookList)))
@@ -51,7 +51,7 @@ export function* watchGetLookIds() {
 }
 
 export function* deleteLooksAsync({ payload }: { type: string, forceReload: any, payload: string[] }) {
-    yield call(() => deleteLooskRequest(payload))
+    yield call(() => LooksRequestService.delete(payload))
     yield put(fetchGetLooks())
 }
 
@@ -60,7 +60,7 @@ export function* watchDeleteLook() {
 }
 
 export function* toggleLikeLookAsync({ payload }: { type: string, forceReload: any, payload: string }) {
-     yield call(() => toggleLikeLookRequest(payload))
+     yield call(() => LooksRequestService.toggleLike(payload))
      yield put(toggleLikeLook(payload));
 
 }
@@ -71,7 +71,7 @@ export function* watchToggleLikeLook() {
 }
 
 export function* changeCategoryLookAsync({ payload }: { type: string, forceReload: any, payload: {id: string, category: string} }) {
-    yield call(() => changeCategoryLookRequest(payload))
+    yield call(() => LooksRequestService.changeType(payload))
     yield put(fetchGetLooks())
 }
 

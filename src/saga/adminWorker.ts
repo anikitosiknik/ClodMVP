@@ -3,7 +3,7 @@ import { FETCH_GET_LOOKS_ADMIN, FETCH_GET_LOOK_IDS_ADMIN, FETCH_UPDATE_LOOK_ADMI
 import { fetchGetLookIdsAdmin, fetchGetLooksAdmin, updateLooksAdmin } from "../redux/reducers/admin";
 import { clothInLookIds, lookList, UpdateLook } from "../redux/types";
 import { getLookAdminRequest, updateLookAdminRequest } from "../utils/adminService";
-import { getLookIdsRequest } from "../utils/lookService";
+import LooksRequestService from "../utils/looksRequestService";
 import { lookListToObject } from "./lookWorker";
 
 export function* getLooksAdmin() {
@@ -18,7 +18,7 @@ export function* watchGetLooks() {
 
 
 export function* getLookIdsAdminAsync({ payload } : {type: string, forceReload: any, payload: lookList}) {
-    const data = yield call(() => getLookIdsRequest(payload.map(look=>look.id)))
+    const data = yield call(() => LooksRequestService.getByIds(payload.map(look=>look.id)))
     const json: clothInLookIds = yield call(() => new Promise(res => res(data.json())))
     const lookList = payload.map( (look,index) => ({...look, clothIds: json[index].map( clothInLook=>clothInLook.cloth_id)}))
     yield put(updateLooksAdmin(lookListToObject(lookList)))

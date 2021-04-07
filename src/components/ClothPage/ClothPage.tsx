@@ -17,7 +17,7 @@ import {
 } from "../../redux/reducers/cloth";
 import { fetchCreateLook } from "../../redux/reducers/look";
 import Modal from "../Modal/Modal";
-import { Cloth, ClothType, CreatedClothType } from "../../utils/clothsService";
+import { Cloth, ClothType, CreatedClothType } from "../../utils/clothRequestService";
 import LazyContainer from "../LazyContainer/LazyContainer";
 import Roller from "../Roller/Roller";
 

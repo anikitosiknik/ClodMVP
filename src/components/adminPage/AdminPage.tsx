@@ -5,7 +5,7 @@ import {
   fetchUpdateLookAdmin,
 } from "../../redux/reducers/admin";
 import { Look, lookList, RootState, userState } from "../../redux/types";
-import { looksObjectToList } from "../../utils/lookService";
+import { looksObjectToList } from "../../utils/looksRequestService";
 import Modal from "../Modal/Modal";
 import backIcon from "../../imgs/backIcon.svg";
 import likeIcon from "../../imgs/likeIcon.svg";
@@ -27,7 +27,7 @@ import plus from "../../imgs/plus.svg";
 import { fetchGetClothsById } from "../../redux/reducers/cloth";
 import { getStringFromImg } from "../../utils/fileService";
 import { getUserAdminRequest } from "../../utils/adminService";
-import { ClothType, CreatedClothType } from "../../utils/clothsService";
+import { ClothType, CreatedClothType } from "../../utils/clothRequestService";
 import CreateCloth from "../ClothPage/CreateCloth";
 
 export default function AdminPage() {

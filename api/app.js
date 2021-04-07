@@ -557,42 +557,68 @@ app.use('/api', apiRouter);
 }
 
 
+{
+    //lookRouter
+    const lookRouter = express.Router();
+
+    lookRouter.post('/create', ClothauthMiddleware, function(req, res) {
+        const lookId = generateAuthToken();
+        const { type, clothIds } = req.body;
+
+        let stmt = `SELECT id FROM look WHERE createdBy = (SELECT mail FROM users WHERE authKey = '${req.cookies.authKey}')  AND  ready = 0`;
+        connection.query(stmt, (err, results) => {
+            if (results.length > 5) {
+                res.status(403);
+                return res.send({
+                    error: 'too many looks for you'
+                })
+            }
 
 
+            let stmt = `INSERT INTO look (id, type, createdBy, createdTime) VALUES ('${lookId}', '${type}', (SELECT mail FROM users WHERE authKey = '${req.cookies.authKey}'), '${new Date().toString()}');`
 
-
-
-
-
-
-
-
-
-
-
-
-app.post('/api/createLook', ClothauthMiddleware, function(req, res) {
-    const lookId = generateAuthToken();
-    const { type, clothIds } = req.body;
-
-    let stmt = `SELECT id FROM look WHERE createdBy = (SELECT mail FROM users WHERE authKey = '${req.cookies.authKey}')  AND  ready = 0`;
-    connection.query(stmt, (err, results) => {
-        if (results.length > 5) {
-            res.status(403);
-            return res.send({
-                error: 'too many looks for you'
+            clothIds.forEach(clothId => {
+                stmt = stmt + `${generateInsertSQLCommand('look_has_cloth', { look_id: lookId, cloth_id: clothId })};`
             })
-        }
 
 
-        let stmt = `INSERT INTO look (id, type, createdBy, createdTime) VALUES ('${lookId}', '${type}', (SELECT mail FROM users WHERE authKey = '${req.cookies.authKey}'), '${new Date().toString()}');`
+            connection.query(stmt, (err) => {
+                if (err) {
+                    if (err.code === "ER_DUP_ENTRY") {
+                        res.status(409)
+                        res.send({
+                            error: 'Duplicate Mail'
+                        });
+                    } else res.send(err)
+                    return console.error(err.message);
+                }
 
-        clothIds.forEach(clothId => {
-            stmt = stmt + `${generateInsertSQLCommand('look_has_cloth', { look_id: lookId, cloth_id: clothId })};`
+
+                let stmt = `SELECT trialLooksCount FROM users WHERE authKey = '${req.cookies.authKey}'`;
+                connection.query(stmt, (err, results) => {
+                    let stmt = `UPDATE users SET trialLooksCount = ${results[0].trialLooksCount + 1}  WHERE authKey = '${req.cookies.authKey}';`
+                    connection.query(stmt, () => {
+                        res.status(201)
+                        res.send({
+                            message: 'created succsfully'
+                        })
+                    })
+
+                })
+
+
+            });
+
         })
 
+    })
 
-        connection.query(stmt, (err) => {
+    lookRouter.get('', authMiddleware, function(req, res) {
+
+
+        let stmt = `SELECT * FROM look WHERE createdBy = (SELECT mail FROM users WHERE authKey = '${req.cookies.authKey}')`;
+
+        connection.query(stmt, (err, results, ) => {
             if (err) {
                 if (err.code === "ER_DUP_ENTRY") {
                     res.status(409)
@@ -602,142 +628,19 @@ app.post('/api/createLook', ClothauthMiddleware, function(req, res) {
                 } else res.send(err)
                 return console.error(err.message);
             }
-
-
-            let stmt = `SELECT trialLooksCount FROM users WHERE authKey = '${req.cookies.authKey}'`;
-            connection.query(stmt, (err, results) => {
-                let stmt = `UPDATE users SET trialLooksCount = ${results[0].trialLooksCount + 1}  WHERE authKey = '${req.cookies.authKey}';`
-                connection.query(stmt, () => {
-                    res.status(201)
-                    res.send({
-                        message: 'created succsfully'
-                    })
-                })
-
-            })
-
-
-        });
-
-    })
-
-})
-
-
-app.put('/api/changeType', authMiddleware, function(req, res) {
-    const { id, category } = req.body;
-    let stmt = `UPDATE look SET  category = '${category}'  WHERE  id = '${id}';`
-
-    connection.query(stmt, (err) => {
-        if (err) {
-            res.status(400)
-            return res.send(err)
-        }
-        res.status(200);
-        res.send({ message: 'ok' })
-    })
-})
-
-app.get('/api/looks', authMiddleware, function(req, res) {
-
-
-    let stmt = `SELECT * FROM look WHERE createdBy = (SELECT mail FROM users WHERE authKey = '${req.cookies.authKey}')`;
-
-    connection.query(stmt, (err, results, ) => {
-        if (err) {
-            if (err.code === "ER_DUP_ENTRY") {
-                res.status(409)
-                res.send({
-                    error: 'Duplicate Mail'
-                });
-            } else res.send(err)
-            return console.error(err.message);
-        }
-        res.status(201)
-        res.send(results.map(look => ({...look, favorite: !!look.favorite, ready: !!look.ready, createdTime: look.createdTime })))
-    });
-})
-
-
-app.delete('/api/looks', authMiddleware, function(req, res) {
-    let stmt = '';
-
-
-    const ids = req.body;
-    ids.forEach((id) => {
-        stmt = stmt + `DELETE FROM look_has_cloth WHERE look_id = '${id}' ; `
-    })
-    stmt = stmt + `DELETE FROM look WHERE`;
-    ids.forEach((id, index) => {
-        stmt = stmt + ` ${index === 0 ? '' : 'OR'} id = '${id}'`
-    })
-
-    connection.query(stmt, (err, results) => {
-        if (err) {
-            if (err.code === "ER_DUP_ENTRY") {
-                res.status(409)
-                res.send({
-                    error: 'asd'
-                });
-            } else res.send(err)
-            return console.error(err.message);
-        }
-        res.status(201)
-        res.send({
-            message: `removed ${results.affectedRows}`
-        })
-    });
-})
-
-app.post('/api/looksIds', authMiddleware, function(req, res) {
-
-    let stmt = '';
-    req.body.forEach(lookId => {
-        stmt = stmt + ` SELECT * FROM look_has_cloth WHERE look_id = '${lookId}';`
-    })
-
-    connection.query(stmt, (err, results) => {
-        if (err) {
-            if (err.code === "ER_DUP_ENTRY") {
-                res.status(409)
-                res.send({
-                    error: 'Duplicate Mail'
-                });
-            } else res.send(err)
-            return console.error(err.message);
-        }
-        if (req.body.length === 1) {
-            const result = [
-                []
-            ]
-            results.forEach(item => result[0].push(item))
             res.status(201)
-            res.send(result)
-            return
-        }
-        res.status(201)
-        res.send(results)
-    });
-})
+            res.send(results.map(look => ({...look, favorite: !!look.favorite, ready: !!look.ready, createdTime: look.createdTime })))
+        });
+    })
 
-app.put('/api/looksLike', authMiddleware, function(req, res) {
-    req.body = req.body.a
-    let stmt = `SELECT favorite FROM look WHERE id = '${req.body}'`
-    connection.query(stmt, (err, results, ) => {
+    //TODO Merge with get by params
+    lookRouter.post('/getByIds', authMiddleware, function(req, res) {
 
+        let stmt = '';
+        req.body.forEach(lookId => {
+            stmt = stmt + ` SELECT * FROM look_has_cloth WHERE look_id = '${lookId}';`
+        })
 
-        if (err) {
-            if (err.code === "ER_DUP_ENTRY") {
-                res.status(409)
-                res.send({
-                    error: 'Duplicate Mail'
-                });
-            } else res.send(err)
-            return console.error(err.message);
-        }
-        const result = results[0].favorite;
-        let stmt = `UPDATE look SET  favorite = '${result ? 0 : 1}'  WHERE  id = '${req.body}';
-         SELECT * FROM look WHERE id = '${req.body}'`;
         connection.query(stmt, (err, results) => {
             if (err) {
                 if (err.code === "ER_DUP_ENTRY") {
@@ -748,10 +651,126 @@ app.put('/api/looksLike', authMiddleware, function(req, res) {
                 } else res.send(err)
                 return console.error(err.message);
             }
-            res.send(results[1].map(look => ({...look, favorite: !!look.favorite, ready: !!look.ready })))
+            if (req.body.length === 1) {
+                const result = [
+                    []
+                ]
+                results.forEach(item => result[0].push(item))
+                res.status(201)
+                res.send(result)
+                return
+            }
+            res.status(201)
+            res.send(results)
+        });
+    })
+
+
+
+    lookRouter.delete('', authMiddleware, function(req, res) {
+        let stmt = '';
+
+
+        const ids = req.body;
+        ids.forEach((id) => {
+            stmt = stmt + `DELETE FROM look_has_cloth WHERE look_id = '${id}' ; `
         })
-    });
-})
+        stmt = stmt + `DELETE FROM look WHERE`;
+        ids.forEach((id, index) => {
+            stmt = stmt + ` ${index === 0 ? '' : 'OR'} id = '${id}'`
+        })
+
+        connection.query(stmt, (err, results) => {
+            if (err) {
+                if (err.code === "ER_DUP_ENTRY") {
+                    res.status(409)
+                    res.send({
+                        error: 'asd'
+                    });
+                } else res.send(err)
+                return console.error(err.message);
+            }
+            res.status(201)
+            res.send({
+                message: `removed ${results.affectedRows}`
+            })
+        });
+    })
+
+    lookRouter.put('/changeType', authMiddleware, function(req, res) {
+        const { id, category } = req.body;
+        let stmt = `UPDATE look SET  category = '${category}'  WHERE  id = '${id}';`
+
+        connection.query(stmt, (err) => {
+            if (err) {
+                res.status(400)
+                return res.send(err)
+            }
+            res.status(200);
+            res.send({ message: 'ok' })
+        })
+    })
+
+
+
+    lookRouter.put('/toggleLike', authMiddleware, function(req, res) {
+        const lookId = req.body.lookId
+        let stmt = `SELECT favorite FROM look WHERE id = '${lookId}'`
+        connection.query(stmt, (err, results, ) => {
+
+
+            if (err) {
+                if (err.code === "ER_DUP_ENTRY") {
+                    res.status(409)
+                    res.send({
+                        error: 'Duplicate Mail'
+                    });
+                } else res.send(err)
+                return console.error(err.message);
+            }
+            const result = results[0].favorite;
+            let stmt = `UPDATE look SET  favorite = '${result ? 0 : 1}'  WHERE  id = '${lookId}';
+         SELECT * FROM look WHERE id = '${lookId}'`;
+            connection.query(stmt, (err, results) => {
+                if (err) {
+                    if (err.code === "ER_DUP_ENTRY") {
+                        res.status(409)
+                        res.send({
+                            error: 'Duplicate Mail'
+                        });
+                    } else res.send(err)
+                    return console.error(err.message);
+                }
+                res.send(results[1].map(look => ({...look, favorite: !!look.favorite, ready: !!look.ready })))
+            })
+        });
+    })
+
+
+    apiRouter.use('/looks', lookRouter);
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 app.get('/api/looksAdmin', authMiddleware, function(req, res) {

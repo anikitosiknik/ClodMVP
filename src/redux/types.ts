@@ -1,4 +1,4 @@
-import { ClothType } from "../utils/clothsService"
+import { ClothType } from "../utils/clothRequestService"
 
 export interface userState {
     logined: boolean,

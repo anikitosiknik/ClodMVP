@@ -1,40 +1,34 @@
 import { ClothStateType } from "../redux/types";
-import { sampleFetch } from "./requestService";
+import RequestService from "./requestService";
 
-export default class ClothRequestService {
+export default class ClothRequestService extends RequestService {
+    static apiRoute = '/cloths';
+
     static create(cloth: Cloth) {
-        return this.clothsFetch('/create', {
+        return this.sampleFetch('/create', {
             method: 'post',
             body: JSON.stringify(cloth),
         })
     }
 
     static get() {
-        return this.clothsFetch('', {
-        })
+        return this.sampleFetch()
     }
 
     static delete(ids: string[]) {
-        return this.clothsFetch('', {
+        return this.sampleFetch('', {
             method: 'delete',
             body: JSON.stringify(ids),
         })
     }
 
     static getById(ids: string[]) {
-        return this.clothsFetch('/clothsById', {
+        return this.sampleFetch('/clothsById', {
             method: 'post',
             body: JSON.stringify(ids),
         })
     }
 
-    static clothsFetch(input: RequestInfo, init?: RequestInit | undefined): Promise<Response> {
-        return sampleFetch(`/cloths${input}`, {
-            headers: {
-                'Content-Type': 'application/json'
-            }, ...init
-        })
-    }
 }
 
 

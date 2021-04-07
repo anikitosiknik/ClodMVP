@@ -7,7 +7,7 @@ import { getStringFromImg } from "../../utils/fileService";
 import { RootState } from "../../redux/types";
 import { useSelector } from "react-redux";
 import Modal from "../Modal/Modal";
-import { CreatedClothType } from "../../utils/clothsService";
+import { CreatedClothType } from "../../utils/clothRequestService";
 
 function CreateCloth({
   createHandler,

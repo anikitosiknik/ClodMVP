@@ -1,28 +1,20 @@
 import { userState } from "../redux/types";
-import { sampleFetch } from "./requestService";
+import RequestService from "./requestService";
 
-export default class InfoRequestService {
+export default class InfoRequestService extends RequestService {
+    static apiRoute = '/info'
 
     static setInfo(user: userState) {
-        return this.infoFetch('/setInfo', {
+        return this.sampleFetch('/setInfo', {
             method: 'post',
             body: JSON.stringify(user),
         })
     }
 
     static setPicture(userPicture: string) {
-        return this.infoFetch('/setPicture', {
+        return this.sampleFetch('/setPicture', {
             method: 'post',
             body: JSON.stringify({userPicture})
-        })
-    }
-
-
-    static infoFetch(input: RequestInfo, init?: RequestInit | undefined): Promise<Response> {
-        return sampleFetch(`/info${input}`, {
-            headers: {
-                'Content-Type': 'application/json'
-            }, ...init
         })
     }
 }
