@@ -751,107 +751,27 @@ app.use('/api', apiRouter);
 }
 
 
+{
+    // AdminRouter
+    const adminRouter = express.Router();
 
 
+    adminRouter.get('/looks', authMiddleware, function(req, res) {
 
+        let stmt = `SELECT isAdmin FROM users WHERE authKey = '${req.cookies.authKey}'`
+        connection.query(stmt, (err, results) => {
+            if (err) {
+                if (err.code === "ER_DUP_ENTRY") {
+                    res.status(409)
+                    res.send({
+                        error: 'error please contact admin'
+                    });
+                } else res.send(err)
+                return console.error(err.message);
+            }
+            if (results[0] && results[0].isAdmin) {
+                let stmt = `SELECT * FROM look WHERE ready = 0`;
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-app.get('/api/looksAdmin', authMiddleware, function(req, res) {
-
-    let stmt = `SELECT isAdmin FROM users WHERE authKey = '${req.cookies.authKey}'`
-    connection.query(stmt, (err, results) => {
-        if (err) {
-            if (err.code === "ER_DUP_ENTRY") {
-                res.status(409)
-                res.send({
-                    error: 'error please contact admin'
-                });
-            } else res.send(err)
-            return console.error(err.message);
-        }
-        if (results[0] && results[0].isAdmin) {
-            let stmt = `SELECT * FROM look WHERE ready = 0`;
-
-            connection.query(stmt, (err, results) => {
-                if (err) {
-                    if (err.code === "ER_DUP_ENTRY") {
-                        res.status(409)
-                        res.send({
-                            error: 'error please contact admin'
-                        });
-                    } else res.send(err)
-                    return console.error(err.message);
-                }
-                res.send(results)
-            })
-        } else res.send({
-            isAdmin: false
-        })
-    })
-})
-
-
-app.post('/api/updateLookAdmin', authMiddleware, function(req, res) {
-
-    let stmt = `SELECT isAdmin FROM users WHERE authKey = '${req.cookies.authKey}'`
-    connection.query(stmt, (err, results) => {
-        const { clothDelete, clothUpd, clothCreate, id, img, mail } = req.body;
-        if (err) {
-            if (err.code === "ER_DUP_ENTRY") {
-                res.status(409)
-                res.send({
-                    error: 'error please contact admin'
-                });
-            } else res.send(err)
-            return console.error(err.message);
-        }
-
-        if (results[0] && results[0].isAdmin) {
-
-
-            let transporter = nodemailer.createTransport({
-                service: 'gmail',
-                auth: {
-                    user: 'clodapp.info@gmail.com',
-                    pass: passwordMail
-                }
-            })
-            transporter.sendMail({
-                from: 'anikitosiknik@gmail.com',
-                to: mail,
-                subject: 'Оповещение',
-                html: `<p>Здравствуйте! Ваш персональный образ готов, зайдите в веб-приложение <a href="https://clod.site/">clod.site</a>, чтобы увидеть созданную для Вас комбинацию. <br>С уважением, <br> Clod</p> `
-            }).then(() => {
-
-                let stmt = `UPDATE look SET  img = '${img}', ready = 1 WHERE  id = '${id}';`
-                clothDelete.forEach(clothId => {
-                    stmt = stmt + ` DELETE FROM look_has_cloth WHERE cloth_id = '${clothId}' AND  look_id = '${id}';`
-                })
-                clothUpd.forEach(clothUpdObj => {
-                    stmt = stmt + ` UPDATE cloth SET img = '${clothUpdObj.img}' WHERE id = '${clothUpdObj.id}';`
-                })
-                clothCreate.forEach(cloth => {
-                    const { img, color, link, type } = cloth;
-                    const clothId = generateAuthToken()
-                    stmt = stmt + `${generateInsertSQLCommand('cloth', { id: clothId, img, color, type, createdBy: 'admin', link })};  ${generateInsertSQLCommand('look_has_cloth', { look_id: id, cloth_id: clothId })};`;
-                })
                 connection.query(stmt, (err, results) => {
                     if (err) {
                         if (err.code === "ER_DUP_ENTRY") {
@@ -864,60 +784,149 @@ app.post('/api/updateLookAdmin', authMiddleware, function(req, res) {
                     }
                     res.send(results)
                 })
-
-            }, err => {
-                res.send(err);
+            } else res.send({
+                isAdmin: false
             })
-        } else res.send({
-            isAdmin: false
         })
     })
-})
-
-app.get('/api/user', authMiddleware, function(req, res) {
-
-    let stmt = `SELECT isAdmin FROM users WHERE authKey = '${req.cookies.authKey}'`
-    connection.query(stmt, (err, results) => {
-        if (err) {
-            if (err.code === "ER_DUP_ENTRY") {
-                res.status(409)
-                res.send({
-                    error: 'error please contact admin'
-                });
-            } else res.send(err)
-            return console.error(err.message);
-        }
-        if (results[0] && results[0].isAdmin) {
-            let stmt = `SELECT * FROM users WHERE mail = '${req.query.mail}'`
 
 
-            connection.query(stmt, (err, results) => {
-                if (err) {
-                    res.send(err)
-                    return console.error(err.message);
-                }
-                const { mail, chest, waist, hair, hips, height, age, skin, eyes, userPicture, country, city, choosedImages } = results[0]
-                res.send({
-                    mail,
-                    chest,
-                    waist,
-                    hair,
-                    hips,
-                    height,
-                    age,
-                    skin,
-                    eyes,
-                    userPicture,
-                    country,
-                    city,
-                    choosedImages
+    adminRouter.post('/updateLook', authMiddleware, function(req, res) {
+
+        let stmt = `SELECT isAdmin FROM users WHERE authKey = '${req.cookies.authKey}'`
+        connection.query(stmt, (err, results) => {
+            const { clothDelete, clothUpd, clothCreate, id, img, mail } = req.body;
+            if (err) {
+                if (err.code === "ER_DUP_ENTRY") {
+                    res.status(409)
+                    res.send({
+                        error: 'error please contact admin'
+                    });
+                } else res.send(err)
+                return console.error(err.message);
+            }
+
+            if (results[0] && results[0].isAdmin) {
+
+
+                let transporter = nodemailer.createTransport({
+                    service: 'gmail',
+                    auth: {
+                        user: 'clodapp.info@gmail.com',
+                        pass: passwordMail
+                    }
                 })
+                transporter.sendMail({
+                    from: 'anikitosiknik@gmail.com',
+                    to: mail,
+                    subject: 'Оповещение',
+                    html: `<p>Здравствуйте! Ваш персональный образ готов, зайдите в веб-приложение <a href="https://clod.site/">clod.site</a>, чтобы увидеть созданную для Вас комбинацию. <br>С уважением, <br> Clod</p> `
+                }).then(() => {
+
+                    let stmt = `UPDATE look SET  img = '${img}', ready = 1 WHERE  id = '${id}';`
+                    clothDelete.forEach(clothId => {
+                        stmt = stmt + ` DELETE FROM look_has_cloth WHERE cloth_id = '${clothId}' AND  look_id = '${id}';`
+                    })
+                    clothUpd.forEach(clothUpdObj => {
+                        stmt = stmt + ` UPDATE cloth SET img = '${clothUpdObj.img}' WHERE id = '${clothUpdObj.id}';`
+                    })
+                    clothCreate.forEach(cloth => {
+                        const { img, color, link, type } = cloth;
+                        const clothId = generateAuthToken()
+                        stmt = stmt + `${generateInsertSQLCommand('cloth', { id: clothId, img, color, type, createdBy: 'admin', link })};  ${generateInsertSQLCommand('look_has_cloth', { look_id: id, cloth_id: clothId })};`;
+                    })
+                    connection.query(stmt, (err, results) => {
+                        if (err) {
+                            if (err.code === "ER_DUP_ENTRY") {
+                                res.status(409)
+                                res.send({
+                                    error: 'error please contact admin'
+                                });
+                            } else res.send(err)
+                            return console.error(err.message);
+                        }
+                        res.send(results)
+                    })
+
+                }, err => {
+                    res.send(err);
+                })
+            } else res.send({
+                isAdmin: false
             })
-        } else res.send({
-            isAdmin: false
         })
     })
-})
+
+
+    adminRouter.get('/user', authMiddleware, function(req, res) {
+
+        let stmt = `SELECT isAdmin FROM users WHERE authKey = '${req.cookies.authKey}'`
+        connection.query(stmt, (err, results) => {
+            if (err) {
+                if (err.code === "ER_DUP_ENTRY") {
+                    res.status(409)
+                    res.send({
+                        error: 'error please contact admin'
+                    });
+                } else res.send(err)
+                return console.error(err.message);
+            }
+            if (results[0] && results[0].isAdmin) {
+                let stmt = `SELECT * FROM users WHERE mail = '${req.query.mail}'`
+
+
+                connection.query(stmt, (err, results) => {
+                    if (err) {
+                        res.send(err)
+                        return console.error(err.message);
+                    }
+                    const { mail, chest, waist, hair, hips, height, age, skin, eyes, userPicture, country, city, choosedImages } = results[0]
+                    res.send({
+                        mail,
+                        chest,
+                        waist,
+                        hair,
+                        hips,
+                        height,
+                        age,
+                        skin,
+                        eyes,
+                        userPicture,
+                        country,
+                        city,
+                        choosedImages
+                    })
+                })
+            } else res.send({
+                isAdmin: false
+            })
+        })
+    })
+
+
+    apiRouter.use('/admin', adminRouter);
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

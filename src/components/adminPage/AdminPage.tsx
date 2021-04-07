@@ -26,7 +26,7 @@ import { CLOTH_TYPES, EYES_COLORS, HAIR_COLORS } from "../../utils/const";
 import plus from "../../imgs/plus.svg";
 import { fetchGetClothsById } from "../../redux/reducers/cloth";
 import { getStringFromImg } from "../../utils/fileService";
-import { getUserAdminRequest } from "../../utils/adminService";
+import AdminRequestService from "../../utils/adminRequestService";
 import { ClothType, CreatedClothType } from "../../utils/clothRequestService";
 import CreateCloth from "../ClothPage/CreateCloth";
 
@@ -140,7 +140,7 @@ export function LookModal({
   }, [look.clothIds]);
 
   useEffect(() => {
-    getUserAdminRequest(look.createdBy)
+    AdminRequestService.getUser(look.createdBy)
       .then((res) => res.json())
       .then((res) => {
         changeUser(res);

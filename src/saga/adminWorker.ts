@@ -2,12 +2,12 @@ import { all, call, put, takeLatest } from "redux-saga/effects";
 import { FETCH_GET_LOOKS_ADMIN, FETCH_GET_LOOK_IDS_ADMIN, FETCH_UPDATE_LOOK_ADMIN } from "../redux/actionTypes";
 import { fetchGetLookIdsAdmin, fetchGetLooksAdmin, updateLooksAdmin } from "../redux/reducers/admin";
 import { clothInLookIds, lookList, UpdateLook } from "../redux/types";
-import { getLookAdminRequest, updateLookAdminRequest } from "../utils/adminService";
+import AdminRequestService from "../utils/adminRequestService";
 import LooksRequestService from "../utils/looksRequestService";
 import { lookListToObject } from "./lookWorker";
 
 export function* getLooksAdmin() {
-    const data = yield call(() => getLookAdminRequest());
+    const data = yield call(() => AdminRequestService.getLooks());
     const json: lookList = yield call(() => new Promise(res => res(data.json())))
     yield put(fetchGetLookIdsAdmin(json));
 }
@@ -30,7 +30,7 @@ export function* watchGetLookIdsAdmin () {
 }
 
 export function* updateLookAdminAsync ({ payload } : {type: string, forceReload: any, payload: UpdateLook}) {
-    yield call(() => updateLookAdminRequest(payload))
+    yield call(() => AdminRequestService.updateLook(payload))
     yield put(fetchGetLooksAdmin())
 }
 
