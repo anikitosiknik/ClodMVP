@@ -2,7 +2,7 @@ import React from "react";
 import "./Roller.css";
 
 export default function Roller({ style }: { style?: React.CSSProperties }) {
-  const circles = [...Array(8)].map((_, index) => {
+  const circles = [...Array(8)].map((piece, index) => {
     return (
       <div key={index}>
         <div className={"div-after"} style={{ background: "#699C8B" }}></div>

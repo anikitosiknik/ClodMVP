@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import { useSelector } from "react-redux";
 import { RootState } from "../../redux/types";
 import Footer from "../footer/Footer";
-import { Pages } from "../../redux/types";
 import LazyContainer from "../LazyContainer/LazyContainer";
 const UserForm = React.lazy(() => import("../userForm/UserForm"));
 const ClothPage = React.lazy(() => import("../ClothPage/ClothPage"));
@@ -12,7 +11,7 @@ const AdminPage = React.lazy(() => import("../adminPage/AdminPage"));
 function AppContainer() {
   const user = useSelector((store: RootState) => store.user);
 
-  const [currentPage, changeCurrentPage] = useState<Pages>("clothPage");
+  const [currentPage, changeCurrentPage] = useState<Pages>(Pages.ClothPage);
 
   return (
     <>
@@ -24,12 +23,12 @@ function AppContainer() {
         <>
           <LazyContainer>
             <>
-              {currentPage === "clothPage" ? <ClothPage /> : null}
-              {currentPage === "lookPage" ? <LookPage /> : null}
-              {currentPage === "admin" ? <AdminPage /> : null}
+              {currentPage === Pages.ClothPage ? <ClothPage /> : null}
+              {currentPage === Pages.LookPage ? <LookPage /> : null}
+              {currentPage === Pages.AdminPage ? <AdminPage /> : null}
             </>
           </LazyContainer>
-          <Footer navigate={changeCurrentPage} currentPage={currentPage} />
+          <Footer navigate={changeCurrentPage} currentPage={Pages[currentPage]} />
         </>
       )}
     </>
@@ -37,3 +36,9 @@ function AppContainer() {
 }
 
 export default AppContainer;
+
+export enum Pages {
+  AdminPage,
+  ClothPage,
+  LookPage,
+}
