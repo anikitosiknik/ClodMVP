@@ -14,27 +14,24 @@ function Footer({
   currentPage: string;
 }) {
   const isAdmin = useSelector((state: RootState) => state.user.isAdmin);
-  const navigateHandler = (target: Pages) => {
-    navigate(target);
-  };
 
   return (
     <footer className="footer">
       <button
         className={`btn ${currentPage === "clothPage" ? "clicked" : ""}`}
-        onClick={() => navigateHandler(Pages.ClothPage)}
+        onClick={() => navigate(Pages.ClothPage)}
       >
         Одежда
       </button>
       <button
         className={`btn ${currentPage === "lookPage" ? "clicked" : ""}`}
-        onClick={() => navigateHandler(Pages.LookPage)}
+        onClick={() => navigate(Pages.LookPage)}
       >
         Образы
       </button>
       <button className={`btn soon`}>Календарь</button>
       {isAdmin ? (
-        <button className={`btn`} onClick={() => navigateHandler(Pages.AdminPage)}>
+        <button className={`btn`} onClick={()=>navigate(Pages.AdminPage)}>
           admin
         </button>
       ) : null}
