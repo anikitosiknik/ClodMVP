@@ -28,7 +28,7 @@ function AppContainer() {
               {currentPage === Pages.AdminPage ? <AdminPage /> : null}
             </>
           </LazyContainer>
-          <Footer navigate={changeCurrentPage} currentPage={Pages[currentPage]} />
+          <Footer navigate={changeCurrentPage} currentPage={currentPage} />
         </>
       )}
     </>

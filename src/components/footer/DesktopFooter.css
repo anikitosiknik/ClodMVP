@@ -1,11 +1,10 @@
-@media (min-width: 700px) { 
+@media (min-width: 700px) {
     .footer {
         justify-content: center;
         grid-template-columns: auto;
         gap: 18px;
-    }   
-
-    .footer .btn {
-       min-width: 180px;
+    }
+    .footer__button {
+        min-width: 180px;
     }
 }

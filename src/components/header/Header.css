@@ -6,45 +6,39 @@
     grid-template-columns: 1fr 1fr 1fr;
 }
 
-.header-logo {
+.header__logo {
     height: 45px;
 }
 
-
-.userIcon {
+.user-icon {
     height: 35px;
     width: 35px;
     border-radius: 50%;
     filter: drop-shadow(2px 4px 4px rgba(0, 0, 0, 0.25));
     justify-self: self-end;
-    
     background-position: 50%;
     background-size: cover;
 }
 
-
-
-.userPopupContainer {
+.menu-container {
     position: absolute;
     left: 0;
     top: 0;
     width: 100vw;
     height: 0vh;
-
     background-color: rgba(0, 0, 0, 0);
     transition: background-color 0.3s 0.3s, height 0s 0.6s;
     overflow: hidden;
-
     z-index: 1;
 }
 
-.userPopupContainer.shown {
+.menu-container_shown {
     background-color: rgba(0, 0, 0, 0.6);
     transition: background-color 0.3s ease-out, height 0s;
     height: 100vh;
 }
 
-.userPopup {
+.menu {
     position: relative;
     background-color: #fff;
     height: 50vh;
@@ -52,26 +46,21 @@
     border-top-left-radius: 20px;
     border-top-right-radius: 20px;
     transition: top 0.3s;
-
-
     justify-items: center;
     align-items: center;
     display: grid;
     z-index: 1;
-    
 }
 
-.userPopup.shown {
-  
+.menu_shown {
     transition: top 0.3s;
     transition-delay: 0.3s;
     top: 50%;
 }
 
-.userPopup-iconContainer {
+.menu__icon-container {
     align-self: flex-end;
     position: relative;
-
     width: 80px;
     height: 80px;
     border-radius: 50%;
@@ -81,8 +70,7 @@
     background-size: cover;
 }
 
-
-.userPopup-plus {
+.plus-button {
     position: absolute;
     right: 0px;
     bottom: 7px;
@@ -100,31 +88,26 @@
     align-items: center;
 }
 
-.userPopup-plus p {
+.plus-button__icon {
     margin-left: 2px;
 }
 
-.userPopup-plus input {
+.plus-button__input {
     display: none;
 }
 
-.userPopup-infoContainer {
+.menu__info-container {
     align-self: flex-start;
     color: #515151
 }
 
-.userPopup-infoContainer h2 {
+.menu__mail-header {
     font-size: 25px;
     color: #515151;
     margin: 20px 0px 7px;
 }
 
-.userPopup-infoContainer p {
-    font-size: 16px;
-    margin: 0px;
-}
-
-.userPopup-buttons {
+.menu__buttons-list {
     display: grid;
     align-items: center;
     justify-content: center;

@@ -20,32 +20,32 @@ export default function Header({
 }) {
   return (
     <div className="header">
-      {additionalElement || <div className="emptyIcon" />}
-      <img className="header-logo" src={logo}></img>
-      {logoOnly ? <div className="emptyIcon" /> : <UserIcon />}
+      {additionalElement || <div className="header__icon" />}
+      <img className="header__logo" src={logo}></img>
+      {logoOnly ? <div className="header__icon" /> : <UserIcon />}
     </div>
   );
 }
 
 function UserIcon() {
-  const [isPopupShown, togglePopupShown] = useState(false);
+  const [isProfileShown, toggleProfileShown] = useState(false);
   const userPicture = useSelector((state: RootState) => state.user.userPicture);
   return (
     <React.Fragment>
-      <UserPopup
-        isPopupShown={isPopupShown}
-        togglePopupShown={togglePopupShown}
+      <ProfileMenu
+        isPopupShown={isProfileShown}
+        togglePopupShown={toggleProfileShown}
       />
       <div
-        className="userIcon"
+        className="user-icon"
         style={{ backgroundImage: `url("${userPicture || userIcon}")` }}
-        onClick={() => togglePopupShown(!isPopupShown)}
+        onClick={() => toggleProfileShown(!isProfileShown)}
       ></div>
     </React.Fragment>
   );
 }
 
-function UserPopup({
+function ProfileMenu({
   isPopupShown,
   togglePopupShown,
 }: {
@@ -53,12 +53,12 @@ function UserPopup({
   togglePopupShown: (status: boolean) => void;
 }) {
   const user = useSelector((state: RootState) => state.user);
+  const disptach = useDispatch();
   const togglePopup = (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
     isPopupShown && event.target === event.currentTarget
       ? togglePopupShown(!isPopupShown)
       : null;
   };
-  const disptach = useDispatch();
   const uploadPicture = (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = event.target.files;
     if (!files || !files[0]) return;
@@ -70,29 +70,30 @@ function UserPopup({
 
   return (
     <div
-      className={`userPopupContainer ${isPopupShown ? "shown" : ""}`}
+      className={`menu-container ${isPopupShown ? "menu-container_shown" : ""}`}
       onClick={togglePopup}
     >
-      <div className={`userPopup ${isPopupShown ? "shown" : ""}`}>
+      <div className={`menu ${isPopupShown ? "menu_shown" : ""}`}>
         <div
-          className="userPopup-iconContainer"
+          className="menu__icon-container"
           style={{ backgroundImage: `url("${user.userPicture || userIcon}")` }}
         >
-          <div className="userPopup-plus">
+          <div className="plus-button">
             <input
+            className="plus-button__input"
               type="file"
               id="uploadUserPicture"
               onChange={(event) => uploadPicture(event)}
             />
             <label htmlFor="uploadUserPicture">
-              <p>+</p>
+              <p className="plus-button__icon">+</p>
             </label>
           </div>
         </div>
-        <div className="userPopup-infoContainer">
-          <h2>{user.mail}</h2>
+        <div className="menu__info-container">
+          <h2 className="menu__mail-header">{user.mail}</h2>
         </div>
-        <div className="userPopup-buttons">
+        <div className="menu__buttons-list">
           <button
             className="btn"
             onClick={() => disptach(setUser({ ...user, needChanges: true }))}

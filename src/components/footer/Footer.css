@@ -9,6 +9,6 @@
     grid-template-columns: 1fr 1fr 1fr;
 }
 
-.footer .btn {
+.footer__button {
     width: auto;
 }
