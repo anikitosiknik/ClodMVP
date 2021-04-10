@@ -1,4 +1,3 @@
-
 .addClothButton {
     flex: 1
 }
@@ -8,11 +7,10 @@
     font-size: 16px;
 }
 
-
 .clothList {
     display: grid;
     gap: 15px;
-   grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(3, 1fr);
     overflow-y: scroll;
     flex: 1;
     margin-bottom: 15px;
@@ -26,41 +24,6 @@
     display: flex;
     flex-direction: column;
     gap: 15px;
-}
-
-.clothList .clothItem {
-    border: 3px solid #C4C4C4;
-    box-sizing: border-box;
-    border-radius: 15px;
-    display: block;
-    transition: all 0.5s;
-    overflow: hidden;
-    position: relative;
-}
-
-
-.clothList .clothItem.choosed {
-    border: 3px solid #699C8B;
-    transition: all 0.5s;
-}
-
-.clothList .clothItem .clothImage {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-}
-
-.clothList .clothItem .clothChoosed {
-    position: absolute;
-    right: 7px;
-    top: 7px;
-    opacity: 0;
-    transition: all 0.5s;
-}
-
-.clothList .clothItem .clothChoosed.choosed {
-    opacity: 1;
-    transition: all 0.5s;
 }
 
 .clothFiltres {
@@ -97,9 +60,6 @@
     align-items: flex-start;
 }
 
-
-
-
 .clothFiltres .addClothText {
     margin: 0px;
 }
@@ -133,8 +93,6 @@
     transition: all 0.3s;
 }
 
-
-
 .lookButtons {
     display: grid;
     grid-auto-flow: column;
@@ -155,8 +113,6 @@
 .basketContainer .basketIcon {
     width: 30px;
 }
-
-
 
 .createModal {
     display: grid;
@@ -181,20 +137,15 @@
     color: #C4C4C4;
     font-size: 14px;
     text-align: center;
-
     margin: 0px;
 }
 
 .deleteModal {
     display: grid;
-    grid-template-areas:
-        'header header'
-        'no yes'
-        'warning warning';
+    grid-template-areas: 'header header' 'no yes' 'warning warning';
     grid-template-rows: 2fr 1fr 0.5fr;
     gap: 15px;
     align-items: center;
-
 }
 
 .deleteModal .deleteModalHeader {
@@ -203,7 +154,6 @@
     color: #515151;
     text-align: center;
     margin: 0px;
-
 }
 
 .deleteModal .deleteModalNo {
@@ -223,6 +173,5 @@
     color: #C4C4C4;
     font-size: 14px;
     text-align: center;
-
     margin: 0px;
 }

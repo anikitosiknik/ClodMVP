@@ -1,13 +1,11 @@
-import React, { Suspense, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import Header from "../header/Header";
 import "./ClothPage.css";
 import "./DesktopClothPage.css";
 import plusIcon from "../../imgs/plus.svg";
-import ChoosedIcon from "../../imgs/choosedIcon.svg";
 import BasketIcon from "../../imgs/basketIcon.svg";
 import { ClothStateType, lookType, RootState } from "../../redux/types";
 import { useDispatch, useSelector } from "react-redux";
-import PropTypes from "prop-types";
 import { CreateClothModal } from "./CreateCloth";
 import ClothFilters from "./ClothFilters";
 import {
@@ -19,7 +17,7 @@ import { fetchCreateLook } from "../../redux/reducers/look";
 import Modal from "../Modal/Modal";
 import { Cloth, ClothType, CreatedClothType } from "../../utils/clothRequestService";
 import LazyContainer from "../LazyContainer/LazyContainer";
-import Roller from "../Roller/Roller";
+import ClothItem from "../clothItem/ClothItem";
 
 const PhotoGuide = React.lazy(() => import("./../PhotoGuide/PhotoGuide"));
 
@@ -157,24 +155,7 @@ function ClothList({
             )
             .reverse()
             .map((id: string) => {
-              return (
-                <div
-                  key={id}
-                  className={`clothItem ${cloths[id].choosed ? "choosed" : ""}`}
-                  onClick={() => dispatch(toggleChoosedCloth(id))}
-                >
-                  <img
-                    src={ChoosedIcon}
-                    alt=""
-                    className={`clothChoosed ${
-                      cloths[id].choosed ? "choosed" : ""
-                    }`}
-                  />
-                  <Suspense fallback={<Roller/>}>
-                    <img className={"clothImage"} src={`/api/imgs/${id}`} />
-                  </Suspense>
-                </div>
-              );
+              return <div key={id} onClick={()=>dispatch(toggleChoosedCloth(id))}><ClothItem cloth={cloths[id]}/></div>
             })}
         </div>
       ))}
@@ -182,9 +163,7 @@ function ClothList({
   );
 }
 
-ClothList.propTypes = {
-  clothList: PropTypes.array.isRequired,
-};
+
 
 function LookButtons({ choosedCloth }: { choosedCloth: ClothType[] }) {
   const dispatch = useDispatch();
@@ -211,9 +190,6 @@ function LookButtons({ choosedCloth }: { choosedCloth: ClothType[] }) {
   );
 }
 
-LookButtons.propTypes = {
-  choosedCloth: PropTypes.array.isRequired,
-};
 
 function ClothBusket({ choosedCloths }: { choosedCloths: ClothType[] }) {
   const dispatch = useDispatch();
@@ -253,10 +229,6 @@ function ClothBusket({ choosedCloths }: { choosedCloths: ClothType[] }) {
     </div>
   );
 }
-
-ClothBusket.propTypes = {
-  choosedCloths: PropTypes.array.isRequired,
-};
 
 const useColumnList = () => {
   const [columnCount, changeColumnCount] = useState(3);

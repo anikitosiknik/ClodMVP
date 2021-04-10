@@ -1,0 +1,33 @@
+ .cloth-item {
+     border: 3px solid #C4C4C4;
+     box-sizing: border-box;
+     border-radius: 15px;
+     display: block;
+     transition: all 0.5s;
+     overflow: hidden;
+     position: relative;
+ }
+ 
+ .cloth-item_choosed {
+     border: 3px solid #699C8B;
+     transition: all 0.5s;
+ }
+ 
+ .cloth-item__image {
+     width: 100%;
+     height: 100%;
+     object-fit: cover;
+ }
+ 
+ .cloth-item__cheked-icon {
+     position: absolute;
+     right: 7px;
+     top: 7px;
+     opacity: 0;
+     transition: all 0.5s;
+ }
+ 
+ .cloth-item__cheked-icon_choosed {
+     opacity: 1;
+     transition: all 0.5s;
+ }
