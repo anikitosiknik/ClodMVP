@@ -15,7 +15,6 @@ import "./AdminPage.css";
 import "../LookPage/LookModal.css";
 import "../LookPage/LookPage.css";
 import "../LookPage/DesktopLookPage.css";
-import "../LookPage/DesktopLookModal.css";
 
 import {
   fetchDeleteLooks,

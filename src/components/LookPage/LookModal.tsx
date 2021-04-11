@@ -9,7 +9,6 @@ import basketIcon from "../../imgs/basketIcon.svg";
 import plusIcon from "../../imgs/plus.svg";
 
 import "./LookModal.css";
-import "./DesktopLookModal.css";
 import {
   fetchDeleteLooks,
   fetchToggleLikeLook,
@@ -39,27 +38,7 @@ export function LookModal({
       <div className="lookModal">
         <div className="lookModalControls">
           <img src={backIcon} alt="" onClick={() => closeEvent()} />
-          {/* {look.ready ? (
-            <select
-            defaultValue={look.category}
-              onChange={(e) => {
-                dispatch(
-                  fetchChangeCategoryLook({ id: look.id, category: e.target.value })
-                );
-                closeEvent()
-              }
-                
-              }
-            >
-              {[{ title: "Все", type: "" }, ...LOOKS_CATEGORIES_FOR_CHOOSE].map(
-                (cloth) => (
-                  <option key={cloth.title} value={cloth.type} >
-                    {cloth.title}
-                  </option>
-                )
-              )}
-            </select>
-          ) : null} */}
+
 
           <img
             src={likeIcon}

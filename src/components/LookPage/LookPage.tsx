@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import {
   CategoryPageInfo,
-  Look,
   looksSorted,
   RootState,
 } from "../../redux/types";
@@ -11,10 +10,9 @@ import { looksObjectToList } from "../../utils/looksRequestService";
 import Header from "../header/Header";
 import "./LookPage.css";
 import "./DesktopLookPage.css";
-import noPhotoIcon from "../../imgs/no-photo.svg";
 import backIcon from "../../imgs/backIcon.svg";
-import { LookModal } from "./LookModal";
 import LookCategoryItem from '../LookCategoryItem/LookCategoryItem';
+import LookCategoryPage from "../LookCategoryPage/LookCategoryPage";
 
 
 
@@ -75,7 +73,7 @@ export default function LookPage() {
         }
       />
       {categoryPage.title ? (
-        <CategoryPage page={categoryPage} />
+        <LookCategoryPage page={categoryPage} />
       ) : (
         <div className="lookPage">
           {LOOKS_CATEGORIES.map((category) => (
@@ -88,50 +86,6 @@ export default function LookPage() {
           ))}
         </div>
       )}
-    </>
-  );
-}
-
-const emptyLook = (): Look => ({
-  createdBy: "",
-  category: "",
-  id: "",
-  favorite: false,
-  img: "",
-  ready: false,
-  clothIds: [],
-  type: "clod",
-});
-
-function CategoryPage({ page }: { page: CategoryPageInfo }) {
-  const [lookModal, changeLookModal] = useState<Look>(emptyLook());
-  return (
-    <>
-      {lookModal.id ? (
-        <LookModal
-          look={lookModal}
-          closeEvent={() => changeLookModal(emptyLook())}
-        ></LookModal>
-      ) : null}
-      <h2>{page.title}</h2>
-      <div className="categoryPage">
-        {page.looks
-          .sort((lookOne, lookTwo) =>
-            new Date(lookOne.createdTime || "") >
-            new Date(lookTwo.createdTime || "")
-              ? 1
-              : -1
-          )
-          .map((look) => (
-            <div
-              onClick={() => changeLookModal(look)}
-              className="categoryPageLook"
-              key={look.id}
-            >
-              <img src={look.img || noPhotoIcon}></img>
-            </div>
-          ))}
-      </div>
     </>
   );
 }
