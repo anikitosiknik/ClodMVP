@@ -1,9 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import {
+  CategoryPageInfo,
   Look,
-  lookCategories,
-  lookList,
   looksSorted,
   RootState,
 } from "../../redux/types";
@@ -12,19 +11,16 @@ import { looksObjectToList } from "../../utils/looksRequestService";
 import Header from "../header/Header";
 import "./LookPage.css";
 import "./DesktopLookPage.css";
-import dots from "../../imgs/dots.svg";
+import noPhotoIcon from "../../imgs/no-photo.svg";
 import backIcon from "../../imgs/backIcon.svg";
 import { LookModal } from "./LookModal";
+import LookCategoryItem from '../LookCategoryItem/LookCategoryItem';
 
-type categoryPage = {
-  title: string;
-  looks: lookList;
-  type: lookCategories;
-};
 
-function LookPage() {
+
+export default function LookPage() {
   const looksState = useSelector((state: RootState) => state.look);
-  const [categoryPage, changeCategoryPage] = useState<categoryPage>({
+  const [categoryPage, changeCategoryPage] = useState<CategoryPageInfo>({
     title: "",
     looks: [],
     type: "all",
@@ -83,7 +79,7 @@ function LookPage() {
       ) : (
         <div className="lookPage">
           {LOOKS_CATEGORIES.map((category) => (
-            <LookCategories
+            <LookCategoryItem
               openCategory={changeCategoryPage}
               looks={looks[category.type]}
               key={category.type}
@@ -93,40 +89,6 @@ function LookPage() {
         </div>
       )}
     </>
-  );
-}
-
-export default LookPage;
-
-function LookCategories({
-  category,
-  looks,
-  openCategory,
-}: {
-  category: { title: string; type: lookCategories };
-  looks: lookList;
-  openCategory: (page: categoryPage) => void;
-}) {
-  return (
-    <div
-      key={category.type}
-      className="lookCategory"
-      onClick={() =>
-        openCategory({ title: category.title, looks, type: category.type })
-      }
-    >
-      <div className="lookCategoryImgContainer">
-        {looks.slice(0, 4).map((look) => (
-          <div
-            className={`lookCategoryCloth ${look.img ? "cover" : ""}`}
-            key={look.id}
-          >
-            <img src={look.img || dots} />
-          </div>
-        ))}
-      </div>
-      <h2>{category.title}</h2>
-    </div>
   );
 }
 
@@ -141,7 +103,7 @@ const emptyLook = (): Look => ({
   type: "clod",
 });
 
-function CategoryPage({ page }: { page: categoryPage }) {
+function CategoryPage({ page }: { page: CategoryPageInfo }) {
   const [lookModal, changeLookModal] = useState<Look>(emptyLook());
   return (
     <>
@@ -166,7 +128,7 @@ function CategoryPage({ page }: { page: categoryPage }) {
               className="categoryPageLook"
               key={look.id}
             >
-              <img src={look.img || dots}></img>
+              <img src={look.img || noPhotoIcon}></img>
             </div>
           ))}
       </div>

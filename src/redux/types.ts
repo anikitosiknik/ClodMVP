@@ -82,3 +82,10 @@ export type lookList = Look[]
 export type looksSorted = {
   [key in lookCategories]: lookList;
 };
+
+
+export type CategoryPageInfo = {
+  title: string;
+  looks: lookList;
+  type: lookCategories;
+};

@@ -8,57 +8,10 @@
     /* flex: 1; */
     margin: 10px 0px;
     align-self: center;
-
 }
 
 .lookPage::-webkit-scrollbar {
     display: none;
-}
-
-.lookCategory {
-    background: #F2F3F7;
-    box-shadow: 3px 4px 10px #BECDE2;
-    border-radius: 20px;
-    display: grid;
-    align-items: center;
-    padding: 15px 20px;
-    justify-content: center;
-}
-
-.lookCategoryCloth {
-    width: 38px;
-    height: 38px;
-    background: #F2F3F7;
-    box-shadow: inset 2px 2px 5px #BECDE2, inset 2px 2px 5px #BECDE2, inset 2px 2px 5px #BECDE2, inset 2px 2px 5px #BECDE2;
-    border-radius: 15px;
-    overflow: hidden;
-}
-
-.lookCategoryImgContainer {
-    width: 80%;
-    height: 88px;
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    grid-template-rows: 1fr 1fr;
-    gap: 12px;
-    justify-items: center;
-    align-items: center;
-}
-
-.lookCategoryCloth img {
-    width: 100%;
-    height: 100%;
-}
-
-.lookCategoryCloth.cover img {
-    object-fit: cover;
-}
-
-.lookCategory h2 {
-    margin: 5px 0;
-    font-size: 14px;
-    color: #515151;
-    align-self: flex-end;
 }
 
 .backButton {
@@ -75,15 +28,12 @@
     margin: 30px 0;
 }
 
-
 .categoryPage::-webkit-scrollbar {
     display: none;
 }
 
-
 .categoryPageLook {
     border-radius: 5px;
-
     box-sizing: border-box;
     display: block;
     transition: all 0.5s;
