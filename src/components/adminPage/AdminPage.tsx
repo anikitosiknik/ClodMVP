@@ -12,7 +12,6 @@ import likeIcon from "../../imgs/likeIcon.svg";
 import basketIcon from "../../imgs/basketIcon.svg";
 import plusIcon from "../../imgs/plus.svg";
 import "./AdminPage.css";
-import "../LookPage/LookModal.css";
 import "../LookPage/LookPage.css";
 import "../LookPage/DesktopLookPage.css";
 
@@ -28,6 +27,7 @@ import { getStringFromImg } from "../../utils/fileService";
 import AdminRequestService from "../../utils/adminRequestService";
 import { ClothType, CreatedClothType } from "../../utils/clothRequestService";
 import CreateCloth from "../ClothPage/CreateCloth";
+import "../LookModal/LookModal.css"
 
 export default function AdminPage() {
   const dispatch = useDispatch();
@@ -122,7 +122,7 @@ export type UpdateLook = {
   clothCreate: ClothType[];
 };
 
-export function LookModal({
+ function LookModal({
   closeEvent,
   look,
 }: {
@@ -193,8 +193,8 @@ export function LookModal({
   };
   return (
     <Modal closeEvent={closeEvent}>
-      <div className="lookModal">
-        <div className="lookModalControls">
+      <div className="look-modal">
+        <div className="look-modal__controls">
           <img src={backIcon} alt="" onClick={() => closeEvent()} />
           <img
             src={likeIcon}
@@ -202,7 +202,7 @@ export function LookModal({
               dispatch(fetchToggleLikeLook(look.id));
               closeEvent();
             }}
-            className={`like ${look.favorite ? "liked" : ""}`}
+            className={`look-modal__like ${look.favorite ? "look-modal__like_liked" : ""}`}
           />
           <img
             src={basketIcon}
@@ -271,7 +271,7 @@ export function LookModal({
           </div>
         </div>
 
-        <div className="lookModalClothContainer">
+        <div className="look-modal__cloths">
           {look.clothIds
             .filter((id) => {
               return cloths[id] && !updatedLook.clothDelete.includes(id);
@@ -279,7 +279,7 @@ export function LookModal({
             .map((id) => {
               const look = cloths[id];
               return (
-                <div key={id} className="lookModalCloth">
+                <div key={id} className="look-modal-cloth">
                   <input
                     type="file"
                     className="updateClothPicture"
@@ -290,7 +290,7 @@ export function LookModal({
                   />
                   <label htmlFor={`updateClothPicture${id}`}>
                     <img
-                      className="lookModalImgAdmin"
+                      className="lookModalImgAdmin look-modal-cloth__image"
                  
                       src={
                         updatedLook.clothUpd.find((cloth) => {
@@ -299,18 +299,18 @@ export function LookModal({
                       }
                     ></img>
                   </label>
-                  <div className="lookModalClothInfo">
-                    <p className="lookModalType">
+                  <div className="look-modal-cloth__info">
+                    <p className="look-modal-cloth__type">
                       {clothTypeObject[look.type]}
                     </p>
                     <div
-                      className="lookModalColor"
+                      className="look-modal-cloth__color"
                       style={{ backgroundColor: look.color }}
                     ></div>
                     <a
                       href={look.link}
-                      className={`btn lookModalButton ${
-                        look.link ? "show" : "hide"
+                      className={`btn look-modal-cloth__buy ${
+                        look.link ? "" : "look-modal-cloth__buy_hidden"
                       }`}
                     >
                       Купить

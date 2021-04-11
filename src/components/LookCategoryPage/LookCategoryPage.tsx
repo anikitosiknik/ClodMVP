@@ -1,31 +1,21 @@
 import React, { useState } from 'react'
-import { CategoryPageInfo, Look } from '../../redux/types';
-import { LookModal } from '../LookPage/LookModal';
+import { CategoryPageInfo } from '../../redux/types';
 import noPhotoIcon from "../../imgs/no-photo.svg";
+import LookModal from "../LookModal/LookModal";
 
 import './LookCategoryPage.css'
 
-const emptyLook = (): Look => ({
-    createdBy: "",
-    category: "",
-    id: "",
-    favorite: false,
-    img: "",
-    ready: false,
-    clothIds: [],
-    type: "clod",
-  });
-  
+
   
 
 export default function LookCategoryPage({ page }: { page: CategoryPageInfo }) {
-    const [lookModal, changeLookModal] = useState<Look>(emptyLook());
+    const [lookId, changeLookId] = useState<string>('');
     return (
       <>
-        {lookModal.id ? (
+        {lookId ? (
           <LookModal
-            look={lookModal}
-            closeEvent={() => changeLookModal(emptyLook())}
+            id={lookId}
+            closeEvent={() => changeLookId('')}
           ></LookModal>
         ) : null}
         <h2>{page.title}</h2>
@@ -39,7 +29,7 @@ export default function LookCategoryPage({ page }: { page: CategoryPageInfo }) {
             )
             .map((look) => (
               <div
-                onClick={() => changeLookModal(look)}
+                onClick={() => changeLookId(look.id)}
                 className="look-category-page__item"
                 key={look.id}
               >

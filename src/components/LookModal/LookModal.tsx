@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchGetClothsById } from "../../redux/reducers/cloth";
-import { Look, RootState } from "../../redux/types";
+import { RootState } from "../../redux/types";
 import Modal from "../Modal/Modal";
 import backIcon from "../../imgs/backIcon.svg";
 import likeIcon from "../../imgs/likeIcon.svg";
@@ -20,13 +20,14 @@ CLOTH_TYPES.forEach((type) => {
   clothTypeObject[type.value] = type.title;
 });
 
-export function LookModal({
+export default function LookModal({
   closeEvent,
-  look,
+  id,
 }: {
   closeEvent: () => void;
-  look: Look;
+  id: string
 }) {
+  const look = useSelector((store: RootState) => store.look[id])
   const cloths = useSelector((store: RootState) => store.cloth);
   const dispatch = useDispatch();
   useEffect(() => {
@@ -35,10 +36,9 @@ export function LookModal({
   }, [look.clothIds]);
   return (
     <Modal closeEvent={closeEvent}>
-      <div className="lookModal">
-        <div className="lookModalControls">
+      <div className="look-modal">
+        <div className="look-modal__controls">
           <img src={backIcon} alt="" onClick={() => closeEvent()} />
-
 
           <img
             src={likeIcon}
@@ -46,7 +46,7 @@ export function LookModal({
               dispatch(fetchToggleLikeLook(look.id));
               closeEvent();
             }}
-            className={`like ${look.favorite ? "liked" : ""}`}
+            className={`look-modal__like ${look.favorite ? "look-modal__like_liked" : ""}`}
           />
           <img
             src={basketIcon}
@@ -57,10 +57,10 @@ export function LookModal({
             alt=""
           />
         </div>
-        <div className="lookModalHeader">
-          <img src={look.img || plusIcon} alt="" />
+        <div className="look-modal__header">
+          <img src={look.img || plusIcon} alt="" className="look-modal__image"/>
         </div>
-        <div className="lookModalClothContainer">
+        <div className="look-modal__cloths">
           {look.clothIds
             .filter((id) => {
               return cloths[id];
@@ -68,21 +68,20 @@ export function LookModal({
             .map((id) => {
               const look = cloths[id];
               return (
-                <div key={id} className="lookModalCloth">
-                  
-                  <img className="lookModalImg" src={`/api/imgs/${id}`}></img>
-                  <div className="lookModalClothInfo">
-                    <p className="lookModalType">
+                <div key={id} className="look-modal-cloth">
+                  <img className="look-modal-cloth__image" src={`/api/imgs/${id}`}></img>
+                  <div className="look-modal-cloth__info">
+                    <p className="look-modal-cloth__type">
                       {clothTypeObject[look.type]}
                     </p>
                     <div
-                      className="lookModalColor"
+                      className="look-modal-cloth__color"
                       style={{ backgroundColor: look.color }}
                     ></div>
                     <a
                       href={look.link}
-                      className={`btn lookModalButton ${
-                        look.link ? "show" : "hide"
+                      className={`btn look-modal-cloth__buy ${
+                        look.link ? "" : "look-modal-cloth__buy_hidden"
                       }`}
                     >
                       Купить
